@@ -1,0 +1,46 @@
+package com.sa.restaurant.app.roomDatabase
+
+import android.arch.persistence.room.*
+
+@Dao
+interface MyDao{
+
+    @Insert
+    fun adduser(table: Table)
+
+    @Delete
+    fun deleteuser(table: Table)
+
+    @Update
+    fun updateuser(table: Table)
+
+     @Query("select * from Mytable")
+    fun getusers():List<Table>
+
+    @Update
+    fun update(table: Table)
+
+    @Query("select * from Mytable Where Name=:username or Email=:email ")
+    fun checkuser(username:String,email:String):List<Table>
+
+    @Query("select * from Mytable Where Password=:password and Name=:username or Email=:username")
+    fun userLogin(username:String,password:String):List<Table>
+
+    @Query("select * from FavoritesTable Where RestaurantName=:restaurantName And userid=:uid")
+    fun checkFavorites(restaurantName:String,uid:Int):List<FavoritesTable>
+
+    @Query("select id from Mytable Where Name=:username")
+    fun getUserId(username:String):Int
+
+    @Insert
+    fun addfav(table: FavoritesTable)
+
+    @Query("Delete from FavoritesTable where RestaurantName=:restaurantName And userid=:uid")
+    fun deletefromfav(restaurantName:String,uid:Int)
+
+    @Query("select * from FavoritesTable Where userid=:userid")
+    fun getFavorites(userid:Int):List<FavoritesTable>
+
+
+
+}

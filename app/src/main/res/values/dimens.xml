@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <dimen name="layout_margin">16dp</dimen>
+    <dimen name="btn_login_width">120dp</dimen>
+    <dimen name="btn_login_marginright">16dp</dimen>
+    <dimen name="btn_login_margintop">54dp</dimen>
+    <dimen name="et_email_margintop">25dp</dimen>
+    <dimen name="et_password_margintop">52dp</dimen>
+    <dimen name="tv_forgot_marginright">16dp</dimen>
+    <dimen name="tv_forgot_marginbottom">14dp</dimen>
+    <dimen name="tv_donthaveacc_marginleft">16dp</dimen>
+    <dimen name="tv_donthaveacc_margintop">54dp</dimen>
+    <dimen name="tv_registernow_marginleft">16dp</dimen>
+    <dimen name="tv_registernow_margintop">8dp</dimen>
+    <dimen name="et_registerfrag_name_margintop">8dp</dimen>
+    <dimen name="et_registerfrag_cpass_margintop">25dp</dimen>
+    <dimen name="et_registerfrag_number_margintop">25dp</dimen>
+    <dimen name="et_registerfrag_registerbtn_marginbottom">16dp</dimen>
+    <dimen name="et_registerfrag_registerbtn_marginend">16dp</dimen>
+    <dimen name="et_registerfrag_donthaveacc_marginbottom">10dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+</resources>
