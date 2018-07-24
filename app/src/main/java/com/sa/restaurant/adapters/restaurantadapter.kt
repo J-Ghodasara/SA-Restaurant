@@ -18,12 +18,15 @@ import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.app.roomDatabase.Table
 import com.sa.restaurant.utils.Toastutils
+import com.squareup.picasso.Picasso
+import retrofit2.http.Url
 
 class restaurantadapter(var context: Context, var array: ArrayList<RestaurantData>) : RecyclerView.Adapter<restaurantadapter.Vholder>() {
 
     lateinit var mydb: Mydatabase
     var Username: String?=null
     var uid:Int?=null
+    var list:ArrayList<String> = ArrayList()
 
 
     init {
@@ -49,8 +52,11 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
         Log.i("onbindviewholder", "in")
         holder.textView.text = array[position].Name
         holder.subtitle.text=array[position].Address
-        var result:List<FavoritesTable> =  mydb.myDao().checkFavorites(array[position].Name!!,uid!!)
+        var referencePhoto=array[position].image
 
+        val imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referencePhoto&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
+        var result:List<FavoritesTable> =  mydb.myDao().checkFavorites(array[position].Name!!,uid!!)
+        Picasso.get().load(imgUrl).into(holder.img)
 
         if(result.isNotEmpty()){
 
@@ -86,6 +92,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 favoritesTable.restaurantName=restroName
                 favoritesTable.uid=uid
                 favoritesTable.restaurantAddress=holder.subtitle.text.toString()
+                favoritesTable.restaurantPhoto=array[position].image
+                list.add(referencePhoto!!)
                 mydb.myDao().addfav(favoritesTable)
                 this.notifyDataSetChanged()
                 Toastutils.showsSnackBar(context as Activity, "Added to fav")
@@ -114,7 +122,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
         var textView: TextView = itemView.findViewById(R.id.restaurant_names)
         var add_to_fav: ToggleButton = itemView.findViewById(R.id.add_to_fav)
-
+        var img:ImageView = itemView.findViewById(R.id.imageView)
         var subtitle: TextView = itemView.findViewById(R.id.price)
 
     }

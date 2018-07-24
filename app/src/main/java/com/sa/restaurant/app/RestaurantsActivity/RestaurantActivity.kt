@@ -2,20 +2,20 @@ package com.sa.restaurant.app.RestaurantsActivity
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
@@ -26,17 +26,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.facebook.login.LoginManager
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.GoogleMap
+import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 import com.sa.restaurant.adapters.ViewPagerAdapter
 import com.sa.restaurant.adapters.restaurantadapter
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
-
+import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
@@ -44,10 +46,11 @@ import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterIm
 import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.utils.Fragmentutils
+import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.activity_restaurant.*
 import kotlinx.android.synthetic.main.app_bar_restaurant.*
 import kotlinx.android.synthetic.main.content_restaurant.*
-import kotlinx.android.synthetic.main.restaurants_list.*
+import kotlinx.android.synthetic.main.fragment_maps.*
 
 
 class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RestaurantView {
@@ -55,7 +58,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private var dotscount: Int = 0
     private var dots: Array<ImageView?>? = null
-    lateinit var iGoogleApiServices: IGoogleApiServices
+
     lateinit var loc: Location
     lateinit var pojo: POJO
     private lateinit var mMap: GoogleMap
@@ -66,14 +69,19 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     lateinit var adapter: restaurantadapter
     var RestaurantsList: ArrayList<String> = ArrayList()
-    var isfav:Boolean = false
+    var isfav: Boolean = false
     lateinit var mydb: Mydatabase
-    var favRestros:FavoriteRestaurants= FavoriteRestaurants()
+    var favRestros: FavoriteRestaurants = FavoriteRestaurants()
+    var mapsFragment: MapsFragment = MapsFragment()
+    var isVisibletouser: Boolean = false
+
     companion object {
         var count: Int = 0
         lateinit var locationreq: LocationRequest
         lateinit var locationcallback: LocationCallback
         var googleClient: GoogleApiClient? = null
+        lateinit var iGoogleApiServices: IGoogleApiServices
+        lateinit var itemaction: MenuItem
     }
 
 
@@ -83,12 +91,11 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         setSupportActionBar(toolbar)
 
 
-
         var RestaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
         googleClient = RestaurantPresenter.createClient(this)
         googleClient!!.connect()
 
-        mydb= Room.databaseBuilder(this, Mydatabase::class.java,"Database").allowMainThreadQueries().build()
+        mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -114,7 +121,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         //getting userdetails to show in header navigation bar ->> End
 
         // handling the favorite btn -->Start
-
 
 
         //setting the viewpager ->> Start
@@ -169,7 +175,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         val viewGroup = (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
 
-        var dividerItemDecoration:com.sa.restaurant.adapters.DividerItemDecoration= com.sa.restaurant.adapters.DividerItemDecoration(this)
+        var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(this)
         recyclerview.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
         adapter = restaurantadapter(this, list)
         recyclerview.addItemDecoration(dividerItemDecoration)
@@ -261,28 +267,47 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.maps ->{
-
-                return true}
+            R.id.showonmaps -> {
+                if (item.isVisible) {
+                    isVisibletouser = false
+                    Fragmentutils.addFragmentwithBackStack(this, mapsFragment, fragmentManager, R.id.content)
+                    itemaction = item
+                    item.isVisible = false
+                }
+                return true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.home -> {
-                 Fragmentutils.removeFragment(favRestros,fragmentManager)
+                isVisibletouser = false
+                Fragmentutils.removeFragment(favRestros, fragmentManager)
+                Fragmentutils.removeFragment(mapsFragment, fragmentManager)
+                this.invalidateOptionsMenu()
             }
             R.id.fav -> {
+                if (!isVisibletouser) {
+                    Fragmentutils.addFragment(this, favRestros, fragmentManager, R.id.content)
+                    isVisibletouser = true
+                } else {
 
-                Fragmentutils.addFragment(this,favRestros,fragmentManager,R.id.content)
+                }
             }
             R.id.weather -> {
-
+                isVisibletouser = false
             }
             R.id.logout -> {
-
+                isVisibletouser = false
+                LoginManager.getInstance().logOut()
+                var intent: Intent = Intent(this, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                Toastutils.showToast(this, "Logged out")
+                startActivity(intent)
             }
 
         }
@@ -346,31 +371,31 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun getcurrentlatlng(location: Location, iGoogleApiServices: IGoogleApiServices, context: ViewGroup, activity: Context, adapter: restaurantadapter) {
 
-          //  var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
-         //   list = restaurantPresenter.nearbyplaces(this, "Restaurants", location, iGoogleApiServices)
+        //  var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
+        //   list = restaurantPresenter.nearbyplaces(this, "Restaurants", location, iGoogleApiServices)
 
-           // Log.i("list $count", "${list.size}")
-        if(list!=null){
-            for (l in list.indices){
+        // Log.i("list $count", "${list.size}")
+        if (list != null) {
+            for (l in list.indices) {
                 adapter.array.add(list[l])
                 Log.i("list passed", "success $count")
             }
             adapter.notifyDataSetChanged()
 
-        }else{
+        } else {
             Log.i("list is null", "trying again")
         }
     }
 
     override fun restaurantslist(list: ArrayList<RestaurantData>, activity: Context, adapter: restaurantadapter) {
-        if(list!=null){
-            for (l in list.indices){
+        if (list != null) {
+            for (l in list.indices) {
                 adapter.array.add(list[l])
                 Log.i("list passed", "success $count")
             }
             adapter.notifyDataSetChanged()
 
-        }else{
+        } else {
             Log.i("list is null", "trying again")
         }
     }

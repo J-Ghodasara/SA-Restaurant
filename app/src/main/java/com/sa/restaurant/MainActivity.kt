@@ -8,10 +8,19 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.Toolbar
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.login.LoginFragment
 import com.sa.restaurant.app.signUp.view.RegisterView
 import com.sa.restaurant.utils.Fragmentutils
+import android.R.attr.data
+import android.app.Fragment
+import android.util.Log
+import android.R.attr.data
+
+
+
 
 /**
  * Landing class for login and register fragment
@@ -25,6 +34,8 @@ class MainActivity : AppCompatActivity(),communicate {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FacebookSdk.sdkInitialize(FacebookSdk.getApplicationContext())
+        AppEventsLogger.activateApp(this)
         setContentView(R.layout.activity_main)
         var loginFragment:LoginFragment= LoginFragment()
 
@@ -35,8 +46,21 @@ class MainActivity : AppCompatActivity(),communicate {
     //    loginFragment.arguments=
         Fragmentutils.addFragment(this,loginFragment,fragmentManager,R.id.container)
 
+
+
     }
 
+ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+////        for (fragment in supportFragmentManager.fragments) {
+////            fragment.onActivityResult(requestCode, resultCode, data)
+////            Log.d("Activity", "ON RESULT CALLED")
+////        }
+//            Log.i("Activity","OnActivity Result")
+            val fragment = fragmentManager.findFragmentById(R.id.container)
+            fragment.onActivityResult(requestCode, resultCode, data)
+//
+  }
     override fun loginsuccessfull() {
 
 //        var sharedPreferences:SharedPreferences=getSharedPreferences("applicationcontext",0)

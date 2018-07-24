@@ -51,6 +51,7 @@ class FavoriteRestaurants : Fragment() {
             var restaurantData:RestaurantData=RestaurantData()
             restaurantData.Name=list[l].restaurantName
            restaurantData.Address=list[l].restaurantAddress
+            restaurantData.image=list[l].restaurantPhoto
             favorite_list.add(restaurantData)
         }
 

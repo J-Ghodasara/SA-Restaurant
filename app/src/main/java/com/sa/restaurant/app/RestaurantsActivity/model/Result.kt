@@ -1,5 +1,6 @@
 package com.sa.restaurant.app.RestaurantsActivity.model
 
+
 data class Result(
         val geometry: Geometry,
         val icon: String,
@@ -11,5 +12,6 @@ data class Result(
         val types: List<String>,
         val vicinity: String,
         val rating: Double,
+        val photos: List<PhotosItem>,
         val opening_hours: OpeningHours
 )

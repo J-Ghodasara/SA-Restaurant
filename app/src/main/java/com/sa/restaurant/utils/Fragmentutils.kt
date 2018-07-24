@@ -29,5 +29,11 @@ object Fragmentutils{
         fragmentTransaction.remove(fragment).commit()
     }
 
+    fun addFragmentwithBackStack(context: Context,fragment: Fragment, fragmentManager: FragmentManager,id:Int){
+        var fm:FragmentManager= fragmentManager
+        var fragmentTransaction:FragmentTransaction= fm.beginTransaction().addToBackStack(null)
+        fragmentTransaction.add(id,fragment).commit()
+    }
+
 
 }

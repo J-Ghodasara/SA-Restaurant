@@ -15,11 +15,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import com.sa.restaurant.MainActivity
 import com.sa.restaurant.adapters.restaurantadapter
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
+import com.sa.restaurant.app.RestaurantsActivity.model.PhotosItem
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.utils.Toastutils
@@ -44,14 +44,14 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
     lateinit var locationReq: LocationRequest
     lateinit var locationCallback: LocationCallback
-    lateinit var loc: Location
+
     var latlng: LatLng? = null
     var GEOFENCE_ID_STAN_UNI = "My_Location"
     var list: ArrayList<RestaurantData> = ArrayList()
     var count: Int = 0
     companion object {
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
-
+        lateinit var loc: Location
 
     }
 
@@ -74,19 +74,29 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
             }
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
-
+                var photoitem: List<PhotosItem> = ArrayList()
                 pojo = response!!.body()!!
                 Log.i("Response",response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
+                var photoreference:String
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
 //                        val markerOptions: MarkerOptions = MarkerOptions()
                         val googlePlace = response.body()!!.results!![i]
                         val address= response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
+                        if(googlePlace.photos==null){
+                            photoreference="CmRaAAAARs96HXjLZFkFS1Nzb2FfsTnesaYVp-lGptxA3o-rLDlNgZJqjpse57PIB42_tUQnErkBkuWEcJMTSKBScC5eYrzLA3s4Pt8MihxpMD3gLi_7zOxD9i2-fxxOp7v9fs_pEhC7cZWc4cvi5UmJO1_IyOYsGhR2X0rUzKq54WzXiAsdUVFZwBQpHw"
+                        }else{
+                            photoitem = googlePlace.photos.toList()
+                            photoreference = photoitem[0].photo_reference
+                        }
+
+
                         var restaurantData:RestaurantData=RestaurantData()
                         restaurantData.Name=placename
                         restaurantData.Address=address
+                        restaurantData.image=photoreference
                         list.add(restaurantData)
                         //  latlng2 = LatLng(lat, lng)
 
@@ -101,6 +111,8 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                     Log.i("Total places", list.size.toString())
                     var restaurantView:RestaurantView= RestaurantActivity()
                     restaurantView.restaurantslist(list,context,restaurantadapter)
+
+
 
                     //mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng2))
                 }else{
