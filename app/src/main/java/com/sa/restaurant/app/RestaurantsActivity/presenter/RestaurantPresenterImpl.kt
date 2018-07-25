@@ -57,7 +57,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
     override fun BuildLocationreq(): LocationRequest {
         locationReq = LocationRequest()
-        locationReq.interval = 30000
+        locationReq.interval = 60000
         Log.i("Called", "in onconnected")
         locationReq.fastestInterval = 5000
         locationReq.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
@@ -98,6 +98,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         restaurantData.Address=address
                         restaurantData.image=photoreference
                         list.add(restaurantData)
+                        RestaurantActivity.mcount=0
                         //  latlng2 = LatLng(lat, lng)
 
 
@@ -183,6 +184,12 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
               //  RestaurantView.getcurrentlatlng(loc, iGoogleApiServices, context, activity, adapter)
                   Log.i("Count success","$count")
+            }
+
+            if(RestaurantActivity.mcount==1){
+                list.clear()
+                Log.i("cleared list",list.size.toString())
+                nearbyplaces(activity, "restaurant", loc, iGoogleApiServices,adapter)
             }
 
         }

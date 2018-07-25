@@ -57,7 +57,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
         val imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referencePhoto&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
         var result:List<FavoritesTable> =  mydb.myDao().checkFavorites(array[position].Name!!,uid!!)
         Picasso.get().load(imgUrl).into(holder.img)
-
+  Log.i("Result of db favs",result.toString())
         if(result.isNotEmpty()){
 
            for(i in result.indices){
@@ -68,6 +68,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
            }
 
 
+        }else{
+            holder.add_to_fav.isChecked=false
         }
 
         holder.add_to_fav.setOnClickListener(View.OnClickListener {

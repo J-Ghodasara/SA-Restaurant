@@ -1,19 +1,18 @@
 package com.sa.restaurant.app.RestaurantsActivity
 
+import android.app.Activity
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
-import android.opengl.Visibility
-import android.os.Build
-import android.os.Bundle
-import android.os.Looper
+import android.os.*
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -39,6 +38,7 @@ import com.sa.restaurant.adapters.ViewPagerAdapter
 import com.sa.restaurant.adapters.restaurantadapter
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
+import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
@@ -50,10 +50,10 @@ import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.activity_restaurant.*
 import kotlinx.android.synthetic.main.app_bar_restaurant.*
 import kotlinx.android.synthetic.main.content_restaurant.*
-import kotlinx.android.synthetic.main.fragment_maps.*
 
 
-class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RestaurantView {
+class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RestaurantView, SwipeRefreshLayout.OnRefreshListener {
+
 
 
     private var dotscount: Int = 0
@@ -73,7 +73,10 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     lateinit var mydb: Mydatabase
     var favRestros: FavoriteRestaurants = FavoriteRestaurants()
     var mapsFragment: MapsFragment = MapsFragment()
-    var isVisibletouser: Boolean = false
+    var favIsVisibletouser: Boolean = false
+    var weatherIsVisibletouser: Boolean = false
+var homeIsVisible:Boolean=true
+    var weatherfragment:weatherFragment=weatherFragment()
 
     companion object {
         var count: Int = 0
@@ -82,6 +85,8 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         var googleClient: GoogleApiClient? = null
         lateinit var iGoogleApiServices: IGoogleApiServices
         lateinit var itemaction: MenuItem
+        var mcount:Int=0
+
     }
 
 
@@ -202,6 +207,8 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Getting our current location ->> End
 
 
+        swipe_refresh.setOnRefreshListener(this)
+
     }
 
 //    fun getmMap(): GoogleMap {
@@ -224,6 +231,24 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 //            true
 //
 //    }
+
+
+    override fun onRefresh() {
+        list.clear()
+        Toastutils.showsSnackBar(this,"List Updated")
+        var handler:Handler?=Handler()
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mcount=1
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
+        }
+
+            handler!!.postDelayed(Runnable {swipe_refresh.isRefreshing = false  },2000)
+
+
+
+    }
+
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -268,8 +293,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.showonmaps -> {
+                supportActionBar!!.title = "Locations"
                 if (item.isVisible) {
-                    isVisibletouser = false
+                    favIsVisibletouser = false
                     Fragmentutils.addFragmentwithBackStack(this, mapsFragment, fragmentManager, R.id.content)
                     itemaction = item
                     item.isVisible = false
@@ -285,24 +311,55 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.home -> {
-                isVisibletouser = false
+                list.clear()
+                supportActionBar!!.title = "Restaurants"
+                favIsVisibletouser = false
+                weatherIsVisibletouser=false
                 Fragmentutils.removeFragment(favRestros, fragmentManager)
                 Fragmentutils.removeFragment(mapsFragment, fragmentManager)
+                Fragmentutils.removeFragment(weatherfragment,fragmentManager)
                 this.invalidateOptionsMenu()
+                if(!homeIsVisible){
+                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mcount=1
+                        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+                        fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
+                    }
+                }
             }
             R.id.fav -> {
-                if (!isVisibletouser) {
+                list.clear()
+                supportActionBar!!.title = "Favorites"
+                weatherIsVisibletouser=false
+                homeIsVisible=false
+                if (!favIsVisibletouser) {
+                    Fragmentutils.removeFragment(mapsFragment, fragmentManager)
+                    Fragmentutils.removeFragment(weatherfragment,fragmentManager)
                     Fragmentutils.addFragment(this, favRestros, fragmentManager, R.id.content)
-                    isVisibletouser = true
+
+                    favIsVisibletouser = true
                 } else {
 
                 }
             }
             R.id.weather -> {
-                isVisibletouser = false
-            }
+                list.clear()
+                supportActionBar!!.title = "Weather"
+                favIsVisibletouser = false
+                homeIsVisible=false
+                if(!weatherIsVisibletouser){
+                    Fragmentutils.removeFragment(favRestros, fragmentManager)
+                    Fragmentutils.removeFragment(mapsFragment, fragmentManager)
+
+                    Fragmentutils.addFragment(this,weatherfragment,fragmentManager,R.id.content)
+                    weatherIsVisibletouser=true
+
+                 }else{
+
+                }
+               }
             R.id.logout -> {
-                isVisibletouser = false
+                favIsVisibletouser = false
                 LoginManager.getInstance().logOut()
                 var intent: Intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -389,6 +446,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun restaurantslist(list: ArrayList<RestaurantData>, activity: Context, adapter: restaurantadapter) {
         if (list != null) {
+            adapter.array.clear()
             for (l in list.indices) {
                 adapter.array.add(list[l])
                 Log.i("list passed", "success $count")

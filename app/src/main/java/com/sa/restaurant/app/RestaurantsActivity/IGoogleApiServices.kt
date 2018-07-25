@@ -1,6 +1,7 @@
 package com.sa.restaurant.app.RestaurantsActivity
 
 
+import com.sa.restaurant.app.MapsActivity.Weather.Model.Response
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import retrofit2.Call
 import retrofit2.http.GET
@@ -10,6 +11,9 @@ interface IGoogleApiServices{
 
     @GET
     fun getnearbyplaces(@Url url:String): Call<POJO>
+
+    @GET
+    fun getWeatherInfo(@Url url:String): Call<Response>
 
     @GET
     fun getdirections(@Url url:String):Call<String>

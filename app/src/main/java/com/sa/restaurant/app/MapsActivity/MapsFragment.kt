@@ -7,6 +7,7 @@ import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.app.Fragment
 import android.content.Context
+import android.location.Location
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
+import com.sa.restaurant.app.MapsActivity.Weather.view.WeatherView
 import kotlinx.android.synthetic.main.fragment_maps.*
 
 
@@ -35,25 +37,7 @@ import kotlinx.android.synthetic.main.fragment_maps.*
  * A simple [Fragment] subclass.
  *
  */
-class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
-    override fun onMarkerClick(p0: Marker?): Boolean {
-        p0!!.showInfoWindow()
-
-//when{
-//    p0!! == MapsPresenterImpl.myLocation -> {
-//        MapsPresenterImpl.myLocation!!.showInfoWindow()
-//        return true
-//    }
-//    p0 == MapsPresenterImpl.RestaurantMarker -> {
-//
-//        return true
-//    }
-//    else -> {
-//        return true
-//    }
-//}
-return true
-    }
+class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
     companion object {
           var mMap: GoogleMap?=null
@@ -77,6 +61,15 @@ return true
             mMap!!.isMyLocationEnabled = true
            }
     }
+
+    override fun onMarkerClick(p0: Marker?): Boolean {
+        p0!!.showInfoWindow()
+
+        return true
+    }
+
+
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

@@ -41,6 +41,15 @@ interface MyDao{
     @Query("select * from FavoritesTable Where userid=:userid")
     fun getFavorites(userid:Int):List<FavoritesTable>
 
+    @Insert
+    fun addWeatherInfo(table: WeatherInfoTable)
+
+    @Query("select * from WeatherInfoTable Where userID=:UserId ")
+    fun checkUserId(UserId:Int):List<WeatherInfoTable>
+
+    @Update
+    fun updateWeatherInfo(table: WeatherInfoTable)
+
 
 
 }

@@ -34,7 +34,8 @@ class FavoriteRestaurants : Fragment() {
         // Inflate the layout for this fragment
         var v:View= inflater.inflate(R.layout.fragment_favorite_restaurants, container, false)
         mydb= Room.databaseBuilder(activity, Mydatabase::class.java,"Database").allowMainThreadQueries().build()
-       return v
+
+        return v
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
