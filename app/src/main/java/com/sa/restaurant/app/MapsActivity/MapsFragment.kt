@@ -110,13 +110,6 @@ return true
             fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
         }
 
-
-
-
-
-
-
-
         return view
     }
 
