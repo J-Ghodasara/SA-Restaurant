@@ -43,10 +43,10 @@
             </intent-filter>
         </activity>
 
-        <!--<provider-->
-            <!--android:name="com.facebook.FacebookContentProvider"-->
-            <!--android:authorities="com.facebook.app.FacebookContentProvider{186645018695373}"-->
-            <!--android:exported="false" />-->
+        <provider
+            android:name="com.facebook.FacebookContentProvider"
+            android:authorities="com.facebook.app.FacebookContentProvider{276275663130951}"
+            android:exported="false" />
         <activity
             android:name=".app.RestaurantsActivity.RestaurantActivity"
             android:label="@string/title_activity_restaurant"

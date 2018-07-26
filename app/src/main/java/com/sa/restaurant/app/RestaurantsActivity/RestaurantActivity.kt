@@ -26,6 +26,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import com.facebook.login.LoginManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -239,8 +240,12 @@ var homeIsVisible:Boolean=true
         var handler:Handler?=Handler()
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mcount=1
-            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-            fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
+//            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//            fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
+            var restaurantPresenter:RestaurantPresenterImpl=RestaurantPresenterImpl()
+            restaurantPresenter.nearbyplaces(this,"restaurant",RestaurantPresenterImpl.loc, iGoogleApiServices,adapter)
+
+
         }
 
             handler!!.postDelayed(Runnable {swipe_refresh.isRefreshing = false  },2000)
@@ -249,6 +254,15 @@ var homeIsVisible:Boolean=true
 
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode== 1){
+//            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+//            handleSignInResult(task)
+            Toastutils.showToast(this,"Shared")
+        }
+    }
 
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -322,8 +336,11 @@ var homeIsVisible:Boolean=true
                 if(!homeIsVisible){
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mcount=1
-                        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-                        fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
+                        var restaurantPresenter:RestaurantPresenterImpl=RestaurantPresenterImpl()
+                        restaurantPresenter.nearbyplaces(this,"restaurant",RestaurantPresenterImpl.loc, iGoogleApiServices,adapter)
+
+//                        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//                        fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
                     }
                 }
             }
