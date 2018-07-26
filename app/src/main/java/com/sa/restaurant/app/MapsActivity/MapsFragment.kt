@@ -56,8 +56,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListe
 
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-         var mapsPresenter:MapsPresenter=MapsPresenterImpl()
-            mapsPresenter.createClient(activity)
+//         var mapsPresenter:MapsPresenter=MapsPresenterImpl()
+//            mapsPresenter.createClient(activity)
             mMap!!.isMyLocationEnabled = true
            }
     }

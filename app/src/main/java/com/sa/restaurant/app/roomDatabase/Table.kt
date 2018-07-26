@@ -23,6 +23,9 @@ import android.arch.persistence.room.PrimaryKey
     @ColumnInfo(name="MobileNumber")
     var mobilenumber:String?=null
 
+// @ColumnInfo(name="LoginStatus")
+// var loginStatus:String?=null
+
 
 
 

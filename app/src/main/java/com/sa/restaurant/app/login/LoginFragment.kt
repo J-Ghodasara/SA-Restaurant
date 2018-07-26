@@ -28,6 +28,7 @@ import com.sa.restaurant.app.login.presenter.LoginPresenter
 import com.sa.restaurant.app.login.presenter.LoginPresenterImpl
 import com.sa.restaurant.app.login.view.LoginView
 import com.sa.restaurant.app.roomDatabase.Mydatabase
+import com.sa.restaurant.app.roomDatabase.Table
 import com.sa.restaurant.app.signUp.RegisterFragment
 import com.sa.restaurant.communicate
 import com.sa.restaurant.utils.Fragmentutils
@@ -139,6 +140,14 @@ lateinit var loginpresenter: LoginPresenter
                var issucess:Boolean= loginpresenter.validateUser(username,password,mydb,activity)
 
                 if(issucess){
+//                    var  userData=  mydb.myDao().getUserInfo(username)
+//                    var table:Table= Table()
+//                    table.name=userData[0].name
+//                    table.email=userData[0].email
+//                    table.password=userData[0].password
+//                    table.mobilenumber=userData[0].mobilenumber
+//                    table.loginStatus="yes"
+//                    mydb.myDao().update(table)
                     var intent:Intent= Intent(activity,RestaurantActivity::class.java)
                     startActivity(intent)
                 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
@@ -25,6 +26,7 @@ import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.utils.Toastutils
 import retrofit2.Call
 import retrofit2.Response
+import kotlin.math.ln
 
 class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -52,7 +54,8 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     companion object {
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
         lateinit var loc: Location
-
+        lateinit var gClient: GoogleApiClient
+        var hashMap:HashMap<String,Location> = HashMap()
     }
 
     override fun BuildLocationreq(): LocationRequest {
@@ -75,6 +78,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
                 var photoitem: List<PhotosItem> = ArrayList()
+
                 pojo = response!!.body()!!
                 Log.i("Response",response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
@@ -85,6 +89,13 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         val googlePlace = response.body()!!.results!![i]
                         val address= response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
+                        val lat= googlePlace.geometry.location.lat
+                        val lng= googlePlace.geometry.location.lng
+                        var loc:Location= Location("test")
+                        loc.latitude=lat
+                        loc.longitude=lng
+                        hashMap[placename]=loc
+                        Log.i("LatLng nearbyplaces",lat.toString()+"  "+lng)
                         if(googlePlace.photos==null){
                             photoreference="CmRaAAAARs96HXjLZFkFS1Nzb2FfsTnesaYVp-lGptxA3o-rLDlNgZJqjpse57PIB42_tUQnErkBkuWEcJMTSKBScC5eYrzLA3s4Pt8MihxpMD3gLi_7zOxD9i2-fxxOp7v9fs_pEhC7cZWc4cvi5UmJO1_IyOYsGhR2X0rUzKq54WzXiAsdUVFZwBQpHw"
                         }else{
@@ -97,6 +108,8 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         restaurantData.Name=placename
                         restaurantData.Address=address
                         restaurantData.image=photoreference
+                        restaurantData.lat=lat
+                        restaurantData.lng= lng
                         list.add(restaurantData)
                         RestaurantActivity.mcount=0
                         //  latlng2 = LatLng(lat, lng)
@@ -117,7 +130,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
                     //mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng2))
                 }else{
-                    nearbyplaces(context,typeplace,location,iGoogleApiServices,restaurantadapter)
+                   // nearbyplaces(context,typeplace,location,iGoogleApiServices,restaurantadapter)
                     Log.i("List not found","Trying again")
                 }
             }
@@ -128,7 +141,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     }
 
     override fun createClient(context: Context): GoogleApiClient {
-        var gClient: GoogleApiClient
+
         synchronized(this) {
             Log.i("Client", "created")
             gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
@@ -159,7 +172,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
+        googleplaceurl.append("&key=" + "AIzaSyCqWgzZuwizT2bnUeVGceEK-bJpLN-B-U0")
 
         return googleplaceurl.toString()
     }
@@ -187,6 +200,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
             }
 
             if(RestaurantActivity.mcount==1){
+                RestaurantActivity.mcount=0
                 list.clear()
                 Log.i("cleared list",list.size.toString())
                 nearbyplaces(activity, "restaurant", loc, iGoogleApiServices,adapter)

@@ -25,4 +25,6 @@ class FavoritesTable {
     @ColumnInfo(name="RestaurantPhoto")
     var restaurantPhoto:String?=null
 
+
+
 }

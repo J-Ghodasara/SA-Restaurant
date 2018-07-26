@@ -1,8 +1,10 @@
 package com.sa.restaurant.app.RestaurantsActivity
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.arch.persistence.room.Room
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -28,11 +30,9 @@ import android.widget.Toast
 import com.facebook.login.LoginManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 import com.sa.restaurant.adapters.ViewPagerAdapter
@@ -42,6 +42,8 @@ import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
+import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenter
+import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
@@ -77,8 +79,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     var favIsVisibletouser: Boolean = false
     var weatherIsVisibletouser: Boolean = false
 var homeIsVisible:Boolean=true
+    var GEOFENCE_RADIUS_IN_METERS:Int=1000
     var weatherfragment:weatherFragment=weatherFragment()
-
+    lateinit var geofencingClient: GeofencingClient
     companion object {
         var count: Int = 0
         lateinit var locationreq: LocationRequest
@@ -96,10 +99,16 @@ var homeIsVisible:Boolean=true
         setContentView(R.layout.activity_restaurant)
         setSupportActionBar(toolbar)
 
+        geofencingClient = LocationServices.getGeofencingClient(this)
+
+
 
         var RestaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
         googleClient = RestaurantPresenter.createClient(this)
         googleClient!!.connect()
+//
+//        var mapsPresenter: MapsPresenter = MapsPresenterImpl()
+//        mapsPresenter.createClient(this)
 
         mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
 
@@ -233,6 +242,20 @@ var homeIsVisible:Boolean=true
 //
 //    }
 
+    fun getGeofence(latLng: LatLng,placename:String): Geofence? {
+        var latlon: LatLng = latLng
+
+        var geofence: Geofence = Geofence.Builder()
+                .setRequestId(placename)
+                .setCircularRegion(latlon.latitude, latlon.longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
+                .setNotificationResponsiveness(1000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setExpirationDuration(1000000)
+                .build()
+        return geofence
+
+    }
+
 
     override fun onRefresh() {
         list.clear()
@@ -276,6 +299,9 @@ var homeIsVisible:Boolean=true
                         if (googleClient != null) {
                             var RestaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
                             googleClient = RestaurantPresenter.createClient(this)
+
+//                            var mapsPresenter: MapsPresenter = MapsPresenterImpl()
+//                            mapsPresenter.createClient(this)
                             googleClient!!.connect()
                         }
 //                        mMap.isMyLocationEnabled = true
@@ -314,6 +340,15 @@ var homeIsVisible:Boolean=true
                     itemaction = item
                     item.isVisible = false
                 }
+                return true
+            }
+            R.id.share ->{
+
+                var alertdialogbuilder:AlertDialog.Builder= AlertDialog.Builder(this)
+                alertdialogbuilder.setMessage("Long press on any restaurant to share")
+                alertdialogbuilder.setPositiveButton("Ok") { dialog, which ->  }
+                val alertDialog = alertdialogbuilder.create()
+                alertDialog.show()
                 return true
             }
             else -> super.onOptionsItemSelected(item)

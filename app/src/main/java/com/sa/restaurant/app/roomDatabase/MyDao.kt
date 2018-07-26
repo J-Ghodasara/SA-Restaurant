@@ -50,6 +50,11 @@ interface MyDao{
     @Update
     fun updateWeatherInfo(table: WeatherInfoTable)
 
+//    @Query("select * from Mytable Where Name=:username")
+//    fun getUserInfo(username:String):List<Table>
+
+
+
 
 
 }

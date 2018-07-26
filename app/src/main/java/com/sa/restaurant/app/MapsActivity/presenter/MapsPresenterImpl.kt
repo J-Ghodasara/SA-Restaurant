@@ -30,7 +30,7 @@ import retrofit2.Response
 
 class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    lateinit var latlng2:LatLng
+    lateinit var latlng2: LatLng
 
     override fun nearbyplaces2(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap) {
         val url = geturl(location.latitude, location.longitude, typeplace)
@@ -42,38 +42,38 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
 
                 pojo = response!!.body()!!
-                Log.i("Response",response.body()!!.results.toString())
+                Log.i("Response", response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
                         val markerOptions: MarkerOptions = MarkerOptions()
                         val googlePlace = response.body()!!.results!![i]
-                        val address= response.body()!!.results!![i].vicinity
+                        val address = response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
-                        val lat=googlePlace.geometry.location.lat
-                        val lon=googlePlace.geometry.location.lng
-                        var restaurantData:RestaurantData=RestaurantData()
-                        restaurantData.Name=placename
-                        restaurantData.Address=address
+                        val lat = googlePlace.geometry.location.lat
+                        val lon = googlePlace.geometry.location.lng
+                        var restaurantData: RestaurantData = RestaurantData()
+                        restaurantData.Name = placename
+                        restaurantData.Address = address
                         list.add(restaurantData)
-                          latlng2 = LatLng(lat, lon)
+                        latlng2 = LatLng(lat, lon)
 
 
                         markerOptions.position(latlng2)
                         markerOptions.title(placename)
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                     RestaurantMarker = mMap.addMarker(markerOptions)
+                        RestaurantMarker = mMap.addMarker(markerOptions)
 
                     }
-                    mMap.animateCamera( CameraUpdateFactory.zoomTo( 17.0f ) )
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f))
                     Log.i("Total places", list.size.toString())
 //                    var restaurantView:RestaurantView= RestaurantActivity()
 //                    restaurantView.restaurantslist(list,context,restaurantadapter)
 
 
-                }else{
-                    nearbyplaces2(context,typeplace,location,iGoogleApiServices,MapsFragment.mMap!!)
-                    Log.i("List not found","Trying again")
+                } else {
+                    // nearbyplaces2(context,typeplace,location,iGoogleApiServices,MapsFragment.mMap!!)
+                    Log.i("List not found", "Trying again")
                 }
             }
 
@@ -94,7 +94,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
     }
 
     lateinit var iGoogleApiServices: IGoogleApiServices
-     var pojo: POJO = POJO()
+    var pojo: POJO = POJO()
 
     lateinit var locationReq: LocationRequest
     lateinit var locationCallback: LocationCallback
@@ -105,11 +105,13 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
     var GEOFENCE_ID_STAN_UNI = "My_Location"
     var list: ArrayList<RestaurantData> = ArrayList()
     var count: Int = 0
+
     companion object {
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
-         var loc: Location?= null
+        var loc: Location? = null
         var myLocation: Marker? = null
         var RestaurantMarker: Marker? = null
+
     }
 
     override fun BuildLocationreq(): LocationRequest {
@@ -122,10 +124,8 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
     }
 
 
-
-
     override fun createClient(context: Context): GoogleApiClient {
-        var gClient: GoogleApiClient
+        lateinit var gClient: GoogleApiClient
         synchronized(this) {
             Log.i("Client", "created")
             gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
@@ -156,7 +156,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
+        googleplaceurl.append("&key=" + "AIzaSyCqWgzZuwizT2bnUeVGceEK-bJpLN-B-U0")
 
         return googleplaceurl.toString()
     }
@@ -188,7 +188,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
                 markerOptions.position(latlng!!)
                 markerOptions.title("My Location")
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                 myLocation = mMap!!.addMarker(markerOptions)
+                myLocation = mMap!!.addMarker(markerOptions)
                 Log.i("Move with $count", "animated with location $loc")
                 if (mCount == 1) {
                     mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latlng))
@@ -196,8 +196,20 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
                     mCount++
                 }
 
-                nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices,MapsFragment.mMap!!)
 
+                if (loc != null) {
+                    count++
+                    if (count == 1) {
+                        // var RestaurantView: RestaurantView = RestaurantActivity()
+                        //   var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
+                        nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
+
+                        //  RestaurantView.getcurrentlatlng(loc, iGoogleApiServices, context, activity, adapter)
+                        Log.i("Count success", "$count")
+                    }
+
+
+                }
             }
         }
 

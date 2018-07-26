@@ -1,6 +1,7 @@
 package com.sa.restaurant.adapters
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.app.PendingIntent.getActivity
 import android.arch.persistence.room.Room
 import android.content.Context
@@ -14,9 +15,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.ToggleButton
 import com.sa.restaurant.R
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
@@ -28,7 +26,7 @@ import retrofit2.http.Url
 import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v4.content.ContextCompat.startActivity
-import android.widget.LinearLayout
+import android.widget.*
 import com.facebook.share.R.id.image
 import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.model.SharePhoto
@@ -37,8 +35,17 @@ import com.facebook.share.widget.ShareDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.plus.PlusShare
 import com.sa.restaurant.MainActivity
+import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
+import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import java.net.URL
 
 
@@ -51,6 +58,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
     var list: ArrayList<String> = ArrayList()
     val mBottomSheetDialog = BottomSheetDialog(context)
     lateinit var mGoogleSignInClient: GoogleSignInClient
+    lateinit var geofencingClient: GeofencingClient
+    var GEOFENCE_RADIUS_IN_METERS:Int=1000
 
     init {
         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -58,6 +67,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Vholder {
 
+        geofencingClient = LocationServices.getGeofencingClient(context)
 
         var layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         sheetView = layoutInflater.inflate(R.layout.custom_chooser, null)
@@ -77,6 +87,29 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
     }
 
 
+
+
+    fun getGeofence(latitude:Double,longitude:Double, placename:String): Geofence? {
+
+
+        var geofence: Geofence = Geofence.Builder()
+                .setRequestId(placename)
+                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
+                .setNotificationResponsiveness(1000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setExpirationDuration(1000000)
+                .build()
+        return geofence
+
+    }
+
+    private fun geoFencingReq(lat:Double,lng:Double,placename:String): GeofencingRequest {
+        var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+        builder.addGeofence(getGeofence(lat,lng,placename))
+        return builder.build()
+    }
+
     override fun getItemCount(): Int {
         return array.size
     }
@@ -89,6 +122,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
         var other_Share: LinearLayout = sheetView!!.findViewById(R.id.share_to_other)
 
         Log.i("onbindviewholder", "in")
+
         holder.textView.text = array[position].Name
         holder.subtitle.text = array[position].Address
         var referencePhoto = array[position].image
@@ -149,6 +183,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
             if (holder.add_to_fav.isChecked) {
 
+//                var latitude:Double=array[position].lat!!.toDouble()
+//                var longitude:Double=array[position].lng!!.toDouble()
 
                 var restroName: String = holder.textView.text.toString()
                 var favoritesTable: FavoritesTable = FavoritesTable()
@@ -159,6 +195,27 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 list.add(referencePhoto!!)
                 mydb.myDao().addfav(favoritesTable)
                 this.notifyDataSetChanged()
+
+                var location= RestaurantPresenterImpl.hashMap[holder.textView.text.toString()]
+                Log.i("LatLng",location!!.latitude.toString()+"  "+location.longitude)
+                try {
+                     val geofencePendingIntent: PendingIntent by lazy {
+                        val intent = Intent(context, GeofenceTransitionsIntentService::class.java)
+                        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+                        // addGeofences() and removeGeofences().
+                        PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                    }
+
+                    LocationServices.GeofencingApi.addGeofences(RestaurantPresenterImpl.gClient, geoFencingReq(location.latitude,location.longitude,holder.textView.text.toString()), geofencePendingIntent).setResultCallback(object : ResultCallback<Status> {
+                        override fun onResult(p0: Status) {
+                           Toastutils.showToast(context,"Geofence added")
+                        }
+
+                    })
+                } catch (e: SecurityException) {
+                    e.printStackTrace()
+                }
+
                 Toastutils.showsSnackBar(context as Activity, "Added to fav")
             } else {
 
