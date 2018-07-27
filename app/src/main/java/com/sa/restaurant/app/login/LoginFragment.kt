@@ -49,6 +49,7 @@ class LoginFragment : Fragment(), View.OnClickListener,LoginView {
 lateinit var loginpresenter: LoginPresenter
     lateinit var mydb:Mydatabase
     lateinit var callbackManager: CallbackManager
+    private var firstTime: Boolean? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -60,11 +61,39 @@ lateinit var loginpresenter: LoginPresenter
         return view
     }
 
+//    private fun isFirstTime(): Boolean {
+//        if (firstTime == null) {
+//            val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
+//            firstTime = mPreferences.getBoolean("firstTime", true)
+//            if (firstTime as Boolean) {
+//                val editor = mPreferences.edit()
+//                editor.putBoolean("firstTime", false)
+//                editor.apply()
+//            }
+//        }
+//        return firstTime as Boolean
+//    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val accessToken = AccessToken.getCurrentAccessToken()
         val isLoggedIn = accessToken != null && !accessToken.isExpired
         mydb= Room.databaseBuilder(activity, Mydatabase::class.java,"Database").allowMainThreadQueries().build()
+
+//      if(isFirstTime()){
+//
+//      }else{
+//          var sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
+//          var  Username = sharedpref.getString("username", null)
+//          var  uid=  mydb.myDao().getUserId(Username!!)
+//         var list= mydb.myDao().getUserdetails(uid)
+//          if(list[0].loginStatus=="yes"){
+//              var intent:Intent= Intent(activity,RestaurantActivity::class.java)
+//              startActivity(intent)
+//          }
+//      }
+
+
         textview_Register.setOnClickListener(this)
         btn_login.setOnClickListener(this)
         callbackManager = CallbackManager.Factory.create()

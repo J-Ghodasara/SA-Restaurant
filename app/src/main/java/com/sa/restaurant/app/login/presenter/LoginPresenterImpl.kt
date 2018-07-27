@@ -18,6 +18,15 @@ class LoginPresenterImpl:LoginPresenter{
               var email=result[0].email
             var UserName=result[0].name
             var Number=result[0].mobilenumber
+
+//            var table:Table=Table()
+//            table.name=UserName
+//            table.email=email
+//            table.mobilenumber=Number
+//            table.password=result[0].password
+////            table.loginStatus="yes"
+//            mydatabase.myDao().update(table)
+
             loginView.validuser(activity,UserName,email,Number)
             return true
         }else{

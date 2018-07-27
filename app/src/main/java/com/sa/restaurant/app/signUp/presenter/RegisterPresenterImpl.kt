@@ -34,7 +34,7 @@ class RegisterPresenterImpl: RegisterPresenter{
             table.email=email
             table.mobilenumber=number
             table.password=password
-           // table.loginStatus="no"
+//            table.loginStatus="no"
 
             mydatabase.myDao().adduser(table)
 

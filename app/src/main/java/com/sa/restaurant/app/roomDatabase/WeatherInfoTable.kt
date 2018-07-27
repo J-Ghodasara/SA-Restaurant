@@ -28,4 +28,10 @@ class WeatherInfoTable{
     @ColumnInfo(name="humidity")
     var humidity:String?=null
 
+    @ColumnInfo(name="weatherType")
+    var WeatherType:String?=null
+
+    @ColumnInfo(name="Code")
+    var Code:String?=null
+
 }

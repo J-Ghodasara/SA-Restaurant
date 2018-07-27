@@ -132,6 +132,8 @@ Log.i("image","drawable/icon$code")
         weatherInfoTable.city=cityValue.toString()
         weatherInfoTable.temperature=temperatureValue.toString()
         weatherInfoTable.humidity=humidityValue.toString()
+        weatherInfoTable.WeatherType=text.toString()
+        weatherInfoTable.Code=code.toString()
 
         if(result.isNotEmpty()) {
             mydb.myDao().updateWeatherInfo(weatherInfoTable)

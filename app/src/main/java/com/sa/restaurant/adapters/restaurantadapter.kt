@@ -44,6 +44,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.plus.PlusShare
 import com.sa.restaurant.MainActivity
+import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import java.net.URL
@@ -71,6 +72,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
         var layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         sheetView = layoutInflater.inflate(R.layout.custom_chooser, null)
+        mBottomSheetDialog.setContentView(sheetView)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -88,7 +90,6 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
 
 
-
     fun getGeofence(latitude:Double,longitude:Double, placename:String): Geofence? {
 
 
@@ -97,7 +98,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
                 .setNotificationResponsiveness(1000)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .setExpirationDuration(1000000)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .build()
         return geofence
 
@@ -105,7 +106,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
     private fun geoFencingReq(lat:Double,lng:Double,placename:String): GeofencingRequest {
         var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_DWELL)
         builder.addGeofence(getGeofence(lat,lng,placename))
         return builder.build()
     }
@@ -169,7 +170,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
             for (i in result.indices) {
                 var favRestaurant = result[i].restaurantName
-                if (holder.textView.text == favRestaurant) {
+                var favRestaurantAddress=result[i].restaurantAddress
+                if (holder.textView.text == favRestaurant && holder.subtitle.text == favRestaurantAddress) {
                     holder.add_to_fav.isChecked = true
                 }
             }
@@ -198,23 +200,25 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
                 var location= RestaurantPresenterImpl.hashMap[holder.textView.text.toString()]
                 Log.i("LatLng",location!!.latitude.toString()+"  "+location.longitude)
-                try {
-                     val geofencePendingIntent: PendingIntent by lazy {
-                        val intent = Intent(context, GeofenceTransitionsIntentService::class.java)
-                        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-                        // addGeofences() and removeGeofences().
-                        PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-                    }
-
-                    LocationServices.GeofencingApi.addGeofences(RestaurantPresenterImpl.gClient, geoFencingReq(location.latitude,location.longitude,holder.textView.text.toString()), geofencePendingIntent).setResultCallback(object : ResultCallback<Status> {
-                        override fun onResult(p0: Status) {
-                           Toastutils.showToast(context,"Geofence added")
-                        }
-
-                    })
-                } catch (e: SecurityException) {
-                    e.printStackTrace()
-                }
+                var mapsFragment: MapsFragment = MapsFragment()
+                mapsFragment.callgeofence(context)
+//                try {
+//                     val geofencePendingIntent: PendingIntent by lazy {
+//                        val intent = Intent(context, GeofenceTransitionsIntentService::class.java)
+//                        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+//                        // addGeofences() and removeGeofences().
+//                        PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+//                    }
+//
+//                    LocationServices.GeofencingApi.addGeofences(RestaurantPresenterImpl.gClient, geoFencingReq(location.latitude,location.longitude,holder.textView.text.toString()), geofencePendingIntent).setResultCallback(object : ResultCallback<Status> {
+//                        override fun onResult(p0: Status) {
+//                           Toastutils.showToast(context,"Geofence added")
+//                        }
+//
+//                    })
+//                } catch (e: SecurityException) {
+//                    e.printStackTrace()
+//                }
 
                 Toastutils.showsSnackBar(context as Activity, "Added to fav")
             } else {
@@ -242,8 +246,6 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
     inner class Vholder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnLongClickListener {
 
         override fun onLongClick(v: View?): Boolean {
-
-            mBottomSheetDialog.setContentView(sheetView)
             mBottomSheetDialog.show()
             return true
         }

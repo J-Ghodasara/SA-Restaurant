@@ -32,6 +32,10 @@ interface MyDao{
     @Query("select id from Mytable Where Name=:username")
     fun getUserId(username:String):Int
 
+    @Query("select id from Mytable Where id=:userid")
+    fun getUserdetails(userid:Int):List<Table>
+
+
     @Insert
     fun addfav(table: FavoritesTable)
 

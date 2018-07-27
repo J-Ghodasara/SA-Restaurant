@@ -1,14 +1,15 @@
 package com.sa.restaurant.app.RestaurantsActivity
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.PendingIntent
 import android.arch.persistence.room.Room
-import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.location.Location
+import android.location.LocationManager
 import android.os.*
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
@@ -39,7 +40,9 @@ import com.sa.restaurant.adapters.ViewPagerAdapter
 import com.sa.restaurant.adapters.restaurantadapter
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
+import com.sa.restaurant.app.MapsActivity.Weather.Model.PojoContext
 import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
+import com.sa.restaurant.app.ProximityIntentReceiver
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenter
@@ -47,7 +50,9 @@ import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
+import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
+import com.sa.restaurant.app.roomDatabase.WeatherInfoTable
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.activity_restaurant.*
@@ -82,6 +87,9 @@ var homeIsVisible:Boolean=true
     var GEOFENCE_RADIUS_IN_METERS:Int=1000
     var weatherfragment:weatherFragment=weatherFragment()
     lateinit var geofencingClient: GeofencingClient
+    var PROX_ALERT_INTENT= "com.sa.restaurant.proximity"
+    lateinit var locationManager:LocationManager
+    lateinit var location:Location
     companion object {
         var count: Int = 0
         lateinit var locationreq: LocationRequest
@@ -94,10 +102,44 @@ var homeIsVisible:Boolean=true
     }
 
 
+    @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_restaurant)
         setSupportActionBar(toolbar)
+
+locationManager= getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+        var sharedpref2: SharedPreferences = this.getSharedPreferences("UserInfo", 0)
+        var  Username2 = sharedpref2.getString("username", null)
+        var  uid=  mydb.myDao().getUserId(Username2!!)
+        var list2: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+        var intent:Intent  = Intent(PROX_ALERT_INTENT)
+      //  intent.putExtra("placeName",)
+        var proximityIntent: PendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+
+        for(l in list.indices){
+            var name:String= list2[l].restaurantName.toString()
+           location = RestaurantPresenterImpl.hashMap[name]!!
+            locationManager.addProximityAlert(
+                    location.latitude, // the latitude of the central point of the alert region
+                    location.longitude, // the longitude of the central point of the alert region
+                    1000f, // the radius of the central point of the alert region, in meters
+                    -1, // time for this proximity alert, in milliseconds, or -1 to indicate no                           expiration
+                    proximityIntent // will be used to generate an Intent to fire when entry to or exit from the alert region is detected
+            )
+        }
+
+        var filter: IntentFilter  =  IntentFilter(PROX_ALERT_INTENT)
+        var proximityIntentReceiver:ProximityIntentReceiver=ProximityIntentReceiver()
+              registerReceiver( proximityIntentReceiver, filter)
+              Toast.makeText(applicationContext,"Alert Added",Toast.LENGTH_SHORT).show()
+
+
+
+
+
+
 
         geofencingClient = LocationServices.getGeofencingClient(this)
 
@@ -110,7 +152,7 @@ var homeIsVisible:Boolean=true
 //        var mapsPresenter: MapsPresenter = MapsPresenterImpl()
 //        mapsPresenter.createClient(this)
 
-        mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -122,6 +164,27 @@ var homeIsVisible:Boolean=true
         var view: View = nav_view.getHeaderView(0)
         var tv_headerUsername = view.findViewById<TextView>(R.id.tv_header_UserName)
         var tv_headeremail = view.findViewById<TextView>(R.id.tv_header_email)
+        var tv_weatherType=view.findViewById<TextView>(R.id.tv_header_WeatherType)
+        var tv_temperature=view.findViewById<TextView>(R.id.tv_header_temperature)
+        var image_weather=view.findViewById<ImageView>(R.id.weather_image)
+
+        var result:List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+        if(result.isEmpty()){
+            tv_weatherType.visibility=View.GONE
+            tv_temperature.visibility=View.GONE
+            image_weather.visibility=View.GONE
+        }else{
+            var response:List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+            tv_weatherType.visibility=View.VISIBLE
+            tv_temperature.visibility=View.VISIBLE
+            image_weather.visibility=View.VISIBLE
+            tv_weatherType.text=response[0].WeatherType
+            tv_temperature.text=response[0].temperature
+            var code=response[0].Code
+            var resources:Int=this.resources.getIdentifier("drawable/icon$code",null,"com.sa.restaurant")
+            var icon: Drawable =this.resources.getDrawable(resources)
+            image_weather.setImageDrawable(icon)
+        }
 
 
         //getting userdetails to show in header navigation bar ->> Start
@@ -296,7 +359,7 @@ var homeIsVisible:Boolean=true
 
 
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        if (googleClient != null) {
+                        if (googleClient == null) {
                             var RestaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
                             googleClient = RestaurantPresenter.createClient(this)
 
@@ -504,9 +567,36 @@ var homeIsVisible:Boolean=true
                 Log.i("list passed", "success $count")
             }
             adapter.notifyDataSetChanged()
+            var mapsFragment:MapsFragment= MapsFragment()
+            mapsFragment.callgeofence(activity)
 
         } else {
             Log.i("list is null", "trying again")
         }
     }
+
+
+//    fun getLocation() {
+//
+//        var sharedpref: SharedPreferences = applicationContext.getSharedPreferences("UserInfo", 0)
+//        var  Username = sharedpref.getString("username", null)
+//        var  uid=  mydb.myDao().getUserId(Username!!)
+//        var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+//
+//
+//        //  var favorite_list:ArrayList<RestaurantData> = ArrayList()
+//        for(l in list.indices){
+//            var name:String= list[l].restaurantName.toString()
+//            var location= RestaurantPresenterImpl.hashMap[name]
+//
+//         //   Log.i("Inside geofence forloop","success")
+////            var geofencingClient:GeofencingClient=GeofencingClient(contextt)
+////            geofencingClient.addGeofences( geoFencingReq(location!!.latitude,location.longitude,name), geofencePendingIntent)
+////                    .setResultCallback(object : ResultCallback<Status> {
+////                override fun onResult(p0: Status) {
+////                    Toastutils.showToast(contextt,"Geofence added")
+////                }
+////            })
+//        }
+//    }
 }

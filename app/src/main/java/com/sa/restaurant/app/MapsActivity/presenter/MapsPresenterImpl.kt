@@ -1,7 +1,12 @@
 package com.sa.restaurant.app.RestaurantsActivity.presenter
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
+import android.arch.persistence.room.Room
 import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -9,26 +14,28 @@ import android.support.v4.app.ActivityCompat
 import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
 import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.MapsActivity.MapsFragment.Companion.mMap
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
+import com.sa.restaurant.app.roomDatabase.FavoritesTable
+import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.utils.Toastutils
 import retrofit2.Call
 import retrofit2.Response
 
-class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListener {
 
     lateinit var latlng2: LatLng
 
@@ -85,13 +92,15 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
         Log.i("OnConnectionFailed", "failed")
     }
 
-    override fun onConnected(p0: Bundle?) {
-        Log.i("OnConnected", "success")
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-
-    }
+//    override fun onConnected(p0: Bundle?) {
+//        Log.i("OnConnected", "success")
+//
+//
+//    }
+//
+//    override fun onConnectionSuspended(p0: Int) {
+//
+//    }
 
     lateinit var iGoogleApiServices: IGoogleApiServices
     var pojo: POJO = POJO()
@@ -105,6 +114,8 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
     var GEOFENCE_ID_STAN_UNI = "My_Location"
     var list: ArrayList<RestaurantData> = ArrayList()
     var count: Int = 0
+    var GEOFENCE_RADIUS_IN_METERS:Int=1000
+    lateinit var mydb: Mydatabase
 
     companion object {
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
@@ -124,15 +135,40 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.ConnectionCallbacks, Go
     }
 
 
+    @SuppressLint("MissingPermission")
     override fun createClient(context: Context): GoogleApiClient {
         lateinit var gClient: GoogleApiClient
-        synchronized(this) {
-            Log.i("Client", "created")
-            gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
-            gClient.connect()
-            return gClient
-        }
+//        synchronized(this) {
+//            Log.i("Client", "created")
+//            gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
+//            gClient.connect()
+//
+          return gClient
+//        }
     }
+
+
+//    fun geoFencingReq(lat:Double,lng:Double,placename:String): GeofencingRequest {
+//        var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
+//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+//        builder.addGeofence(getGeofence(lat,lng,placename))
+//        return builder.build()
+//    }
+//
+//
+//    fun getGeofence(latitude:Double,longitude:Double, placename:String): Geofence? {
+//
+//
+//        var geofence: Geofence = Geofence.Builder()
+//                .setRequestId(placename)
+//                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
+//                .setNotificationResponsiveness(1000)
+//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+//                .setExpirationDuration(1000000)
+//                .build()
+//        return geofence
+//
+//    }
 
     override fun checklocationpermission(context: Activity): Boolean {
         return if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
