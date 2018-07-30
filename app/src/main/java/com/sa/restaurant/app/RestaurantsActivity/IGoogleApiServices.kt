@@ -7,14 +7,14 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Url
 
-interface IGoogleApiServices{
+interface IGoogleApiServices {
 
     @GET
-    fun getnearbyplaces(@Url url:String): Call<POJO>
+    fun getnearbyplaces(@Url url: String): Call<POJO>
 
     @GET
-    fun getWeatherInfo(@Url url:String): Call<Response>
+    fun getWeatherInfo(@Url url: String): Call<Response>
 
-    @GET
-    fun getdirections(@Url url:String):Call<String>
+
+
 }

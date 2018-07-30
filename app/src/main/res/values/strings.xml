@@ -15,4 +15,8 @@
     <string name="share_on_facebook">Share on Facebook</string>
     <string name="share_to_other">Share to other</string>
     <string name="share_on_google_plus">Share on Google Plus</string>
+
+    <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

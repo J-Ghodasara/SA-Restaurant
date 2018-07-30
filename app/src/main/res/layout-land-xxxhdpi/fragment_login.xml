@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+<android.support.constraint.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    tools:context=".app.login.LoginFragment">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_Username"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/et_email_margintop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/editText_Username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email/Username"
+            android:maxLength="40"
+            android:textColor="@color/colorBlack" />
+
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_Password"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/et_password_margintop"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_Username">
+
+        <EditText
+            android:id="@+id/editText_Password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:maxLength="20"
+            android:textColor="@color/colorBlack" />
+
+
+    </android.support.design.widget.TextInputLayout>
+
+    <TextView
+        android:id="@+id/textView_Forgot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/tv_forgot_marginbottom"
+        android:layout_marginEnd="32dp"
+        android:layout_marginRight="32dp"
+        android:text="FORGOT?"
+        android:textColor="@color/colorComponents"
+        app:layout_constraintBottom_toBottomOf="@+id/input_layout_Password"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="@dimen/btn_login_width"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/btn_login_marginright"
+        android:layout_marginRight="@dimen/btn_login_marginright"
+        android:layout_marginTop="@dimen/btn_login_margintop"
+        android:background="@drawable/btn_rounded"
+        android:text="@string/button_login"
+        android:textAllCaps="false"
+        android:textColor="@color/colorwhite"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_Password" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="200dp"
+        android:layout_marginLeft="@dimen/tv_donthaveacc_marginleft"
+        android:layout_marginStart="@dimen/tv_donthaveacc_marginleft"
+        android:layout_marginTop="@dimen/tv_donthaveacc_margintop"
+        android:text="Don't have an account?"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_Password" />
+
+    <TextView
+        android:id="@+id/textview_Register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/tv_registernow_marginleft"
+        android:layout_marginStart="@dimen/tv_registernow_marginleft"
+        android:layout_marginTop="@dimen/tv_registernow_margintop"
+        android:text="Register Now"
+        android:textAllCaps="true"
+        android:textColor="@color/colorComponents"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_Register" />
+
+</android.support.constraint.ConstraintLayout>
+</ScrollView>

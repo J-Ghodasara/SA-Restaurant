@@ -10,15 +10,15 @@ import com.google.android.gms.maps.GoogleMap
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 
 
-interface MapsPresenter{
+interface MapsPresenter {
 
-    fun nearbyplaces2(context: Context, typeplace: String, location: Location, iGoogleApiServices:IGoogleApiServices, mMap: GoogleMap)
+    fun nearbyplaces2(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap)
 
     fun BuildLocationreq(): LocationRequest
 
-   fun Buildlocationcallback(iGoogleApiServices:IGoogleApiServices,activity: Context): LocationCallback
+    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context): LocationCallback
 
     fun checklocationpermission(context: Activity): Boolean
 
-    fun createClient( context: Context):GoogleApiClient
+    fun createClient(context: Context): GoogleApiClient
 }

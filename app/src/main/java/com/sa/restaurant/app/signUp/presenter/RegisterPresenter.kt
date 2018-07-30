@@ -8,7 +8,7 @@ import com.sa.restaurant.app.roomDatabase.Mydatabase
 
 interface RegisterPresenter{
 
-   // fun insertintodb(name: String, email: String, number: String, password: String,mydatabase: Mydatabase,v:Activity,fragmentmanager:FragmentManager){}
+
 
     fun checkforuser(name: String, email: String, number: String, password: String,mydatabase: Mydatabase,v:Activity,fragmentmanager: FragmentManager)
 }

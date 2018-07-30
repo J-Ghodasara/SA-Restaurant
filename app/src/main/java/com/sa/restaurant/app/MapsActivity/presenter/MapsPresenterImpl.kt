@@ -50,7 +50,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
 
                 pojo = response!!.body()!!
                 Log.i("Response", response.body()!!.results.toString())
-                //  var latlng2: LatLng? = null
+
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
                         val markerOptions: MarkerOptions = MarkerOptions()
@@ -74,12 +74,11 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                     }
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f))
                     Log.i("Total places", list.size.toString())
-//                    var restaurantView:RestaurantView= RestaurantActivity()
-//                    restaurantView.restaurantslist(list,context,restaurantadapter)
+
 
 
                 } else {
-                    // nearbyplaces2(context,typeplace,location,iGoogleApiServices,MapsFragment.mMap!!)
+
                     Log.i("List not found", "Trying again")
                 }
             }
@@ -92,15 +91,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         Log.i("OnConnectionFailed", "failed")
     }
 
-//    override fun onConnected(p0: Bundle?) {
-//        Log.i("OnConnected", "success")
-//
-//
-//    }
-//
-//    override fun onConnectionSuspended(p0: Int) {
-//
-//    }
+
 
     lateinit var iGoogleApiServices: IGoogleApiServices
     var pojo: POJO = POJO()
@@ -114,7 +105,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
     var GEOFENCE_ID_STAN_UNI = "My_Location"
     var list: ArrayList<RestaurantData> = ArrayList()
     var count: Int = 0
-    var GEOFENCE_RADIUS_IN_METERS:Int=1000
+    var GEOFENCE_RADIUS_IN_METERS: Int = 1000
     lateinit var mydb: Mydatabase
 
     companion object {
@@ -138,37 +129,13 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
     @SuppressLint("MissingPermission")
     override fun createClient(context: Context): GoogleApiClient {
         lateinit var gClient: GoogleApiClient
-//        synchronized(this) {
-//            Log.i("Client", "created")
-//            gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
-//            gClient.connect()
-//
-          return gClient
-//        }
+
+        return gClient
+
     }
 
 
-//    fun geoFencingReq(lat:Double,lng:Double,placename:String): GeofencingRequest {
-//        var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
-//        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-//        builder.addGeofence(getGeofence(lat,lng,placename))
-//        return builder.build()
-//    }
-//
-//
-//    fun getGeofence(latitude:Double,longitude:Double, placename:String): Geofence? {
-//
-//
-//        var geofence: Geofence = Geofence.Builder()
-//                .setRequestId(placename)
-//                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
-//                .setNotificationResponsiveness(1000)
-//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-//                .setExpirationDuration(1000000)
-//                .build()
-//        return geofence
-//
-//    }
+
 
     override fun checklocationpermission(context: Activity): Boolean {
         return if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -192,7 +159,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyCqWgzZuwizT2bnUeVGceEK-bJpLN-B-U0")
+        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
 
         return googleplaceurl.toString()
     }
@@ -208,17 +175,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                     myLocation!!.remove()
                 }
                 AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
-//        if(loc != null){
-//            count++
-//            if(count==1){
-//
-//
-//
-//               // RestaurantView.getcurrentlatlng(loc, iGoogleApiServices, context, activity, adapter)
-//                //  Log.i("Count success","$count")
-//            }
-//
-//        }
+
 
                 var markerOptions: MarkerOptions = MarkerOptions()
                 markerOptions.position(latlng!!)
@@ -236,11 +193,10 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                 if (loc != null) {
                     count++
                     if (count == 1) {
-                        // var RestaurantView: RestaurantView = RestaurantActivity()
-                        //   var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
+
                         nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
 
-                        //  RestaurantView.getcurrentlatlng(loc, iGoogleApiServices, context, activity, adapter)
+
                         Log.i("Count success", "$count")
                     }
 

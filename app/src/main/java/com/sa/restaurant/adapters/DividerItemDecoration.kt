@@ -13,9 +13,10 @@ class DividerItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
 
 
     private lateinit var mDivider: Drawable
-init {
-    mDivider = context.resources.getDrawable(R.drawable.line_divider)
-}
+
+    init {
+        mDivider = context.resources.getDrawable(R.drawable.line_divider)
+    }
 
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {

@@ -2,48 +2,42 @@ package com.sa.restaurant.app.MapsActivity
 
 
 import android.annotation.SuppressLint
-import android.content.pm.PackageManager
-import android.os.Bundle
-import android.os.Looper
-import android.support.v4.app.ActivityCompat
 import android.app.Fragment
 import android.app.PendingIntent
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.location.Location
+import android.content.pm.PackageManager
+import android.os.Bundle
+import android.os.Looper
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.MapsInitializer
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.Marker
 import com.sa.restaurant.R
+import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
+import com.sa.restaurant.app.MapsActivity.Weather.Model.PojoContext
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.RetrofitnearbyClient
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
-import com.sa.restaurant.MainActivity
-import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
-import com.sa.restaurant.app.MapsActivity.Weather.Model.PojoContext
-import com.sa.restaurant.app.MapsActivity.Weather.view.WeatherView
-import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
-import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.fragment_maps.*
 
 
@@ -51,55 +45,48 @@ import kotlinx.android.synthetic.main.fragment_maps.*
  * A simple [Fragment] subclass.
  *
  */
-class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     companion object {
-          var mMap: GoogleMap?=null
+        var mMap: GoogleMap? = null
+        lateinit var gclient: GoogleApiClient
     }
-    lateinit var contextt:Context
+
+    lateinit var contextt: Context
     var mMapView: MapView? = null
     lateinit var iGoogleApiServices: IGoogleApiServices
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    lateinit var locationreq:LocationRequest
-    lateinit var locationcallback:LocationCallback
-    var GEOFENCE_RADIUS_IN_METERS:Int=1000
+    lateinit var locationreq: LocationRequest
+    lateinit var locationcallback: LocationCallback
+    var GEOFENCE_RADIUS_IN_METERS: Int = 1000
     lateinit var mydb: Mydatabase
-    lateinit var gclient:GoogleApiClient
-
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
         mMap = googleMap!!
         mMap!!.setOnMarkerClickListener(this)
-     Log.i("Map","Ready")
-        mydb= Room.databaseBuilder(activity, Mydatabase::class.java,"Database").allowMainThreadQueries().build()
+        Log.i("Map", "Ready")
+        mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-          //  var mapsPresenter:MapsPresenter=MapsPresenterImpl()
-
-//           gclient=  mapsPresenter.createClient(activity)
-//            gclient.connect()
-
-
 
             mMap!!.isMyLocationEnabled = true
 
 
+            RestaurantActivity.dialog.dismiss()
 
 
-
-
-           }
+        }
     }
 
-    fun callgeofence(context: Context){
-        contextt=context
-       // RestaurantActivity.googleClient!!.reconnect()
+    fun callgeofence(context: Context) {
+        contextt = context
+        // RestaurantActivity.googleClient!!.reconnect()
         synchronized(this) {
             Log.i("Client", "created")
             gclient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
             gclient.connect()
-            mydb= Room.databaseBuilder(context, Mydatabase::class.java,"Database").allowMainThreadQueries().build()
+            mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
 
         }
     }
@@ -110,55 +97,51 @@ class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListe
         return true
     }
 
-         fun geoFencingReq(lat:Double,lng:Double,placename:String): GeofencingRequest {
-            var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
-            builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT )
-            builder.addGeofence(getGeofence(lat,lng,placename))
-            return builder.build()
-        }
+    fun geoFencingReq(lat: Double, lng: Double, placename: String): GeofencingRequest {
+        var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT)
+        builder.addGeofence(getGeofence(lat, lng, placename))
+        return builder.build()
+    }
 
 
-        fun getGeofence(latitude:Double,longitude:Double, placename:String): Geofence? {
+    fun getGeofence(latitude: Double, longitude: Double, placename: String): Geofence? {
 
 
-            var geofence: Geofence = Geofence.Builder()
-                    .setRequestId(placename)
-                    .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
-                    .setNotificationResponsiveness(1)
-                    .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                    .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                    .build()
-            return geofence
+        var geofence: Geofence = Geofence.Builder()
+                .setRequestId(placename)
+                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
+                .setNotificationResponsiveness(1)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setLoiteringDelay(1)
+                .build()
+        return geofence
 
-        }
+    }
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
+           var view: View = inflater.inflate(R.layout.fragment_maps, container, false)
 
-
-
-       // var layoutInflater:LayoutInflater= activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        var view:View= inflater.inflate(R.layout.fragment_maps, container, false)
-
-        mMapView= view.findViewById(R.id.map)
+        mMapView = view.findViewById(R.id.map)
 
         mMapView!!.onCreate(savedInstanceState)
         mMapView!!.onResume()
 
-        try{
+        try {
             MapsInitializer.initialize(activity.applicationContext)
-        }catch (e:Exception ) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
         mMapView!!.getMapAsync(this)
 
         iGoogleApiServices = RetrofitnearbyClient.getClient("https://maps.google.com/").create(IGoogleApiServices::class.java)
-        var mapsPresenter:MapsPresenter=MapsPresenterImpl()
+        var mapsPresenter: MapsPresenter = MapsPresenterImpl()
         locationreq = mapsPresenter.BuildLocationreq()
-       locationcallback = mapsPresenter.Buildlocationcallback(iGoogleApiServices,activity)
+        locationcallback = mapsPresenter.Buildlocationcallback(iGoogleApiServices, activity)
 
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
@@ -168,55 +151,66 @@ class MapsFragment : Fragment(), OnMapReadyCallback,GoogleMap.OnMarkerClickListe
         return view
     }
 
+
     override fun onResume() {
         super.onResume()
         map.onResume()
     }
 
+
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
 
-        }
-    var PROX_ALERT_INTENT= "com.sa.restaurant.proximity"
-    var intent2:Intent  = Intent(PROX_ALERT_INTENT)
+    }
+
+    var PROX_ALERT_INTENT = "com.sa.restaurant.proximity"
+    var intent2: Intent = Intent(PROX_ALERT_INTENT)
     val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(contextt, GeofenceTransitionsIntentService::class.java)
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
         PendingIntent.getService(contextt, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        //PendingIntent.getBroadcast(contextt,0,intent2,0)
+
     }
+
     @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
-        Log.i("gClient","connected")
-        var pojo:PojoContext= PojoContext()
+        Log.i("gClient", "connected")
+        var pojo: PojoContext = PojoContext()
 
 
         var sharedpref: SharedPreferences = contextt.getSharedPreferences("UserInfo", 0)
-        var  Username = sharedpref.getString("username", null)
-        var  uid=  mydb.myDao().getUserId(Username!!)
+        var Username = sharedpref.getString("username", null)
+        var uid = mydb.myDao().getUserId(Username!!)
         var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
 
 
-        //  var favorite_list:ArrayList<RestaurantData> = ArrayList()
-        for(l in list.indices){
-            var name:String= list[l].restaurantName.toString()
-            var location= RestaurantPresenterImpl.hashMap[name]
-            Log.i("Inside geofence forloop","success")
-            var geofencingClient:GeofencingClient=GeofencingClient(contextt)
-            geofencingClient.addGeofences( geoFencingReq(location!!.latitude,location.longitude,name), geofencePendingIntent)
-//                    .setResultCallback(object : ResultCallback<Status> {
-//                override fun onResult(p0: Status) {
-//                    Toastutils.showToast(contextt,"Geofence added")
-//                }
-//            })
+
+        for (l in list.indices) {
+            var name: String = list[l].restaurantName.toString()
+            var location = RestaurantPresenterImpl.hashMap[name]
+
+            var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(contextt)
+            Log.i("Location", location.toString())
+            if (location != null) {
+                LocationServices.GeofencingApi.addGeofences(gclient, geoFencingReq(location!!.latitude, location.longitude, name), geofencePendingIntent)
+                        .setResultCallback(object : ResultCallback<Status> {
+                            override fun onResult(p0: Status) {
+                                Log.i("Geofence", "Added")
+                            }
+                        })
+            } else {
+
+            }
+
         }
     }
 
     override fun onConnectionSuspended(p0: Int) {
-       Log.i("Connection","Suspended")
+        Log.i("Connection", "Suspended")
     }
+
     override fun onConnectionFailed(p0: ConnectionResult) {
-        Log.i("OOps","Connection Failed")
+        Log.i("OOps", "Connection Failed")
     }
 
 

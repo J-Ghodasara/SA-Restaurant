@@ -35,8 +35,10 @@ import com.sa.restaurant.utils.Toastutils
  * Created by :- jay.ghodasara
  */
 
-class MainActivity : AppCompatActivity(),communicate {
-
+class MainActivity : AppCompatActivity(), communicate {
+    companion object {
+        var isVisible: Boolean = false
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,29 +47,39 @@ class MainActivity : AppCompatActivity(),communicate {
         AppEventsLogger.activateApp(this)
         setContentView(R.layout.activity_main)
 
+
+        if (isVisible) {
+
+        } else {
+            var loginFragment: LoginFragment = LoginFragment()
+            Fragmentutils.removeFragment(loginFragment, fragmentManager)
+
+            isVisible = true
+            Fragmentutils.addFragment(this, loginFragment, fragmentManager, R.id.container)
+        }
+
         val geofencePendingIntent: PendingIntent by lazy {
             val intent = Intent(this, GeofenceTransitionsIntentService::class.java)
             // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
             // addGeofences() and removeGeofences().
             PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-            //PendingIntent.getBroadcast(contextt,0,intent2,0)
+
         }
 
 
-        var loginFragment:LoginFragment= LoginFragment()
 
-//        var sharedpref: SharedPreferences = this.getSharedPreferences("applicationcontext",0)
-//        var editor: SharedPreferences.Editor= sharedpref.edit()
-//        editor.putString("username", applicationContext.toString())
-//        editor.apply()
-    //    loginFragment.arguments=
-        Fragmentutils.addFragment(this,loginFragment,fragmentManager,R.id.container)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
             restaurantPresenter.checklocationpermission(this)
         }
 
+    }
+
+    override fun onBackPressed() {
+        isVisible = false
+        finishAffinity()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -78,7 +90,7 @@ class MainActivity : AppCompatActivity(),communicate {
 
 
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                       Toastutils.showToast(this,"Permission Granted")
+                        Toastutils.showToast(this, "Permission Granted")
 //                        mMap.isMyLocationEnabled = true
                     }
                 } else {
@@ -89,22 +101,15 @@ class MainActivity : AppCompatActivity(),communicate {
     }
 
 
- override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-////        for (fragment in supportFragmentManager.fragments) {
-////            fragment.onActivityResult(requestCode, resultCode, data)
-////            Log.d("Activity", "ON RESULT CALLED")
-////        }
-//            Log.i("Activity","OnActivity Result")
-            val fragment = fragmentManager.findFragmentById(R.id.container)
-            fragment.onActivityResult(requestCode, resultCode, data)
-//
-  }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+        val fragment = fragmentManager.findFragmentById(R.id.container)
+        fragment.onActivityResult(requestCode, resultCode, data)
+
+    }
+
     override fun loginsuccessfull() {
 
-//        var sharedPreferences:SharedPreferences=getSharedPreferences("applicationcontext",0)
-//        var context:Context= sharedPreferences.getString("username",null)
-//        var intent:Intent=Intent(applicationContext,RestaurantActivity::class.java)
-//        startActivity(intent)
+
     }
 }

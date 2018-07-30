@@ -54,8 +54,8 @@ interface MyDao{
     @Update
     fun updateWeatherInfo(table: WeatherInfoTable)
 
-//    @Query("select * from Mytable Where Name=:username")
-//    fun getUserInfo(username:String):List<Table>
+    @Query("select * from Mytable Where id=:userid")
+    fun getUserInfo(userid:Int):List<Table>
 
 
 

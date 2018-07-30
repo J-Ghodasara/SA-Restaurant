@@ -30,54 +30,41 @@ import android.view.View
 import java.util.*
 
 
-class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
-
+class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
     lateinit var locationReq: LocationRequest
     lateinit var locationCallback: LocationCallback
     var latlng: LatLng? = null
     var GEOFENCE_ID_STAN_UNI = "My_Location"
-    var loc: Location?= null
-    var result:com.sa.restaurant.app.MapsActivity.Weather.Model.Response= com.sa.restaurant.app.MapsActivity.Weather.Model.Response()
+    var loc: Location? = null
+    var result: com.sa.restaurant.app.MapsActivity.Weather.Model.Response = com.sa.restaurant.app.MapsActivity.Weather.Model.Response()
 
 
     override fun BuildLocationreq(): LocationRequest {
         locationReq = LocationRequest()
-        locationReq.interval = 60000*60
+        locationReq.interval = 60000 * 60
         Log.i("Called", "in onconnected")
         locationReq.fastestInterval = 5000
         locationReq.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         return locationReq
     }
 
-    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context,view: View): LocationCallback {
+    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View): LocationCallback {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 loc = p0!!.locations[p0.locations.size - 1]
                 Log.i("Location Weather", "${MapsPresenterImpl.loc}")
                 latlng = LatLng(loc!!.latitude, loc!!.longitude)
-//                if (MapsPresenterImpl.myLocation != null) {
-//                    MapsPresenterImpl.myLocation!!.remove()
-//                }
+
                 MapsPresenterImpl.AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
 
-                var weatherView:WeatherView= weatherFragment()
-                weatherView.sendlocation(loc!!,activity,iGoogleApiServices,view)
+                var weatherView: WeatherView = weatherFragment()
+                weatherView.sendlocation(loc!!, activity, iGoogleApiServices, view)
 
-//                var markerOptions: MarkerOptions = MarkerOptions()
-//                markerOptions.position(latlng!!)
-//                markerOptions.title("My Location")
-//                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-//                MapsPresenterImpl.myLocation = MapsFragment.mMap!!.addMarker(markerOptions)
-              //  Log.i("Move with $count", "animated with location ${MapsPresenterImpl.loc}")
-//                if (mCount == 1) {
-//                    MapsFragment.mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latlng))
-//                    MapsFragment.mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latlng))
-//                    mCount++
-//                }
 
-               // nearbyplaces2(activity, "restaurant", MapsPresenterImpl.loc!!, iGoogleApiServices, MapsFragment.mMap!!)
+
+
 
             }
         }
@@ -96,7 +83,7 @@ class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks
         }
     }
 
-     fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices,view: View) {
+    fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices, view: View) {
         val url = getWeatherUrl(typeplace)
         iGoogleApiServices.getWeatherInfo(url).enqueue(object : retrofit2.Callback<com.sa.restaurant.app.MapsActivity.Weather.Model.Response> {
             override fun onFailure(call: Call<com.sa.restaurant.app.MapsActivity.Weather.Model.Response>?, t: Throwable?) {
@@ -107,34 +94,34 @@ class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks
 
 
                 result = response!!.body()!!
-                Log.i("Response",result.toString())
+                Log.i("Response", result.toString())
                 //  var latlng2: LatLng? = null
                 if (response!!.body()!! != null) {
-                    var city= result.query!!.results!!.channel!!.location!!.city
-                    var region= result.query!!.results!!.channel!!.location!!.region
-                    var humidity=result.query!!.results!!.channel!!.atmosphere!!.humidity
-                    var unit= result.query!!.results!!.channel!!.units!!.temperature
-                    var code= result.query!!.results!!.channel!!.item!!.condition!!.code
-                    var temperature= result.query!!.results!!.channel!!.item!!.condition!!.temp
-                    var text=result.query!!.results!!.channel!!.item!!.condition!!.text
+                    var city = result.query!!.results!!.channel!!.location!!.city
+                    var region = result.query!!.results!!.channel!!.location!!.region
+                    var humidity = result.query!!.results!!.channel!!.atmosphere!!.humidity
+                    var unit = result.query!!.results!!.channel!!.units!!.temperature
+                    var code = result.query!!.results!!.channel!!.item!!.condition!!.code
+                    var temperature = result.query!!.results!!.channel!!.item!!.condition!!.temp
+                    var text = result.query!!.results!!.channel!!.item!!.condition!!.text
 
-                    var bundle:Bundle= Bundle()
-                    bundle.putString("city",city)
-                    bundle.putString("humidity",humidity)
-                    bundle.putString("unit",unit)
-                    bundle.putString("code",code)
-                    bundle.putString("temperature",temperature)
-                    bundle.putString("text",text)
-                    bundle.putString("region",region)
+                    var bundle: Bundle = Bundle()
+                    bundle.putString("city", city)
+                    bundle.putString("humidity", humidity)
+                    bundle.putString("unit", unit)
+                    bundle.putString("code", code)
+                    bundle.putString("temperature", temperature)
+                    bundle.putString("text", text)
+                    bundle.putString("region", region)
 
-                    Log.i("bundle",bundle.toString())
-                    var weatherView:WeatherView= weatherFragment()
-                    weatherView.sendweatherInfo(bundle,context,view)
+                    Log.i("bundle", bundle.toString())
+                    var weatherView: WeatherView = weatherFragment()
+                    weatherView.sendweatherInfo(bundle, context, view)
 
-                 //   Log.i("Total places", list.size.toString())
+                    //   Log.i("Total places", list.size.toString())
 
-                }else{
-                    Log.i("List not found","Trying again")
+                } else {
+                    Log.i("List not found", "Trying again")
                 }
             }
 
@@ -143,8 +130,8 @@ class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks
     }
 
     fun getWeatherUrl(bundle: Bundle): String {
-        var city= bundle["city"]
-        var placename=bundle["place"]
+        var city = bundle["city"]
+        var placename = bundle["place"]
         var weatherUrl: StringBuilder = StringBuilder("https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) ")
         weatherUrl.append("where text=\"$city,$placename\")")
         weatherUrl.append("&format=json")
@@ -152,7 +139,7 @@ class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks
         return weatherUrl.toString()
     }
 
-    override fun getNameFromLatLng(location: Location, context: Context,iGoogleApiServices: IGoogleApiServices,view: View) {
+    override fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View) {
         val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
         val addresses: List<Address>
 
@@ -165,11 +152,11 @@ class WeatherPresenterImpl:WeatherPresenter, GoogleApiClient.ConnectionCallbacks
         val postalCode = addresses[0].postalCode
         val knownName = addresses[0].featureName
 
-        var bundle:Bundle= Bundle()
-        bundle.putString("city",city)
-        bundle.putString("place",knownName)
+        var bundle: Bundle = Bundle()
+        bundle.putString("city", city)
+        bundle.putString("place", knownName)
 
-        getWeatherInfo(context,bundle,iGoogleApiServices,view)
+        getWeatherInfo(context, bundle, iGoogleApiServices, view)
 
     }
 

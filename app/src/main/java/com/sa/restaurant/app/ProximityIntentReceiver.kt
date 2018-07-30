@@ -17,7 +17,7 @@ import com.sa.restaurant.R
 import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
 
 
-class ProximityIntentReceiver:BroadcastReceiver(){
+class ProximityIntentReceiver : BroadcastReceiver() {
 
     lateinit var notificationManager: NotificationManager
     lateinit var notificationchannel: NotificationChannel
@@ -29,20 +29,20 @@ class ProximityIntentReceiver:BroadcastReceiver(){
     override fun onReceive(context: Context?, intent: Intent?) {
         val key = LocationManager.KEY_PROXIMITY_ENTERING
         val entering = intent!!.getBooleanExtra(key, false)
-        if(entering){
+        if (entering) {
             sendNotification(context)
         }
     }
 
     fun sendNotification(context: Context?) {
-        Log.i("Notification triggered","success")
+        Log.i("Notification triggered", "success")
         notificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationIntent = Intent(context, MainActivity::class.java)
-      //  var geofenceName= geofenceTransitionDetails.list!![0].requestId
+
 
         val pendingIntent = PendingIntent.getActivity(context, 0,
                 notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        //  var remoteView: RemoteViews = RemoteViews(this.packageName, R.layout.custom_notification)
+
 
         val alarmSound = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE
                 + "://" + context.packageName + "/raw/plucky")
@@ -56,7 +56,7 @@ class ProximityIntentReceiver:BroadcastReceiver(){
 
 
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-        // startForeground(123, notification)
+
 
 
     }

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
@@ -26,7 +25,6 @@ import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.utils.Toastutils
 import retrofit2.Call
 import retrofit2.Response
-import kotlin.math.ln
 
 class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     override fun onConnectionFailed(p0: ConnectionResult) {
@@ -42,7 +40,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     }
 
     lateinit var iGoogleApiServices: IGoogleApiServices
-     var pojo: POJO = POJO()
+    var pojo: POJO = POJO()
 
     lateinit var locationReq: LocationRequest
     lateinit var locationCallback: LocationCallback
@@ -51,11 +49,12 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     var GEOFENCE_ID_STAN_UNI = "My_Location"
     var list: ArrayList<RestaurantData> = ArrayList()
     var count: Int = 0
+
     companion object {
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
         lateinit var loc: Location
         lateinit var gClient: GoogleApiClient
-        var hashMap:HashMap<String,Location> = HashMap()
+        var hashMap: HashMap<String, Location> = HashMap()
     }
 
     override fun BuildLocationreq(): LocationRequest {
@@ -68,7 +67,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     }
 
 
-     fun nearbyplaces(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices,restaurantadapter: restaurantadapter) {
+    fun nearbyplaces(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, restaurantadapter: restaurantadapter) {
 
         val url = geturl(location.latitude, location.longitude, typeplace)
         iGoogleApiServices.getnearbyplaces(url).enqueue(object : retrofit2.Callback<POJO> {
@@ -80,58 +79,54 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                 var photoitem: List<PhotosItem> = ArrayList()
 
                 pojo = response!!.body()!!
-                Log.i("Response",response.body()!!.results.toString())
+                Log.i("Response", response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
-                var photoreference:String
+                var photoreference: String
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
-//                        val markerOptions: MarkerOptions = MarkerOptions()
+
                         val googlePlace = response.body()!!.results!![i]
-                        val address= response.body()!!.results!![i].vicinity
+                        val address = response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
-                        val lat= googlePlace.geometry.location.lat
-                        val lng= googlePlace.geometry.location.lng
-                        var loc:Location= Location("test")
-                        loc.latitude=lat
-                        loc.longitude=lng
-                        hashMap[placename]=loc
-                        Log.i("LatLng nearbyplaces",lat.toString()+"  "+lng)
-                        if(googlePlace.photos==null){
-                            photoreference="CmRaAAAARs96HXjLZFkFS1Nzb2FfsTnesaYVp-lGptxA3o-rLDlNgZJqjpse57PIB42_tUQnErkBkuWEcJMTSKBScC5eYrzLA3s4Pt8MihxpMD3gLi_7zOxD9i2-fxxOp7v9fs_pEhC7cZWc4cvi5UmJO1_IyOYsGhR2X0rUzKq54WzXiAsdUVFZwBQpHw"
-                        }else{
+                        val lat = googlePlace.geometry.location.lat
+                        val lng = googlePlace.geometry.location.lng
+                        var loc: Location = Location("test")
+                        loc.latitude = lat
+                        loc.longitude = lng
+                        hashMap[placename] = loc
+                        Log.i("LatLng nearbyplaces", lat.toString() + "  " + lng)
+                        if (googlePlace.photos == null) {
+                            photoreference = "NotAvailable"
+                        } else {
                             photoitem = googlePlace.photos.toList()
                             photoreference = photoitem[0].photo_reference
                         }
 
 
-                        var restaurantData:RestaurantData=RestaurantData()
-                        restaurantData.Name=placename
-                        restaurantData.Address=address
-                        restaurantData.image=photoreference
-                        restaurantData.lat=lat
-                        restaurantData.lng= lng
+                        var restaurantData: RestaurantData = RestaurantData()
+                        restaurantData.Name = placename
+                        restaurantData.Address = address
+                        restaurantData.image = photoreference
+                        restaurantData.lat = lat
+                        restaurantData.lng = lng
                         list.add(restaurantData)
-                        RestaurantActivity.mcount=0
+                        RestaurantActivity.mcount = 0
                         //  latlng2 = LatLng(lat, lng)
 
 
-//                        markerOptions.position(latlng2)
-//                        markerOptions.title(placename)
-//                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-//                        mMap.addMarker(markerOptions)
+
 
                     }
 
                     Log.i("Total places", list.size.toString())
-                    var restaurantView:RestaurantView= RestaurantActivity()
-                    restaurantView.restaurantslist(list,context,restaurantadapter)
+                    var restaurantView: RestaurantView = RestaurantActivity()
+                    restaurantView.restaurantslist(list, context, restaurantadapter)
 
 
 
-                    //mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng2))
-                }else{
-                   // nearbyplaces(context,typeplace,location,iGoogleApiServices,restaurantadapter)
-                    Log.i("List not found","Trying again")
+                } else {
+
+                    Log.i("List not found", "Trying again")
                 }
             }
 
@@ -143,7 +138,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     override fun createClient(context: Context): GoogleApiClient {
 
         synchronized(this) {
-            Log.i("Client", "created")
+            Log.i("Restaurant Client", "created")
             gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
             gClient.connect()
             return gClient
@@ -172,7 +167,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyCqWgzZuwizT2bnUeVGceEK-bJpLN-B-U0")
+        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
 
         return googleplaceurl.toString()
     }
@@ -184,41 +179,30 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                 loc = p0!!.locations[p0.locations.size - 1]
 
                 latlng = LatLng(loc.latitude, loc.longitude)
-//                if (myLocation != null) {
-//                    myLocation!!.remove()
-//                }
+
                 AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
-        if(loc != null){
-            count++
-            if(count==1){
-               // var RestaurantView: RestaurantView = RestaurantActivity()
-             //   var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
-               nearbyplaces(activity, "restaurant", loc, iGoogleApiServices,adapter)
+                if (loc != null) {
+                    count++
+                    if (count == 1) {
 
-              //  RestaurantView.getcurrentlatlng(loc, iGoogleApiServices, context, activity, adapter)
-                  Log.i("Count success","$count")
-            }
+                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter)
 
-            if(RestaurantActivity.mcount==1){
-                RestaurantActivity.mcount=0
-                list.clear()
-                Log.i("cleared list",list.size.toString())
-                nearbyplaces(activity, "restaurant", loc, iGoogleApiServices,adapter)
-            }
 
-        }
+                        Log.i("Count success", "$count")
+                    }
 
-//                var markerOptions: MarkerOptions = MarkerOptions()
-//                markerOptions.position(latlng!!)
-//                markerOptions.title("My Location")
-//                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                // myLocation = mMap.addMarker(markerOptions)
+                    if (RestaurantActivity.mcount == 1) {
+                        RestaurantActivity.mcount = 0
+                        list.clear()
+                        Log.i("cleared list", list.size.toString())
+                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter)
+                    }
+
+                }
+
+
                 Log.i("Move with $count", "animated with location $loc")
-//                if (mCount == 1) {
-//                    mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng))
-//                    mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng))
-//                    mCount++
-//                }
+
 
             }
         }

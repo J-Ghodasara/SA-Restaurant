@@ -13,7 +13,7 @@ import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 
 interface RestaurantPresenter{
 
-    //fun nearbyplaces(context: Context,typeplace: String,location: Location,iGoogleApiServices:IGoogleApiServices):ArrayList<String>
+
 
     fun BuildLocationreq(): LocationRequest
 
