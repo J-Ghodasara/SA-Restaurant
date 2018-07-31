@@ -44,7 +44,7 @@ import com.sa.restaurant.utils.Toastutils
 import com.squareup.picasso.Picasso
 
 
-class restaurantadapter(var context: Context, var array: ArrayList<RestaurantData>, var myView: View) : RecyclerView.Adapter<restaurantadapter.Vholder>() {
+class restaurantadapter(var context: Context, var array: ArrayList<RestaurantData>, var myView: View,var flag:Int) : RecyclerView.Adapter<restaurantadapter.Vholder>() {
 
 
     var sheetView: View? = null
@@ -84,21 +84,6 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
         uid = mydb.myDao().getUserId(Username!!)
 
         return Vholder(v)
-    }
-
-
-    fun getGeofence(latitude: Double, longitude: Double, placename: String): Geofence? {
-
-
-        var geofence: Geofence = Geofence.Builder()
-                .setRequestId(placename)
-                .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
-                .setNotificationResponsiveness(1000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .build()
-        return geofence
-
     }
 
 
@@ -148,16 +133,22 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
             if (array[position].image == "NotAvailable") {
                 imgUrl = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
             } else {
-
                 imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
-
             }
             bundle.putString("restroImg", imgUrl)
+            bundle.putDouble("rating",array[position].rating!!.toDouble())
 
+            if(array[position].open.toString()=="NotAvailable"){
+                bundle.putString("open","NotAvailable")
+            }else{
+                bundle.putString("open",array[position].open.toString())
+            }
             restaurantInfoFragment.arguments = bundle
-            Fragmentutils.addFragmentwithBackStack(context, restaurantInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
+            Fragmentutils.replaceFragmentwithBackStack(context, restaurantInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
 
         })
+
+        // Share dialog handling -->Start
         fb_Share.setOnClickListener(View.OnClickListener {
 
 
@@ -189,7 +180,9 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
             startActivity(context, Intent.createChooser(sendIntent, "Select Where to Share"), null)
 
         })
+        //Start Dialog handling-->End
 
+        //When the recyclerview loads data checks for the values that are favorite.
         var result: List<FavoritesTable> = mydb.myDao().checkFavorites(array[position].Name!!, uid!!)
         Picasso.get().load(imgUrl).into(holder.img)
         Log.i("Result of db favs", result.toString())
@@ -208,12 +201,10 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
             holder.add_to_fav.isChecked = false
         }
 
+        //Favorite toggle button handling-->Start
         holder.add_to_fav.setOnClickListener(View.OnClickListener {
 
             if (holder.add_to_fav.isChecked) {
-
-
-
                 var restroName: String = holder.textView.text.toString()
                 var favoritesTable: FavoritesTable = FavoritesTable()
                 favoritesTable.restaurantName = restroName
@@ -228,11 +219,8 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 Log.i("LatLng", location!!.latitude.toString() + "  " + location.longitude)
                 var mapsFragment: MapsFragment = MapsFragment()
                 mapsFragment.callgeofence(context)
-
-
                 Toastutils.showsSnackBar(context as Activity, "Added to fav")
             } else {
-
 
                 var restrauntName = holder.textView.text.toString()
                 var ID: Int = uid!!
@@ -241,16 +229,16 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 var list: ArrayList<String> = ArrayList<String>()
                 list.add(holder.textView.text.toString())
                 LocationServices.GeofencingApi.removeGeofences(MapsFragment.gclient, list)
-                var favoriteRestaurants: FavoriteRestaurants = FavoriteRestaurants()
-                this.array.clear()
-                favoriteRestaurants.reload(context, myView)
+                if(flag==2){
+                    var favoriteRestaurants: FavoriteRestaurants = FavoriteRestaurants()
+                    this.array.clear()
+                    favoriteRestaurants.reload(context, myView)
+                }
                 Toastutils.showsSnackBar(context as Activity, "Removed from fav")
             }
 
-
         })
-
-
+        //Favorite Toggle Button handling-->End
     }
 
 

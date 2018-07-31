@@ -42,9 +42,11 @@ import kotlinx.android.synthetic.main.fragment_maps.*
 
 
 /**
- * A simple [Fragment] subclass.
- *
+ * Maps Fragment class on which the location of restaurants are located via google maps
+ * Created On :- 25 july 2018
+ * Created by :- jay.ghodasara
  */
+
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
 
@@ -79,6 +81,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
     }
 
+    //creating client for adding geofences.
     fun callgeofence(context: Context) {
         contextt = context
         // RestaurantActivity.googleClient!!.reconnect()
@@ -97,6 +100,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         return true
     }
 
+    //Creating geofence via lat lng of favorite restaurants
     fun geoFencingReq(lat: Double, lng: Double, placename: String): GeofencingRequest {
         var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT)
@@ -164,6 +168,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     var PROX_ALERT_INTENT = "com.sa.restaurant.proximity"
     var intent2: Intent = Intent(PROX_ALERT_INTENT)
+
+    //Pending intent that will be triggered when the geofence transition occurs
     val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(contextt, GeofenceTransitionsIntentService::class.java)
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
@@ -172,6 +178,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     }
 
+    //after the client is connected the following code executes and attaches pending intent to geofence
     @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
         Log.i("gClient", "connected")

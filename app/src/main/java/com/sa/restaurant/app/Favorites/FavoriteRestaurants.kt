@@ -60,7 +60,7 @@ class FavoriteRestaurants : Fragment() {
             favorite_list.add(restaurantData)
         }
 
-        adapter = restaurantadapter(activity, favorite_list, myView)
+        adapter = restaurantadapter(activity, favorite_list, myView,2)
         var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(activity)
         fav_restaurants_recycler.addItemDecoration(dividerItemDecoration)
 
@@ -85,7 +85,7 @@ class FavoriteRestaurants : Fragment() {
             favorite_list.add(restaurantData)
         }
         var fav_restaurants_recycler: RecyclerView = myView.findViewById(R.id.fav_restaurants_recycler)
-        adapter = restaurantadapter(context, favorite_list, myView)
+        adapter = restaurantadapter(context, favorite_list, myView,2)
         var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(context)
         fav_restaurants_recycler.addItemDecoration(dividerItemDecoration)
 

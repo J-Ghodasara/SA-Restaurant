@@ -8,4 +8,6 @@ class  RestaurantData{
     var image:String?=null
     var lat:Double?=null
     var lng:Double?=null
+    var rating:Double?=null
+    var open:String?=null
 }

@@ -13,12 +13,15 @@ interface WeatherPresenter {
 
     fun BuildLocationreq(): LocationRequest
 
-    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View): LocationCallback
+    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View,flag:Int): LocationCallback
+
+
 
     fun createClient(context: Context): GoogleApiClient
 
     // fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices)
 
-    fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View)
+    fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View,flag:Int)
+
 
 }

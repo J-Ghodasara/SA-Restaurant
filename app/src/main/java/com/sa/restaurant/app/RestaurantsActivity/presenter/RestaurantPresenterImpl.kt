@@ -81,6 +81,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                 pojo = response!!.body()!!
                 Log.i("Response", response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
+                var open:String?=null
                 var photoreference: String
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
@@ -90,6 +91,12 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         val placename = googlePlace.name
                         val lat = googlePlace.geometry.location.lat
                         val lng = googlePlace.geometry.location.lng
+                        val rating = googlePlace.rating
+                        if(googlePlace.opening_hours==null){
+                            open="NotAvailable"
+                        }else{
+                            open= googlePlace.opening_hours.open_now.toString()
+                        }
                         var loc: Location = Location("test")
                         loc.latitude = lat
                         loc.longitude = lng
@@ -107,6 +114,8 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         restaurantData.Name = placename
                         restaurantData.Address = address
                         restaurantData.image = photoreference
+                        restaurantData.rating=rating
+                        restaurantData.open=open
                         restaurantData.lat = lat
                         restaurantData.lng = lng
                         list.add(restaurantData)

@@ -9,6 +9,11 @@ import android.widget.ImageView
 import com.sa.restaurant.R
 import android.support.v4.view.ViewPager
 
+/**
+ * ViewPager adapter to show images on the Restaurant activity screen
+ * Created On :- 21 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 class ViewPagerAdapter(var context: Context) : PagerAdapter() {
 

@@ -7,7 +7,7 @@ import com.sa.restaurant.app.roomDatabase.Table
 import com.sa.restaurant.utils.Toastutils
 
 /**
- * Login presenterImpl
+ * Login presenterImpl that handles the data manipulation inside the database
  *
  */
 

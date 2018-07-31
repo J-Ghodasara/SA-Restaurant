@@ -45,6 +45,8 @@ import com.sa.restaurant.adapters.ViewPagerAdapter
 import com.sa.restaurant.adapters.restaurantadapter
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
+import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenter
+import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenterImpl
 import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
@@ -141,6 +143,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
 
 
+
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -151,27 +154,43 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         var view: View = nav_view.getHeaderView(0)
         var tv_headerUsername = view.findViewById<TextView>(R.id.tv_header_UserName)
         var tv_headeremail = view.findViewById<TextView>(R.id.tv_header_email)
-        var tv_weatherType = view.findViewById<TextView>(R.id.tv_header_WeatherType)
-        var tv_temperature = view.findViewById<TextView>(R.id.tv_header_temperature)
-        var image_weather = view.findViewById<ImageView>(R.id.weather_image)
+//        var tv_weatherType = view.findViewById<TextView>(R.id.tv_header_WeatherType)
+//        var tv_temperature = view.findViewById<TextView>(R.id.tv_header_temperature)
+//        var image_weather = view.findViewById<ImageView>(R.id.weather_image)
 
-        var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
-        if (result.isEmpty()) {
-            tv_weatherType.visibility = View.GONE
-            tv_temperature.visibility = View.GONE
-            image_weather.visibility = View.GONE
-        } else {
-            var response: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
-            tv_weatherType.visibility = View.VISIBLE
-            tv_temperature.visibility = View.VISIBLE
-            image_weather.visibility = View.VISIBLE
-            tv_weatherType.text = response[0].WeatherType
-            tv_temperature.text = response[0].temperature.toString() + "F"
-            var code = response[0].Code
-            var resources: Int = this.resources.getIdentifier("drawable/icon$code", null, "com.sa.restaurant")
-            var icon: Drawable = this.resources.getDrawable(resources)
-            image_weather.setImageDrawable(icon)
+        //fetching weather info
+        var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
+        weatherPresenter.createClient(this)
+
+
+        iGoogleApiServices = RetrofitnearbyClient.getClient("https://query.yahooapis.com/").create(IGoogleApiServices::class.java)
+
+        locationreq = weatherPresenter.BuildLocationreq()
+        locationcallback = weatherPresenter.Buildlocationcallback(iGoogleApiServices, this,view,1)
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
         }
+
+
+
+//        var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+//        if (result.isEmpty()) {
+//            tv_weatherType.visibility = View.GONE
+//            tv_temperature.visibility = View.GONE
+//            image_weather.visibility = View.GONE
+//        } else {
+//            var response: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+//            tv_weatherType.visibility = View.VISIBLE
+//            tv_temperature.visibility = View.VISIBLE
+//            image_weather.visibility = View.VISIBLE
+//            tv_weatherType.text = response[0].WeatherType
+//            tv_temperature.text = response[0].temperature.toString() + "F"
+//            var code = response[0].Code
+//            var resources: Int = this.resources.getIdentifier("drawable/icon$code", null, "com.sa.restaurant")
+//            var icon: Drawable = this.resources.getDrawable(resources)
+//            image_weather.setImageDrawable(icon)
+//        }
 
 
         //getting userdetails to show in header navigation bar ->> Start
@@ -211,11 +230,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         tv_headerUsername.text = Username
         tv_headeremail.text = Email
         name.text = Username
-
-
         //getting userdetails to show in header navigation bar ->> End
 
-        // handling the favorite btn -->Start
+
 
 
         //setting the viewpager ->> Start
@@ -272,7 +289,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(this)
         recyclerview.layoutManager = LinearLayoutManager(this, LinearLayout.VERTICAL, false)
-        adapter = restaurantadapter(this, list, view)
+        adapter = restaurantadapter(this, list, view,1)
         recyclerview.addItemDecoration(dividerItemDecoration)
         recyclerview.adapter = adapter
 
@@ -316,6 +333,25 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     }
 
+    fun setWeatherInfo(view:View,bundle: Bundle,context: Context){
+
+
+        var code = bundle["code"]
+        var temperatureValue = bundle["temperature"]
+        var text = bundle["text"]
+
+
+        var tv_weatherType = view.findViewById<TextView>(R.id.tv_header_WeatherType)
+        var tv_temperature = view.findViewById<TextView>(R.id.tv_header_temperature)
+        var image_weather = view.findViewById<ImageView>(R.id.weather_image)
+
+        tv_weatherType.text=text.toString()
+        tv_temperature.text= temperatureValue.toString()+"F"
+        var resources: Int = context.resources.getIdentifier("drawable/icon$code", null, "com.sa.restaurant")
+        var icon: Drawable = context.resources.getDrawable(resources)
+        image_weather.setImageDrawable(icon)
+
+    }
 
     override fun onRefresh() {
         list.clear()
@@ -483,7 +519,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                     Fragmentutils.removeFragment(weatherfragment, fragmentManager)
                     Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                    Fragmentutils.addFragment(this, favRestros, fragmentManager, R.id.content)
+                    Fragmentutils.replaceFragment(this, favRestros, fragmentManager, R.id.content)
 
                     favIsVisibletouser = true
                 } else {
@@ -501,7 +537,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Fragmentutils.removeFragment(favRestros, fragmentManager)
                     Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                     Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                    Fragmentutils.addFragment(this, weatherfragment, fragmentManager, R.id.content)
+                    Fragmentutils.replaceFragment(this, weatherfragment, fragmentManager, R.id.content)
                     weatherIsVisibletouser = true
 
                 } else {

@@ -27,6 +27,7 @@ import retrofit2.Call
 import retrofit2.Response
 import android.location.Geocoder
 import android.view.View
+import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import java.util.*
 
 
@@ -50,7 +51,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         return locationReq
     }
 
-    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View): LocationCallback {
+    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View, flag: Int): LocationCallback {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 loc = p0!!.locations[p0.locations.size - 1]
@@ -58,13 +59,14 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
                 latlng = LatLng(loc!!.latitude, loc!!.longitude)
 
                 MapsPresenterImpl.AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
+                if (flag == 2) {
+                    var weatherView: WeatherView = weatherFragment()
+                    weatherView.sendlocation(loc!!, activity, iGoogleApiServices, view)
 
-                var weatherView: WeatherView = weatherFragment()
-                weatherView.sendlocation(loc!!, activity, iGoogleApiServices, view)
-
-
-
-
+                }
+                if (flag == 1) {
+                    getNameFromLatLng(loc!!, activity, iGoogleApiServices, view, 1)
+                }
 
             }
         }
@@ -83,7 +85,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         }
     }
 
-    fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices, view: View) {
+    fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices, view: View, flag: Int) {
         val url = getWeatherUrl(typeplace)
         iGoogleApiServices.getWeatherInfo(url).enqueue(object : retrofit2.Callback<com.sa.restaurant.app.MapsActivity.Weather.Model.Response> {
             override fun onFailure(call: Call<com.sa.restaurant.app.MapsActivity.Weather.Model.Response>?, t: Throwable?) {
@@ -115,10 +117,16 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
                     bundle.putString("region", region)
 
                     Log.i("bundle", bundle.toString())
-                    var weatherView: WeatherView = weatherFragment()
-                    weatherView.sendweatherInfo(bundle, context, view)
+                    if (flag == 2) {
+                        var weatherView: WeatherView = weatherFragment()
+                        weatherView.sendweatherInfo(bundle, context, view)
 
-                    //   Log.i("Total places", list.size.toString())
+                    }
+                    if (flag == 1) {
+                        var restaurantActivity: RestaurantActivity = RestaurantActivity()
+                        restaurantActivity.setWeatherInfo(view, bundle, context)
+                    }
+
 
                 } else {
                     Log.i("List not found", "Trying again")
@@ -139,7 +147,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         return weatherUrl.toString()
     }
 
-    override fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View) {
+    override fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View, flag: Int) {
         val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
         val addresses: List<Address>
 
@@ -156,9 +164,16 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         bundle.putString("city", city)
         bundle.putString("place", knownName)
 
-        getWeatherInfo(context, bundle, iGoogleApiServices, view)
+        if (flag == 2) {
+            getWeatherInfo(context, bundle, iGoogleApiServices, view, 2)
+        }
+        if (flag == 1) {
+            getWeatherInfo(context, bundle, iGoogleApiServices, view, 1)
+        }
+
 
     }
+
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         Log.i("OnConnectionFailed", "failed")

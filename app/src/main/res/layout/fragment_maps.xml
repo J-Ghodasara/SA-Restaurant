@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     android:id="@+id/maps"
     android:background="@color/colorwhite"
     android:name="com.google.android.gms.maps.SupportMapFragment"
-    tools:context=".app.MapsActivity.MapsFragment">
+    tools:context=".app.MapsActivity.MapsFragment"
+    android:focusable="true">
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
