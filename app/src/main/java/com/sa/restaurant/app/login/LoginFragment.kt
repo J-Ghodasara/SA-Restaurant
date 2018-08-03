@@ -193,7 +193,9 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
             if (issucess) {
 
                 var uid = mydb.myDao().getUserId(username)
+                Log.i("Username",username)
                 var userData = mydb.myDao().getUserInfo(uid)
+                Log.i("UID",uid.toString())
                 var table: Table = Table()
                 table.id = uid
                 table.name = userData[0].name

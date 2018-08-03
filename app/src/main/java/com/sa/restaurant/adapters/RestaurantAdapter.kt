@@ -24,17 +24,17 @@ import com.facebook.share.widget.ShareDialog
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
-import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.plus.PlusShare
-import com.paginate.recycler.LoadingListItemCreator
 import com.sa.restaurant.R
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
+import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantInfoFragment
+import com.sa.restaurant.app.RestaurantsActivity.RetrofitnearbyClient
+import com.sa.restaurant.app.RestaurantsActivity.model.PlaceInfo.Response
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
@@ -42,9 +42,13 @@ import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
 import com.squareup.picasso.Picasso
+import retrofit2.Call
+
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-class restaurantadapter(var context: Context, var array: ArrayList<RestaurantData>, var myView: View,var flag:Int) : RecyclerView.Adapter<restaurantadapter.Vholder>() {
+class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantData>, var myView: View, var flag: Int) : RecyclerView.Adapter<RestaurantAdapter.Vholder>() {
 
 
     var sheetView: View? = null
@@ -87,7 +91,6 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
     }
 
 
-
     override fun getItemCount(): Int {
         return array.size
     }
@@ -125,23 +128,27 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
         holder.textView.setOnClickListener(View.OnClickListener {
 
+            Log.i("placeId", array[position].placeId.toString())
+
+
             var restaurantInfoFragment: RestaurantInfoFragment = RestaurantInfoFragment()
             var bundle: Bundle = Bundle()
             var referenceImg = array[position].image
             bundle.putString("restroName", holder.textView.text.toString())
             bundle.putString("restroAddress", array[position].Address)
+            bundle.putString("Clicked_placeId", array[position].placeId.toString() )
             if (array[position].image == "NotAvailable") {
                 imgUrl = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
             } else {
                 imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
             }
             bundle.putString("restroImg", imgUrl)
-            bundle.putDouble("rating",array[position].rating!!.toDouble())
+            bundle.putDouble("rating", array[position].rating!!.toDouble())
 
-            if(array[position].open.toString()=="NotAvailable"){
-                bundle.putString("open","NotAvailable")
-            }else{
-                bundle.putString("open",array[position].open.toString())
+            if (array[position].open.toString() == "NotAvailable") {
+                bundle.putString("open", "NotAvailable")
+            } else {
+                bundle.putString("open", array[position].open.toString())
             }
             restaurantInfoFragment.arguments = bundle
             Fragmentutils.replaceFragmentwithBackStack(context, restaurantInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
@@ -211,6 +218,9 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 favoritesTable.uid = uid
                 favoritesTable.restaurantAddress = array[position].Address
                 favoritesTable.restaurantPhoto = array[position].image
+                favoritesTable.ratings=array[position].rating
+                favoritesTable.PlaceId=array[position].placeId
+                favoritesTable.openStatus=array[position].open
                 list.add(referencePhoto)
                 mydb.myDao().addfav(favoritesTable)
                 this.notifyDataSetChanged()
@@ -229,7 +239,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
                 var list: ArrayList<String> = ArrayList<String>()
                 list.add(holder.textView.text.toString())
                 LocationServices.GeofencingApi.removeGeofences(MapsFragment.gclient, list)
-                if(flag==2){
+                if (flag == 2) {
                     var favoriteRestaurants: FavoriteRestaurants = FavoriteRestaurants()
                     this.array.clear()
                     favoriteRestaurants.reload(context, myView)
@@ -242,8 +252,14 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
     }
 
 
+
     override fun getItemViewType(position: Int): Int {
-        return position
+        if(position==0){
+            return 0
+        }else{
+            return 1
+        }
+
     }
 
 
@@ -251,7 +267,7 @@ class restaurantadapter(var context: Context, var array: ArrayList<RestaurantDat
 
         var textView: TextView = itemView.findViewById(R.id.restaurant_names)
         var add_to_fav: ToggleButton = itemView.findViewById(R.id.add_to_fav)
-
+        //        var todays_timings:TextView=itemView.findViewById(R.id.timings_info)
         var img: ImageView = itemView.findViewById(R.id.imageView)
         var subtitle: TextView = itemView.findViewById(R.id.price)
 

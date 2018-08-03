@@ -44,12 +44,13 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         iGoogleApiServices.getnearbyplaces(url).enqueue(object : retrofit2.Callback<POJO> {
             override fun onFailure(call: Call<POJO>?, t: Throwable?) {
                 Toastutils.showToast(context, "Failed")
+                Log.i("ResponseNearbyMaps", "error")
             }
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
 
                 pojo = response!!.body()!!
-                Log.i("Response", response.body()!!.results.toString())
+                Log.i("ResponseNearbyMaps", response.body()!!.results.toString())
 
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {

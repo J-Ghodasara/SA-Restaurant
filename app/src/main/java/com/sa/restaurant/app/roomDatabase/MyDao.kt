@@ -29,7 +29,7 @@ interface MyDao{
     @Query("select * from FavoritesTable Where RestaurantName=:restaurantName And userid=:uid")
     fun checkFavorites(restaurantName:String,uid:Int):List<FavoritesTable>
 
-    @Query("select id from Mytable Where Name=:username")
+    @Query("select id from Mytable Where Name=:username or Email=:username")
     fun getUserId(username:String):Int
 
     @Query("select id from Mytable Where id=:userid")

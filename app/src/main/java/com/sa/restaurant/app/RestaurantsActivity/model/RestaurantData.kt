@@ -10,4 +10,5 @@ class  RestaurantData{
     var lng:Double?=null
     var rating:Double?=null
     var open:String?=null
+    var placeId:String?=null
 }

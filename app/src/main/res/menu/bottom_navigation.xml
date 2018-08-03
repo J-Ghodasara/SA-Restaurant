@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Home"
+        android:id="@+id/home"
+        android:icon="@drawable/ic_home_red_700_24dp"/>
+
+
+    <item android:title="Favorite"
+        android:id="@+id/favorite"
+        android:icon="@drawable/ic_favorite_red_a400_24dp"/>
+
+
+    <item android:title="Weather"
+        android:id="@+id/weather_info"
+        android:icon="@drawable/ic_cloud_purple_a100_24dp"/>
+
+    <item android:title="Logout"
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_phonelink_lock_green_800_24dp"/>
+
+</menu>

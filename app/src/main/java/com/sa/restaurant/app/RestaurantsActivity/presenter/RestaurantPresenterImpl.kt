@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.ViewGroup
 import com.google.android.gms.common.ConnectionResult
@@ -15,7 +16,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
-import com.sa.restaurant.adapters.restaurantadapter
+import com.sa.restaurant.adapters.RestaurantAdapter
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
@@ -67,19 +68,20 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     }
 
 
-    fun nearbyplaces(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, restaurantadapter: restaurantadapter) {
+    fun nearbyplaces(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, restaurantadapter: RestaurantAdapter,recyclerView: RecyclerView) {
 
         val url = geturl(location.latitude, location.longitude, typeplace)
         iGoogleApiServices.getnearbyplaces(url).enqueue(object : retrofit2.Callback<POJO> {
             override fun onFailure(call: Call<POJO>?, t: Throwable?) {
                 Toastutils.showToast(context, "Failed")
+                Log.i("ResponseNearbyPlaces", "failed")
             }
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
                 var photoitem: List<PhotosItem> = ArrayList()
 
                 pojo = response!!.body()!!
-                Log.i("Response", response.body()!!.results.toString())
+                Log.i("ResponseNearbyPlaces", response.body()!!.results.toString())
                 //  var latlng2: LatLng? = null
                 var open:String?=null
                 var photoreference: String
@@ -92,6 +94,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         val lat = googlePlace.geometry.location.lat
                         val lng = googlePlace.geometry.location.lng
                         val rating = googlePlace.rating
+                        val placeId:String=googlePlace.place_id
                         if(googlePlace.opening_hours==null){
                             open="NotAvailable"
                         }else{
@@ -118,6 +121,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         restaurantData.open=open
                         restaurantData.lat = lat
                         restaurantData.lng = lng
+                        restaurantData.placeId=placeId
                         list.add(restaurantData)
                         RestaurantActivity.mcount = 0
                         //  latlng2 = LatLng(lat, lng)
@@ -129,7 +133,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
 
                     Log.i("Total places", list.size.toString())
                     var restaurantView: RestaurantView = RestaurantActivity()
-                    restaurantView.restaurantslist(list, context, restaurantadapter)
+                    restaurantView.restaurantslist(list, context, restaurantadapter,recyclerView)
 
 
 
@@ -182,7 +186,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
     }
 
 
-    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, context: ViewGroup, activity: Context, adapter: restaurantadapter): LocationCallback {
+    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, context: ViewGroup, activity: Context, adapter: RestaurantAdapter,recyclerView: RecyclerView): LocationCallback {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 loc = p0!!.locations[p0.locations.size - 1]
@@ -194,7 +198,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                     count++
                     if (count == 1) {
 
-                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter)
+                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter,recyclerView)
 
 
                         Log.i("Count success", "$count")
@@ -204,7 +208,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
                         RestaurantActivity.mcount = 0
                         list.clear()
                         Log.i("cleared list", list.size.toString())
-                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter)
+                        nearbyplaces(activity, "restaurant", loc, iGoogleApiServices, adapter,recyclerView)
                     }
 
                 }

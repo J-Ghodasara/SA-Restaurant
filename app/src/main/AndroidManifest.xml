@@ -14,9 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
 
         <service android:name=".adapters.GeofenceTransitionsIntentService" />
 
@@ -52,6 +50,7 @@
         <activity
             android:name=".app.RestaurantsActivity.RestaurantActivity"
             android:label="@string/title_activity_restaurant"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
@@ -61,15 +60,16 @@
         <activity
             android:name=".SplashScreen"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:icon="@drawable/saicon"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:icon="@drawable/saicon">
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ErrorActivity"></activity>
     </application>
 
 </manifest>

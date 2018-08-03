@@ -38,6 +38,8 @@ import com.sa.restaurant.utils.Toastutils
 class MainActivity : AppCompatActivity(), communicate {
     companion object {
         var isVisible: Boolean = false
+        var permissionCount:Int = 0
+        var isPermissionGranted:Boolean=false
     }
 
 
@@ -70,7 +72,8 @@ class MainActivity : AppCompatActivity(), communicate {
 
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissionCount==0) {
+            permissionCount++
             var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
             restaurantPresenter.checklocationpermission(this)
         }
@@ -87,13 +90,21 @@ class MainActivity : AppCompatActivity(), communicate {
 
             99 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-
+                    var sharedPreferences:SharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    var edit:SharedPreferences.Editor = sharedPreferences.edit()
+                    edit.putBoolean("permission",true)
+                    edit.apply()
+                    isPermissionGranted=true
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Toastutils.showToast(this, "Permission Granted")
 //                        mMap.isMyLocationEnabled = true
                     }
                 } else {
+                    var sharedPreferences:SharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    var edit:SharedPreferences.Editor = sharedPreferences.edit()
+                    edit.putBoolean("permission",false)
+                    edit.apply()
+                    isPermissionGranted=false
                     Toast.makeText(applicationContext, " Permission Denied", Toast.LENGTH_LONG).show()
                 }
             }

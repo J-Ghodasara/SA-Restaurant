@@ -25,6 +25,15 @@ class FavoritesTable {
     @ColumnInfo(name="RestaurantPhoto")
     var restaurantPhoto:String?=null
 
+    @ColumnInfo(name="Ratings")
+    var ratings:Double?= null
+
+    @ColumnInfo(name="Placeid")
+    var PlaceId:String?=null
+
+    @ColumnInfo(name="OpenStatus")
+    var openStatus:String?=null
+
 
 
 }

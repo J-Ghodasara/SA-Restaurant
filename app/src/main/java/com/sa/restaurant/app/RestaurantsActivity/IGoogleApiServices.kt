@@ -15,6 +15,9 @@ interface IGoogleApiServices {
     @GET
     fun getWeatherInfo(@Url url: String): Call<Response>
 
+    @GET
+    fun getrestaurantInfo(@Url url: String): Call<com.sa.restaurant.app.RestaurantsActivity.model.PlaceInfo.Response>
+
 
 
 }

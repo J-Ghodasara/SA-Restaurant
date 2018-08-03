@@ -23,4 +23,6 @@
         app:headerLayout="@layout/nav_header_restaurant"
         app:menu="@menu/activity_restaurant_drawer" />
 
+
+
 </android.support.v4.widget.DrawerLayout>
