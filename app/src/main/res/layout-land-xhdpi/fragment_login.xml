@@ -13,7 +13,7 @@
     tools:context=".app.login.LoginFragment">
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout_Username"
+        android:id="@+id/input_layout_login_Username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/et_email_margintop"
@@ -34,14 +34,14 @@
 
 
     <android.support.design.widget.TextInputLayout
-        android:id="@+id/input_layout_Password"
+        android:id="@+id/input_layout_login_Password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/et_password_margintop"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_Username">
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Username">
 
         <EditText
             android:id="@+id/editText_Password"
@@ -64,7 +64,7 @@
         android:layout_marginRight="@dimen/tv_forgot_marginright"
         android:text="FORGOT?"
         android:textColor="@color/colorComponents"
-        app:layout_constraintBottom_toBottomOf="@+id/input_layout_Password"
+        app:layout_constraintBottom_toBottomOf="@+id/input_layout_login_Password"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
@@ -80,7 +80,7 @@
         android:textColor="@color/colorwhite"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_Password" />
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Password" />
 
     <TextView
         android:id="@+id/textView"
@@ -93,7 +93,7 @@
         android:text="Don't have an account?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_Password" />
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Password" />
 
     <TextView
         android:id="@+id/textview_Register"

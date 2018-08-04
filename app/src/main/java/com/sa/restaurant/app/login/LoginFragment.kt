@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.facebook.*
 import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginResult
+import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.login.presenter.LoginPresenter
@@ -49,6 +50,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+        MainActivity.isLoginVisible=true
         var layoutInflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
         val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
@@ -113,6 +115,13 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
                     editor.putString("number", "Permission required from facebook")
                     editor.putString("password", password)
                     editor.apply()
+                    val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
+                    firstTime = mPreferences.getBoolean("firstTime", true)
+                    if (firstTime as Boolean) {
+                        val editor = mPreferences.edit()
+                        editor.putBoolean("firstTime", false)
+                        editor.apply()
+                    }
                     Toastutils.showToast(activity, "Login Successfull")
                     var intent: Intent = Intent(activity, RestaurantActivity::class.java)
                     startActivity(intent)
@@ -153,7 +162,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
             R.id.textview_Register -> {
                 var registerFragment: RegisterFragment = RegisterFragment()
-                Fragmentutils.replaceFragment(activity, registerFragment, fragmentManager, R.id.container)
+                Fragmentutils.replaceFragmentwithBackStack(activity, registerFragment, fragmentManager, R.id.container)
             }
 
             R.id.btn_login -> {
@@ -247,17 +256,19 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
     fun method4(id: String) {
         if (id == "") {
-            editText_Password.error = "This is required field"
+            input_layout_login_Password.isErrorEnabled=true
+            input_layout_login_Password.error = "This is required field"
         } else {
-            editText_Password.error = "It should be minimum of 5 in length"
+           input_layout_login_Password.error = "It should be minimum of 5 in length"
         }
     }
 
     fun method2(id: String) {
         if (id == "") {
-            editText_Username.error = "This is required field"
+            input_layout_login_Username.isErrorEnabled=true
+            input_layout_login_Username.error = "This is required field"
         } else {
-            editText_Username.error = "Plzz enter Valid Username/Email"
+            input_layout_login_Username.error = "Plzz enter Valid Username/Email"
         }
     }
 

@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v4.content.ContextCompat.startActivity
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -63,6 +64,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
     lateinit var imgUrl: String
     lateinit var referencePhoto: String
     lateinit var imgUrlForFb: String
+    var Name:String?=null
+    var Address:String?=null
 
     init {
         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -117,6 +120,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         holder.textView.setOnLongClickListener(View.OnLongClickListener {
             mBottomSheetDialog.show()
             var referenceImg = array[position].image
+            var Name=array[position].Name
+            var Address= array[position].Address
             if (array[position].image == "NotAvailable") {
                 imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
             } else {
@@ -125,6 +130,19 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             return@OnLongClickListener true
 
         })
+
+     holder.card.setOnLongClickListener(View.OnLongClickListener {
+         mBottomSheetDialog.show()
+       Name =array[position].Name
+        Address= array[position].Address
+         var referenceImg = array[position].image
+         if (array[position].image == "NotAvailable") {
+             imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
+         } else {
+             imgUrlForFb = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
+         }
+         return@OnLongClickListener true
+     })
 
         holder.textView.setOnClickListener(View.OnClickListener {
 
@@ -160,8 +178,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
 
             var shareLinkContent: ShareLinkContent = ShareLinkContent.Builder()
-                    .setQuote(holder.textView.text.toString())
-                    .setContentDescription(holder.subtitle.text.toString())
+                    .setQuote(holder.textView.text.toString()+"\n"+holder.subtitle.text.toString())
                     .setContentUrl(Uri.parse(imgUrlForFb))
                     .build()
             ShareDialog.show(context as Activity, shareLinkContent)
@@ -177,13 +194,10 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         other_Share.setOnClickListener(View.OnClickListener {
             Toastutils.showToast(context, "Other share")
-
             var sendIntent: Intent = Intent()
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.putExtra(Intent.EXTRA_TEXT, imgUrlForFb)
             sendIntent.type = "text/plain"
-
-
             startActivity(context, Intent.createChooser(sendIntent, "Select Where to Share"), null)
 
         })
@@ -270,6 +284,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         //        var todays_timings:TextView=itemView.findViewById(R.id.timings_info)
         var img: ImageView = itemView.findViewById(R.id.imageView)
         var subtitle: TextView = itemView.findViewById(R.id.price)
+       var card:CardView=itemView.findViewById(R.id.card1)
+
 
 
     }

@@ -1,31 +1,22 @@
 package com.sa.restaurant
 
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.Toolbar
-import com.facebook.FacebookSdk
-import com.facebook.appevents.AppEventsLogger
-import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
-import com.sa.restaurant.app.login.LoginFragment
-import com.sa.restaurant.app.signUp.view.RegisterView
-import com.sa.restaurant.utils.Fragmentutils
-import android.R.attr.data
-import android.app.Fragment
-import android.util.Log
-import android.R.attr.data
-import android.app.PendingIntent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
 import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
+import com.sa.restaurant.app.login.LoginFragment
+import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
 
 
@@ -39,6 +30,7 @@ class MainActivity : AppCompatActivity(), communicate {
     companion object {
         var isVisible: Boolean = false
         var permissionCount:Int = 0
+        var isLoginVisible=true
         var isPermissionGranted:Boolean=false
     }
 
@@ -81,8 +73,14 @@ class MainActivity : AppCompatActivity(), communicate {
     }
 
     override fun onBackPressed() {
-        isVisible = false
-        finishAffinity()
+        if(isVisible || isLoginVisible){
+            isVisible = false
+            isLoginVisible=false
+            finishAffinity()
+        }else{
+            super.onBackPressed()
+        }
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

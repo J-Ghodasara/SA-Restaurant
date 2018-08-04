@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 import com.sa.restaurant.app.login.LoginFragment
 import com.sa.restaurant.app.roomDatabase.Mydatabase
@@ -39,7 +40,8 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         var view: View = inflater.inflate(R.layout.fragment_register, container, false)
-
+        MainActivity.isVisible=false
+        MainActivity.isLoginVisible=false
 
 
         return view
@@ -118,7 +120,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
     fun validateemail(email: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
+        val EMAIL_PATTERN = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z_\\-\\.]+)\\.([a-zA-Z]{2,5})\$"
         pattern = Pattern.compile(EMAIL_PATTERN)
         matcher = pattern.matcher(email)
 
@@ -128,8 +130,13 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
 
 
     fun validatepassword(password: String?): Boolean {
-        return password != null && password.length >= 5
+        val PASSWORD_PATTERN="^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\$@\$!%*?&])[A-Za-z\\d\$@\$!%*?&]{8,}"
+        val pattern: Pattern
+        val matcher: Matcher
+        pattern = Pattern.compile(PASSWORD_PATTERN)
+        matcher = pattern.matcher(password)
 
+        return matcher.matches()
     }
 
     fun confirmpassword(E: String): Boolean {
@@ -155,7 +162,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
     fun validatename(name: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val namePATTERN = "^[a-zA-Z]+$"
+        val namePATTERN = "^[a-zA-Z0-9._-]+$"
         pattern = Pattern.compile(namePATTERN)
         matcher = pattern.matcher(name)
 
@@ -166,42 +173,47 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
 
     fun method4(id: String) {
         if (id == "") {
-            et_signup_Password.error = "This is required field"
+            input_layout_login_Password.isErrorEnabled=true
+            input_layout_login_Password.error = "This is required field"
         } else {
-            et_signup_Password.error = "It should be minimum 5 in length"
+            input_layout_login_Password.error = "It should be minimum 5 in length"
         }
     }
 
     fun method2(id: String) {
         if (id == "") {
-            et_signup_Name.error = "This is required field"
+            input_layout_Name.isErrorEnabled=true
+            input_layout_Name.error = "This is required field"
         } else {
-            et_signup_Name.error = "It should contain only letters"
+            input_layout_Name.error = "It should contain only letters"
         }
     }
 
 
     fun method3(id: String) {
         if (id == "") {
-            et_signup_mobileno.error = "This is required field"
+            input_layout_mobileno.isErrorEnabled=true
+            input_layout_mobileno.error = "This is required field"
         } else {
-            et_signup_mobileno.error = "It should contain only 10 digits"
+            input_layout_mobileno.error = "It should contain only 10 digits"
         }
     }
 
     fun method1(id: String) {
         if (id == "") {
-            et_signup_Email.error = "This is required field"
+            signup_Email.isErrorEnabled=true
+            signup_Email.error = "This is required field"
         } else {
-            et_signup_Email.error = "Enter valid email"
+            signup_Email.error = "Enter valid email"
         }
     }
 
     fun method5(id: String) {
         if (id == "") {
-            et_signup_CPassword.error = "This is required field"
+            input_layout_CPassword.isErrorEnabled=true
+            input_layout_CPassword.error = "This is required field"
         } else {
-            et_signup_CPassword.error = "It should be same as above"
+            input_layout_CPassword.error = "Password & Confirm password must be same"
         }
     }
 

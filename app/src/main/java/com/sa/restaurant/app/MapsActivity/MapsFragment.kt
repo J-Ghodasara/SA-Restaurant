@@ -103,7 +103,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     //Creating geofence via lat lng of favorite restaurants
     fun geoFencingReq(lat: Double, lng: Double, placename: String): GeofencingRequest {
         var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER or GeofencingRequest.INITIAL_TRIGGER_DWELL or GeofencingRequest.INITIAL_TRIGGER_EXIT)
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
         builder.addGeofence(getGeofence(lat, lng, placename))
         return builder.build()
     }
@@ -116,7 +116,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 .setRequestId(placename)
                 .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
                 .setNotificationResponsiveness(1)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT or Geofence.GEOFENCE_TRANSITION_DWELL)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER )
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setLoiteringDelay(1)
                 .build()
