@@ -26,7 +26,9 @@ import com.sa.restaurant.utils.Toastutils
  * Created by :- jay.ghodasara
  */
 
-class MainActivity : AppCompatActivity(), communicate {
+class MainActivity : AppCompatActivity() {
+
+
     companion object {
         var isVisible: Boolean = false
         var permissionCount:Int = 0
@@ -117,8 +119,5 @@ class MainActivity : AppCompatActivity(), communicate {
 
     }
 
-    override fun loginsuccessfull() {
 
-
-    }
 }

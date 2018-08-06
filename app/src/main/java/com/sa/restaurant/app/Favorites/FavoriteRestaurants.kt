@@ -36,7 +36,10 @@ class FavoriteRestaurants : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-
+        var mySharedPreferences:SharedPreferences=activity.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
+        var editor:SharedPreferences.Editor=mySharedPreferences.edit()
+        editor.putString("WhatToShow","fav")
+        editor.apply()
         var v: View = inflater.inflate(R.layout.fragment_favorite_restaurants, container, false)
         myView = v
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -62,6 +65,8 @@ class FavoriteRestaurants : Fragment() {
             restaurantData.placeId=list[l].PlaceId
             restaurantData.open=list[l].openStatus
             restaurantData.rating=list[l].ratings
+            restaurantData.lat=list[l].lat
+            restaurantData.lng=list[l].lng
             favorite_list.add(restaurantData)
         }
 

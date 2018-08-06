@@ -71,6 +71,11 @@ class ErrorActivity : AppCompatActivity() {
         }
     }
 
+//    override fun onBackPressed() {
+//        finish()
+//    }
+
+
      fun checklocationpermission(context: Activity): Boolean {
         return if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 

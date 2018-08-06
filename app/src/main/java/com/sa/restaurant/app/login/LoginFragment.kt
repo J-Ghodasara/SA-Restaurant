@@ -9,9 +9,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import android.widget.Toast
 import com.facebook.*
 import com.facebook.login.LoginBehavior
@@ -84,7 +87,30 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         val isLoggedIn = accessToken != null && !accessToken.isExpired
 
 
-
+//        btn_login.setOnEditorActionListener(object:TextView.OnEditorActionListener{
+//            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+//                if(actionId==EditorInfo.IME_ACTION_DONE || actionId==EditorInfo.IME_ACTION_SEND) {
+//                    var username: String = editText_Username.text.toString()
+//                    var password: String = editText_Password.text.toString()
+//
+//                    if (!validatename(username)) run {
+//                        if (!validateemail(username)) {
+//                            method2(username)
+//
+//                            editText_Username.requestFocus()
+//                        } else {
+//                            check(username, password)
+//                        }
+//
+//                    } else {
+//                        check(username, password)
+//                    }
+//
+//                }
+//                return true
+//            }
+//
+//        })
 
 
         textview_Register.setOnClickListener(this)

@@ -70,6 +70,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".ErrorActivity"></activity>
+
+        <receiver android:name=".services.MyBroadcastReceiverService" >
+        </receiver>
     </application>
 
 </manifest>

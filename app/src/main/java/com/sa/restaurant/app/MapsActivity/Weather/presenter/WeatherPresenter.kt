@@ -2,7 +2,6 @@ package com.sa.restaurant.app.MapsActivity.Weather.presenter
 
 import android.content.Context
 import android.location.Location
-import android.os.Bundle
 import android.view.View
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationCallback
@@ -13,7 +12,7 @@ interface WeatherPresenter {
 
     fun BuildLocationreq(): LocationRequest
 
-    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View,flag:Int): LocationCallback
+    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View?, flag:Int): LocationCallback
 
 
 
@@ -22,6 +21,8 @@ interface WeatherPresenter {
     // fun getWeatherInfo(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices)
 
     fun getNameFromLatLng(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View,flag:Int)
+
+   fun getNameFromLatLngForAlarm(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices)
 
 
 }

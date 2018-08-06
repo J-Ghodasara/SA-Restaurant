@@ -21,4 +21,6 @@ interface MapsPresenter {
     fun checklocationpermission(context: Activity): Boolean
 
     fun createClient(context: Context): GoogleApiClient
+
+    fun favRestaurants(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap)
 }

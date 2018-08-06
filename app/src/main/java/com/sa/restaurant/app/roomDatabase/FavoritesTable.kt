@@ -34,6 +34,12 @@ class FavoritesTable {
     @ColumnInfo(name="OpenStatus")
     var openStatus:String?=null
 
+    @ColumnInfo(name="Latitude")
+    var lat:Double?= null
+
+    @ColumnInfo(name="Longitude")
+    var lng:Double?= null
+
 
 
 }

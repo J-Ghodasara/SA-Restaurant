@@ -1,9 +1,7 @@
 package com.sa.restaurant.app.RestaurantsActivity
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.FragmentManager
-import android.app.ProgressDialog
+import android.app.*
 import android.arch.persistence.room.Room
 import android.content.Context
 import android.content.Intent
@@ -36,12 +34,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import com.facebook.login.LoginManager
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
+import com.sa.restaurant.Communicate
 import com.sa.restaurant.ErrorActivity
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
@@ -60,6 +58,7 @@ import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.app.roomDatabase.Table
 import com.sa.restaurant.helpers.BottomNavigationViewHelper
+import com.sa.restaurant.services.MyBroadcastReceiverService
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.activity_restaurant.*
@@ -77,7 +76,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private var dotscount: Int = 0
     private var dots: Array<ImageView?>? = null
-
+    lateinit var myMenu:Menu
     lateinit var loc: Location
     lateinit var pojo: POJO
     private lateinit var mMap: GoogleMap
@@ -92,7 +91,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     lateinit var mydb: Mydatabase
     var favRestros: FavoriteRestaurants = FavoriteRestaurants()
     var mapsFragment: MapsFragment = MapsFragment()
-    var restaurantInfoFragment: RestaurantInfoFragment = RestaurantInfoFragment()
+
 
     var weatherIsVisibletouser: Boolean = false
 
@@ -112,6 +111,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     companion object {
         var favIsVisibletouser: Boolean = false
+        var restaurantInfoFragment: RestaurantInfoFragment = RestaurantInfoFragment()
         var endHasBeenReached: Boolean = false
         var restrolist: ArrayList<RestaurantData> = ArrayList()
         var homeIsVisible: Boolean? = null
@@ -189,6 +189,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                         Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                         Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
                         Fragmentutils.replaceFragment(applicationContext, weatherfragment, fragmentManager, R.id.content)
+                        myMenu.findItem(R.id.share).isVisible = false
                         weatherIsVisibletouser = true
                         return true
                     } else {
@@ -196,28 +197,41 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     }
                 }
                 R.id.logout -> {
-                    favIsVisibletouser = false
-                    MainActivity.isVisible = false
-                    var sharedpref: SharedPreferences = getSharedPreferences("UserInfo", 0)
-                    var username = sharedpref.getString("username", null)
-                    var email = sharedpref.getString("email", null)
-                    var password = sharedpref.getString("password", null)
-                    var number = sharedpref.getString("number", null)
-                    var uid = mydb.myDao().getUserId(username)
-                    var table: Table = Table()
-                    table.id = uid
-                    table.name = username
-                    table.email = email
-                    table.password = password
-                    table.mobilenumber = number
-                    table.loginStatus = "no"
-                    mydb.myDao().update(table)
 
-                    LoginManager.getInstance().logOut()
-                    var intent: Intent = Intent(applicationContext, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    Toastutils.showToast(applicationContext, "Logged out")
-                    startActivity(intent)
+                    var alertdialogbuilder: AlertDialog.Builder = AlertDialog.Builder(this@RestaurantActivity)
+
+                    alertdialogbuilder.setMessage("Are you sure you want to Logout?")
+                    alertdialogbuilder.setPositiveButton("Logout") { dialog, which ->
+                        favIsVisibletouser = false
+                        MainActivity.isVisible = false
+
+                        var sharedpref: SharedPreferences = this@RestaurantActivity.getSharedPreferences("UserInfo", 0)
+                        var username = sharedpref.getString("username", null)
+                        var email = sharedpref.getString("email", null)
+                        var password = sharedpref.getString("password", null)
+                        var number = sharedpref.getString("number", null)
+                        var uid = mydb.myDao().getUserId(username)
+                        var table: Table = Table()
+                        table.id = uid
+                        table.name = username
+                        table.email = email
+                        table.password = password
+                        table.mobilenumber = number
+                        table.loginStatus = "no"
+                        mydb.myDao().update(table)
+
+                        LoginManager.getInstance().logOut()
+                        var intent: Intent = Intent(this@RestaurantActivity, MainActivity::class.java)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        Toastutils.showToast(this@RestaurantActivity, "Logged out")
+                        startActivity(intent)
+
+                    }
+                    alertdialogbuilder.setNegativeButton("Cancel"){ dialog, which ->
+
+                    }
+                    val alertDialog = alertdialogbuilder.create()
+                    alertDialog.show()
                     return true
                 }
             }
@@ -239,7 +253,22 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         if(isPermissionAvailable==true){
 
+            var communicateContext:Communicate=Communicate()
+            communicateContext.mycontext=this@RestaurantActivity
             homeIsVisible=true
+            Log.i("Context",this.toString())
+
+            var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
+            var editor:SharedPreferences.Editor=mySharedPreferences.edit()
+            editor.putString("WhatToShow","all")
+            editor.apply()
+            val intent = Intent(this, MyBroadcastReceiverService::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(
+                    this.applicationContext, 234324243, intent, 0)
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            alarmManager.set(AlarmManager.RTC_WAKEUP, 5000, pendingIntent)
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,5000,60000*60,pendingIntent)
+
 
             var bottomNavigationViewHelper: BottomNavigationViewHelper = BottomNavigationViewHelper()
             bottomNavigationViewHelper.disableShiftMode(bottom_navigation)
@@ -519,7 +548,11 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 Log.i("UserInfo","Added")
 
             }
+
             var errorIntent:Intent= Intent(this,ErrorActivity::class.java)
+            Log.i("Cleared","top")
+            errorIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+
             startActivity(errorIntent)
 
         }
@@ -582,7 +615,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 //        paginate.showLoading(showMore)
         // paginate.setNoMoreItems(noMoreItems)
         list.clear()
-        Toastutils.showsSnackBar(this, "List Updated")
+
         var handler: Handler? = Handler()
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mcount = 1
@@ -590,7 +623,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             var restaurantPresenter: RestaurantPresenterImpl = RestaurantPresenterImpl()
             restaurantPresenter.nearbyplaces(this, "restaurant", RestaurantPresenterImpl.loc, iGoogleApiServices, adapter, recyclerview)
-
+            Toastutils.showsSnackBar(this, "List Updated")
 
         }
 
@@ -640,7 +673,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         } else if (RestaurantInfoFragment.isInfoVisible) {
             RestaurantInfoFragment.isInfoVisible = false
             super.onBackPressed()
-        } else if (favIsVisibletouser || weatherIsVisibletouser || mapsisVisibletouser) {
+        }else if(mapsisVisibletouser){
+
+        }else if (favIsVisibletouser || weatherIsVisibletouser ) {
             supportActionBar!!.title = "Restaurants"
             if (favIsVisibletouser) {
                 list.clear()
@@ -649,6 +684,10 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     var restaurantPresenter: RestaurantPresenterImpl = RestaurantPresenterImpl()
                     restaurantPresenter.nearbyplaces(this, "restaurant", RestaurantPresenterImpl.loc, iGoogleApiServices, adapter, recyclerview)
 
+                    var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
+                    var editor:SharedPreferences.Editor=mySharedPreferences.edit()
+                    editor.putString("WhatToShow","all")
+                    editor.apply()
 
                 }
             }
@@ -662,11 +701,14 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         } else {
             RestaurantInfoFragment.isInfoVisible = false
             finishAffinity()
+
+
         }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
+        myMenu= menu
         menuInflater.inflate(R.menu.restaurant, menu)
         Log.i("inside", "menu")
         return true
@@ -691,6 +733,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Fragmentutils.addFragmentwithBackStack(this, mapsFragment, fragmentManager, R.id.content)
                     itemaction = item
                     item.isVisible = false
+                    myMenu.findItem(R.id.share).isVisible = false
                 }
                 return true
             }
@@ -717,17 +760,24 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 Log.i("isHomeVisible", "weather"+weatherIsVisibletouser.toString())
                 Log.i("isHomeVisible", "maps"+mapsisVisibletouser.toString())
                 supportActionBar!!.title = "Restaurants"
+                myMenu.findItem(R.id.share).isVisible = true
+                myMenu.findItem(R.id.showonmaps).isVisible = true
                 favIsVisibletouser = false
                 weatherIsVisibletouser = false
                 mapsisVisibletouser = false
                 if (RestaurantInfoFragment.isInfoVisible) {
-                    Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
                     RestaurantInfoFragment.isInfoVisible = false
+                    Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
+                    Log.i("Info","Removed")
                 }
                 Fragmentutils.removeFragment(favRestros, fragmentManager)
                 Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                 Fragmentutils.removeFragment(weatherfragment, fragmentManager)
 
+                var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
+                var editor:SharedPreferences.Editor=mySharedPreferences.edit()
+                editor.putString("WhatToShow","all")
+                editor.apply()
                 this.invalidateOptionsMenu()
                 if (!homeIsVisible!!) {
                     list.clear()
@@ -751,7 +801,8 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Fragmentutils.removeFragment(weatherfragment, fragmentManager)
                     Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
                     Fragmentutils.replaceFragment(this, favRestros, fragmentManager, R.id.content)
-
+                    myMenu.findItem(R.id.share).isVisible = true
+                    myMenu.findItem(R.id.showonmaps).isVisible = true
                     favIsVisibletouser = true
                 } else {
 
@@ -769,6 +820,8 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                     Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
                     Fragmentutils.replaceFragment(this, weatherfragment, fragmentManager, R.id.content)
+                    myMenu.findItem(R.id.share).isVisible = false
+                    myMenu.findItem(R.id.showonmaps).isVisible = false
                     weatherIsVisibletouser = true
 
                 } else {
@@ -776,28 +829,40 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 }
             }
             R.id.logout -> {
-                favIsVisibletouser = false
-                MainActivity.isVisible = false
-                var sharedpref: SharedPreferences = this.getSharedPreferences("UserInfo", 0)
-                var username = sharedpref.getString("username", null)
-                var email = sharedpref.getString("email", null)
-                var password = sharedpref.getString("password", null)
-                var number = sharedpref.getString("number", null)
-                var uid = mydb.myDao().getUserId(username)
-                var table: Table = Table()
-                table.id = uid
-                table.name = username
-                table.email = email
-                table.password = password
-                table.mobilenumber = number
-                table.loginStatus = "no"
-                mydb.myDao().update(table)
+                var alertdialogbuilder: AlertDialog.Builder = AlertDialog.Builder(this)
 
-                LoginManager.getInstance().logOut()
-                var intent: Intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                Toastutils.showToast(this, "Logged out")
-                startActivity(intent)
+                alertdialogbuilder.setMessage("Are you sure you want to Logout?")
+                alertdialogbuilder.setPositiveButton("Logout") { dialog, which ->
+                    favIsVisibletouser = false
+                    MainActivity.isVisible = false
+
+                    var sharedpref: SharedPreferences = this.getSharedPreferences("UserInfo", 0)
+                    var username = sharedpref.getString("username", null)
+                    var email = sharedpref.getString("email", null)
+                    var password = sharedpref.getString("password", null)
+                    var number = sharedpref.getString("number", null)
+                    var uid = mydb.myDao().getUserId(username)
+                    var table: Table = Table()
+                    table.id = uid
+                    table.name = username
+                    table.email = email
+                    table.password = password
+                    table.mobilenumber = number
+                    table.loginStatus = "no"
+                    mydb.myDao().update(table)
+
+                    LoginManager.getInstance().logOut()
+                    var intent: Intent = Intent(this, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    Toastutils.showToast(this, "Logged out")
+                    startActivity(intent)
+                }
+                alertdialogbuilder.setNegativeButton("Cancel"){ dialog, which ->
+
+                }
+                val alertDialog = alertdialogbuilder.create()
+                alertDialog.show()
+
             }
 
         }

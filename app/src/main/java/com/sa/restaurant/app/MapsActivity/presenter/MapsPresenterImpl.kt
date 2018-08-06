@@ -27,7 +27,9 @@ import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
 import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.MapsActivity.MapsFragment.Companion.mMap
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
+import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
+import com.sa.restaurant.app.RestaurantsActivity.model.PhotosItem
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
@@ -48,7 +50,9 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
             }
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
-
+                var open:String?=null
+                var photoreference: String?=null
+                var photoitem: List<PhotosItem> = ArrayList()
                 pojo = response!!.body()!!
                 Log.i("ResponseNearbyMaps", response.body()!!.results.toString())
 
@@ -58,13 +62,37 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                         val googlePlace = response.body()!!.results!![i]
                         val address = response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
+                        val rating = googlePlace.rating
+                        val placeId:String=googlePlace.place_id
                         val lat = googlePlace.geometry.location.lat
                         val lon = googlePlace.geometry.location.lng
-                        var restaurantData: RestaurantData = RestaurantData()
-                        restaurantData.Name = placename
-                        restaurantData.Address = address
-                        list.add(restaurantData)
+//                        var restaurantData: RestaurantData = RestaurantData()
+//                        restaurantData.Name = placename
+//                        restaurantData.Address = address
+//                        restaurantData.image = photoreference
+//                        restaurantData.rating=rating
+//                        restaurantData.open=open
+//                        restaurantData.lat = lat
+//                        restaurantData.lng = lon
+//                        restaurantData.placeId=placeId
+//                        list.add(restaurantData)
                         latlng2 = LatLng(lat, lon)
+//                        if(googlePlace.opening_hours==null){
+//                            open="NotAvailable"
+//                        }else{
+//                            open= googlePlace.opening_hours.open_now.toString()
+//                        }
+//                        var loc: Location = Location("test")
+//                        loc.latitude = lat
+//                        loc.longitude = lon
+//                        RestaurantPresenterImpl.hashMap[placename] = loc
+//                        Log.i("LatLng nearbyplaces", lat.toString() + "  " + lon)
+//                        if (googlePlace.photos == null) {
+//                            photoreference = "NotAvailable"
+//                        } else {
+//                            photoitem = googlePlace.photos.toList()
+//                            photoreference = photoitem[0].photo_reference
+//                        }
 
 
                         markerOptions.position(latlng2)
@@ -73,7 +101,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                         RestaurantMarker = mMap.addMarker(markerOptions)
 
                     }
-                    mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f))
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(11.0f))
                     Log.i("Total places", list.size.toString())
 
 
@@ -87,6 +115,36 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
 
         })
     }
+
+     override fun favRestaurants(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap) {
+         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+         var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+         var Username = sharedpref.getString("username", null)
+         var uid = mydb.myDao().getUserId(Username!!)
+         var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+
+         var favorite_list: ArrayList<RestaurantData> = ArrayList()
+         if(list.isNotEmpty()){
+             for(i in list.indices){
+                 val markerOptions: MarkerOptions = MarkerOptions()
+                 var latitude=list[i].lat
+                 var longitude=list[i].lng
+                 var name=list[i].restaurantName
+
+                 var latLng:LatLng= LatLng(latitude!!,longitude!!)
+                 markerOptions.position(latLng)
+                 markerOptions.title(name)
+                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                 RestaurantMarker = mMap.addMarker(markerOptions)
+             }
+             mMap.animateCamera(CameraUpdateFactory.zoomTo(11.0f))
+             Log.i("Total places", list.size.toString())
+         }else{
+             Log.i("List not found", "Trying again")
+         }
+
+    }
+
 
     override fun onConnectionFailed(p0: ConnectionResult) {
         Log.i("OnConnectionFailed", "failed")
@@ -160,7 +218,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
+        googleplaceurl.append("&key=" + "AIzaSyD7O4Q5UsRLWuP1P17WSDEuHttwKAcoSis")
 
         return googleplaceurl.toString()
     }
@@ -195,7 +253,16 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                     count++
                     if (count == 1) {
 
-                        nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
+                            var mySharedPreferences:SharedPreferences=activity.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
+                            var whatToShow=mySharedPreferences.getString("WhatToShow",null)
+                        if(whatToShow=="all"){
+                            nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
+                        }
+                        if(whatToShow=="fav"){
+                            favRestaurants(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
+                        }
+
+
 
 
                         Log.i("Count success", "$count")

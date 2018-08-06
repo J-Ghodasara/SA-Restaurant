@@ -176,7 +176,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
             input_layout_login_Password.isErrorEnabled=true
             input_layout_login_Password.error = "This is required field"
         } else {
-            input_layout_login_Password.error = "It should be minimum 5 in length"
+            input_layout_login_Password.error = "It should contain 1 special character,1 lowercase character and 1 uppercase character"
         }
     }
 

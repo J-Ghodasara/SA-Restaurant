@@ -24,6 +24,7 @@
         <EditText
             android:id="@+id/editText_Username"
             android:layout_width="match_parent"
+            android:singleLine="true"
             android:layout_height="wrap_content"
             android:hint="Email/Username"
             android:maxLength="40"
@@ -48,6 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
+            android:singleLine="true"
             android:inputType="textPassword"
             android:maxLength="20"
             android:textColor="@color/colorBlack" />

@@ -28,6 +28,7 @@
             android:id="@+id/et_signup_Email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:maxLength="40"
             android:hint="Email"
             android:textColor="@color/colorBlack" />
@@ -51,6 +52,7 @@
             android:id="@+id/et_signup_Password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:maxLength="20"
             android:inputType="textPassword"
             android:hint="Password"
@@ -72,6 +74,7 @@
         <EditText
             android:id="@+id/et_signup_Name"
             android:layout_width="match_parent"
+            android:singleLine="true"
             android:layout_height="wrap_content"
             android:maxLength="40"
             android:hint="Username"
@@ -96,6 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="20"
+            android:singleLine="true"
             android:inputType="textPassword"
             android:hint="Confirm Password"
             android:textColor="@color/colorBlack" />
@@ -119,6 +123,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
+            android:singleLine="true"
             android:maxLength="10"
             android:hint="Mobile Number"
             android:textColor="@color/colorBlack" />

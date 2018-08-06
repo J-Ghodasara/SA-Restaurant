@@ -127,6 +127,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
+
            var view: View = inflater.inflate(R.layout.fragment_maps, container, false)
 
         mMapView = view.findViewById(R.id.map)

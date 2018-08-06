@@ -41,7 +41,7 @@ import com.sa.restaurant.app.roomDatabase.WeatherInfoTable
 class weatherFragment : Fragment(), WeatherView {
 
 
-    lateinit var iGoogleApiServices: IGoogleApiServices
+
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationreq: LocationRequest
     lateinit var locationcallback: LocationCallback
@@ -51,6 +51,7 @@ class weatherFragment : Fragment(), WeatherView {
 
     companion object {
         lateinit var dialog: ProgressDialog
+        lateinit var iGoogleApiServices: IGoogleApiServices
     }
 
 

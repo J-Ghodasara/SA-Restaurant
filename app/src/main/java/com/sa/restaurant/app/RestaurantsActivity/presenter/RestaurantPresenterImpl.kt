@@ -180,7 +180,7 @@ class RestaurantPresenterImpl : RestaurantPresenter, GoogleApiClient.ConnectionC
         googleplaceurl.append("&radius=" + 2000)
         googleplaceurl.append("&type=" + nearbyplace)
         googleplaceurl.append("&sensor=true")
-        googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
+        googleplaceurl.append("&key=" + "AIzaSyD7O4Q5UsRLWuP1P17WSDEuHttwKAcoSis")
 
         return googleplaceurl.toString()
     }

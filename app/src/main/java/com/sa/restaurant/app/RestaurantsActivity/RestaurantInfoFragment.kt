@@ -38,11 +38,12 @@ class RestaurantInfoFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-
+        RestaurantActivity.homeIsVisible=false
+       isInfoVisible=true
         var view: View = inflater.inflate(R.layout.fragment_restaurant_info, container, false)
         RestaurantActivity.homeIsVisible = false
         //RestaurantActivity.favIsVisibletouser=RestaurantActivity.favIsVisibletouser
-        isInfoVisible = true
+
         restroName = arguments.getString("restroName", null).toString()
         restroAddress = arguments.getString("restroAddress", null).toString()
         restroImg = arguments.getString("restroImg", null).toString()

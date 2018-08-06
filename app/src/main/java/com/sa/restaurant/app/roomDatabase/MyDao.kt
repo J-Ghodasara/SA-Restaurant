@@ -39,8 +39,8 @@ interface MyDao{
     @Insert
     fun addfav(table: FavoritesTable)
 
-    @Query("Delete from FavoritesTable where RestaurantName=:restaurantName And userid=:uid")
-    fun deletefromfav(restaurantName:String,uid:Int)
+    @Query("Delete from FavoritesTable where RestaurantName=:restaurantName And userid=:uid and RestaurantAddress=:address")
+    fun deletefromfav(restaurantName:String,uid:Int,address:String)
 
     @Query("select * from FavoritesTable Where userid=:userid")
     fun getFavorites(userid:Int):List<FavoritesTable>
