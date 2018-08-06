@@ -76,7 +76,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     private var dotscount: Int = 0
     private var dots: Array<ImageView?>? = null
-    lateinit var myMenu:Menu
+    lateinit var myMenu: Menu
     lateinit var loc: Location
     lateinit var pojo: POJO
     private lateinit var mMap: GoogleMap
@@ -91,7 +91,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     lateinit var mydb: Mydatabase
     var favRestros: FavoriteRestaurants = FavoriteRestaurants()
     var mapsFragment: MapsFragment = MapsFragment()
-
+    var isFromRestaurant: Boolean = true
 
     var weatherIsVisibletouser: Boolean = false
 
@@ -227,7 +227,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                         startActivity(intent)
 
                     }
-                    alertdialogbuilder.setNegativeButton("Cancel"){ dialog, which ->
+                    alertdialogbuilder.setNegativeButton("Cancel") { dialog, which ->
 
                     }
                     val alertDialog = alertdialogbuilder.create()
@@ -248,26 +248,26 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         setContentView(R.layout.activity_restaurant)
         setSupportActionBar(toolbar)
 
-       var sharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-        var isPermissionAvailable:Boolean=sharedPreferences.getBoolean("permission",false)
+        var sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+        var isPermissionAvailable: Boolean = sharedPreferences.getBoolean("permission", false)
 
-        if(isPermissionAvailable==true){
+        if (isPermissionAvailable == true) {
 
-            var communicateContext:Communicate=Communicate()
-            communicateContext.mycontext=this@RestaurantActivity
-            homeIsVisible=true
-            Log.i("Context",this.toString())
+            var communicateContext: Communicate = Communicate()
+            communicateContext.mycontext = this@RestaurantActivity
+            homeIsVisible = true
+            Log.i("Context", this.toString())
 
-            var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
-            var editor:SharedPreferences.Editor=mySharedPreferences.edit()
-            editor.putString("WhatToShow","all")
+            var mySharedPreferences: SharedPreferences = this.getSharedPreferences("RestaurantsOnMaps", android.content.Context.MODE_PRIVATE)
+            var editor: SharedPreferences.Editor = mySharedPreferences.edit()
+            editor.putString("WhatToShow", "all")
             editor.apply()
             val intent = Intent(this, MyBroadcastReceiverService::class.java)
             val pendingIntent = PendingIntent.getBroadcast(
                     this.applicationContext, 234324243, intent, 0)
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.set(AlarmManager.RTC_WAKEUP, 5000, pendingIntent)
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,5000,60000*60,pendingIntent)
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 5000, 60000 * 60, pendingIntent)
 
 
             var bottomNavigationViewHelper: BottomNavigationViewHelper = BottomNavigationViewHelper()
@@ -327,7 +327,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
 
 
-
             //getting userdetails to show in header navigation bar ->> Start
             var sharedpref: SharedPreferences = this.getSharedPreferences("UserInfo", 0)
             var Username: String = sharedpref.getString("username", null)
@@ -346,7 +345,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 table.mobilenumber = Number
                 table.password = "Fb Password"
                 table.loginStatus = "yes"
-                Log.i("UserInfo","Updated")
+                Log.i("UserInfo", "Updated")
                 mydb.myDao().update(table)
 
 
@@ -358,7 +357,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 table.mobilenumber = Number
                 table.password = "Fb Password"
                 table.loginStatus = "yes"
-                Log.i("UserInfo","Added")
+                Log.i("UserInfo", "Added")
                 mydb.myDao().adduser(table)
 
             }
@@ -514,7 +513,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             navigationView = findViewById<NavigationView>(R.id.nav_view)
             swipe_refresh.setOnRefreshListener(this)
-        }else{
+        } else {
             mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
             var sharedpref: SharedPreferences = this.getSharedPreferences("UserInfo", 0)
             var Username: String = sharedpref.getString("username", null)
@@ -534,7 +533,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 table.password = "Fb Password"
                 table.loginStatus = "yes"
                 mydb.myDao().update(table)
-                Log.i("UserInfo","Updated")
+                Log.i("UserInfo", "Updated")
 
             } else {
 
@@ -545,19 +544,17 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 table.password = "Fb Password"
                 table.loginStatus = "yes"
                 mydb.myDao().adduser(table)
-                Log.i("UserInfo","Added")
+                Log.i("UserInfo", "Added")
 
             }
 
-            var errorIntent:Intent= Intent(this,ErrorActivity::class.java)
-            Log.i("Cleared","top")
+            var errorIntent: Intent = Intent(this, ErrorActivity::class.java)
+            Log.i("Cleared", "top")
             errorIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
 
             startActivity(errorIntent)
 
         }
-
-
 
 
     }
@@ -673,10 +670,20 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         } else if (RestaurantInfoFragment.isInfoVisible) {
             RestaurantInfoFragment.isInfoVisible = false
             super.onBackPressed()
-        }else if(mapsisVisibletouser){
-
-        }else if (favIsVisibletouser || weatherIsVisibletouser ) {
+        } else if (mapsisVisibletouser) {
+            if (isFromRestaurant) {
+                supportActionBar!!.title = "Restaurants"
+                myMenu.findItem(R.id.share).isVisible = true
+                myMenu.findItem(R.id.showonmaps).isVisible = true
+                mapsisVisibletouser = false
+            } else {
+                supportActionBar!!.title = "Favorites"
+                mapsisVisibletouser = false
+            }
+            super.onBackPressed()
+        } else if (favIsVisibletouser || weatherIsVisibletouser) {
             supportActionBar!!.title = "Restaurants"
+            isFromRestaurant = true
             if (favIsVisibletouser) {
                 list.clear()
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -684,9 +691,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     var restaurantPresenter: RestaurantPresenterImpl = RestaurantPresenterImpl()
                     restaurantPresenter.nearbyplaces(this, "restaurant", RestaurantPresenterImpl.loc, iGoogleApiServices, adapter, recyclerview)
 
-                    var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
-                    var editor:SharedPreferences.Editor=mySharedPreferences.edit()
-                    editor.putString("WhatToShow","all")
+                    var mySharedPreferences: SharedPreferences = this.getSharedPreferences("RestaurantsOnMaps", android.content.Context.MODE_PRIVATE)
+                    var editor: SharedPreferences.Editor = mySharedPreferences.edit()
+                    editor.putString("WhatToShow", "all")
                     editor.apply()
 
                 }
@@ -697,6 +704,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             Fragmentutils.removeFragment(mapsFragment, fragmentManager)
             Fragmentutils.removeFragment(weatherfragment, fragmentManager)
             navigationView.menu.getItem(0).isChecked = true
+            isFromRestaurant = false
             this.invalidateOptionsMenu()
         } else {
             RestaurantInfoFragment.isInfoVisible = false
@@ -708,7 +716,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        myMenu= menu
+        myMenu = menu
         menuInflater.inflate(R.menu.restaurant, menu)
         Log.i("inside", "menu")
         return true
@@ -755,10 +763,11 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.home -> {
+                isFromRestaurant=true
                 Log.i("isHomeVisible", homeIsVisible.toString())
-                Log.i("isHomeVisible","fav"+ favIsVisibletouser.toString())
-                Log.i("isHomeVisible", "weather"+weatherIsVisibletouser.toString())
-                Log.i("isHomeVisible", "maps"+mapsisVisibletouser.toString())
+                Log.i("isHomeVisible", "fav" + favIsVisibletouser.toString())
+                Log.i("isHomeVisible", "weather" + weatherIsVisibletouser.toString())
+                Log.i("isHomeVisible", "maps" + mapsisVisibletouser.toString())
                 supportActionBar!!.title = "Restaurants"
                 myMenu.findItem(R.id.share).isVisible = true
                 myMenu.findItem(R.id.showonmaps).isVisible = true
@@ -768,15 +777,15 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 if (RestaurantInfoFragment.isInfoVisible) {
                     RestaurantInfoFragment.isInfoVisible = false
                     Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                    Log.i("Info","Removed")
+                    Log.i("Info", "Removed")
                 }
                 Fragmentutils.removeFragment(favRestros, fragmentManager)
                 Fragmentutils.removeFragment(mapsFragment, fragmentManager)
                 Fragmentutils.removeFragment(weatherfragment, fragmentManager)
 
-                var mySharedPreferences:SharedPreferences=this.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
-                var editor:SharedPreferences.Editor=mySharedPreferences.edit()
-                editor.putString("WhatToShow","all")
+                var mySharedPreferences: SharedPreferences = this.getSharedPreferences("RestaurantsOnMaps", android.content.Context.MODE_PRIVATE)
+                var editor: SharedPreferences.Editor = mySharedPreferences.edit()
+                editor.putString("WhatToShow", "all")
                 editor.apply()
                 this.invalidateOptionsMenu()
                 if (!homeIsVisible!!) {
@@ -791,6 +800,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             }
             R.id.fav -> {
                 list.clear()
+                isFromRestaurant = false
                 supportActionBar!!.title = "Favorites"
                 weatherIsVisibletouser = false
                 mapsisVisibletouser = false
@@ -812,6 +822,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 list.clear()
                 supportActionBar!!.title = "Weather"
                 favIsVisibletouser = false
+                isFromRestaurant = true
                 mapsisVisibletouser = false
                 homeIsVisible = false
                 RestaurantInfoFragment.isInfoVisible = false
@@ -857,7 +868,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                     Toastutils.showToast(this, "Logged out")
                     startActivity(intent)
                 }
-                alertdialogbuilder.setNegativeButton("Cancel"){ dialog, which ->
+                alertdialogbuilder.setNegativeButton("Cancel") { dialog, which ->
 
                 }
                 val alertDialog = alertdialogbuilder.create()
