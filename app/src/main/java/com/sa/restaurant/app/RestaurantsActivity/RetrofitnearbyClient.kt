@@ -3,6 +3,12 @@ package com.sa.restaurant.app.RestaurantsActivity
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+/**
+ * Provides Retrofit object
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
+
 object RetrofitnearbyClient {
     var retrofit: Retrofit? = null
 

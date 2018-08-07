@@ -8,6 +8,12 @@ import com.sa.restaurant.adapters.RestaurantAdapter
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 
+/**
+ * RestaurantView class
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
+
 interface RestaurantView{
     fun getcurrentlatlng(location: Location,iGoogleApiServices: IGoogleApiServices,context: ViewGroup,activity: Context,adapter: RestaurantAdapter)
 

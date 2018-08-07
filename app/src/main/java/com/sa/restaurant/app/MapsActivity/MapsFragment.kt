@@ -22,10 +22,8 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResultCallback
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.sa.restaurant.R
 import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
@@ -95,7 +93,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     override fun onMarkerClick(p0: Marker?): Boolean {
+
         p0!!.showInfoWindow()
+
+
 
         return true
     }
@@ -116,7 +117,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 .setRequestId(placename)
                 .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
                 .setNotificationResponsiveness(1)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER )
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setLoiteringDelay(1)
                 .build()
@@ -129,7 +130,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                               savedInstanceState: Bundle?): View? {
 
 
-           var view: View = inflater.inflate(R.layout.fragment_maps, container, false)
+        var view: View = inflater.inflate(R.layout.fragment_maps, container, false)
 
         mMapView = view.findViewById(R.id.map)
 
@@ -164,18 +165,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        myLocationButton.setOnClickListener(View.OnClickListener {
+            if (MapsPresenterImpl.loc != null) { // Check to ensure coordinates aren't null, probably a better way of doing this...
+                var latLng: LatLng = LatLng(MapsPresenterImpl.loc!!.latitude, MapsPresenterImpl.loc!!.longitude)
+                mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+            }
+        })
+        super.onActivityCreated(savedInstanceState)
     }
-
-    var PROX_ALERT_INTENT = "com.sa.restaurant.proximity"
-    var intent2: Intent = Intent(PROX_ALERT_INTENT)
 
     //Pending intent that will be triggered when the geofence transition occurs
     val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(contextt, GeofenceTransitionsIntentService::class.java)
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
         PendingIntent.getService(contextt, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
     }
@@ -184,7 +187,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     @SuppressLint("MissingPermission")
     override fun onConnected(p0: Bundle?) {
         Log.i("gClient", "connected")
-        var pojo: PojoContext = PojoContext()
 
 
         var sharedpref: SharedPreferences = contextt.getSharedPreferences("UserInfo", 0)

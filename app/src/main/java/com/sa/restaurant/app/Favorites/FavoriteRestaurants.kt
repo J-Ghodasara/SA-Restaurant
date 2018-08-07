@@ -24,7 +24,8 @@ import kotlinx.android.synthetic.main.fragment_favorite_restaurants.*
 
 /**
  * Fragment for favorite restaurants
- *
+ * created by:- jay.ghodasara
+ * created on:- 23 july 18
  */
 class FavoriteRestaurants : Fragment() {
 

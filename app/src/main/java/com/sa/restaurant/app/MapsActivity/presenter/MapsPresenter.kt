@@ -9,6 +9,11 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.maps.GoogleMap
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 
+/**
+ * MapsPresenter class
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 interface MapsPresenter {
 

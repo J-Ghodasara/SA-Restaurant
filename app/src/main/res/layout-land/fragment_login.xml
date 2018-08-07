@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="@dimen/_16sdp">
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         android:id="@+id/input_layout_login_Username"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/et_email_margintop"
+        android:layout_marginTop="@dimen/_25sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -38,7 +38,7 @@
         android:id="@+id/input_layout_login_Password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/et_password_margintop"
+        android:layout_marginTop="@dimen/_52sdp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -61,9 +61,9 @@
         android:id="@+id/textView_Forgot"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/tv_forgot_marginbottom"
-        android:layout_marginEnd="@dimen/tv_forgot_marginright"
-        android:layout_marginRight="@dimen/tv_forgot_marginright"
+        android:layout_marginBottom="@dimen/_14sdp"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginRight="@dimen/_16sdp"
         android:text="FORGOT?"
         android:textColor="@color/colorComponents"
         app:layout_constraintBottom_toBottomOf="@+id/input_layout_login_Password"
@@ -71,16 +71,16 @@
 
     <Button
         android:id="@+id/btn_login"
-        android:layout_width="@dimen/btn_login_width"
+        android:layout_width="@dimen/_120sdp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/btn_login_marginright"
-        android:layout_marginRight="@dimen/btn_login_marginright"
-        android:layout_marginTop="@dimen/btn_login_margintop"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:layout_marginRight="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_54sdp"
         android:background="@drawable/btn_rounded"
         android:text="@string/button_login"
         android:textAllCaps="false"
         android:textColor="@color/colorwhite"
-        android:textSize="20sp"
+        android:textSize="@dimen/_20sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Password" />
 
@@ -89,21 +89,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="200dp"
-        android:layout_marginLeft="@dimen/tv_donthaveacc_marginleft"
-        android:layout_marginStart="@dimen/tv_donthaveacc_marginleft"
-        android:layout_marginTop="@dimen/tv_donthaveacc_margintop"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_16sdp"
         android:text="Don't have an account?"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Password" />
+        app:layout_constraintTop_toTopOf="@+id/btn_login" />
 
     <TextView
         android:id="@+id/textview_Register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/tv_registernow_marginleft"
-        android:layout_marginStart="@dimen/tv_registernow_marginleft"
-        android:layout_marginTop="@dimen/tv_registernow_margintop"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_8sdp"
         android:text="Register Now"
         android:textAllCaps="true"
         android:textColor="@color/colorComponents"
@@ -115,9 +114,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginLeft="@dimen/_16sdp"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_marginTop="@dimen/_24sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textview_Register" />
 

@@ -10,6 +10,11 @@ import com.google.android.gms.location.LocationRequest
 import com.sa.restaurant.adapters.RestaurantAdapter
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 
+/**
+ * RestaurantPresenter class
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 interface RestaurantPresenter{
 

@@ -2,20 +2,17 @@ package com.sa.restaurant.app.RestaurantsActivity.presenter
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.PendingIntent
 import android.arch.persistence.room.Room
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
-import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
+import android.view.View
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.api.ResultCallback
-import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -23,19 +20,28 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
+import com.sa.restaurant.R
 import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.MapsActivity.MapsFragment.Companion.mMap
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
-import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.RestaurantsActivity.model.POJO
 import com.sa.restaurant.app.RestaurantsActivity.model.PhotosItem
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
+import com.sa.restaurant.helpers.CustomInfoWindow
+import com.sa.restaurant.helpers.InfoWindowPojo
 import com.sa.restaurant.utils.Toastutils
+import kotlinx.android.synthetic.main.fragment_restaurant_info.*
 import retrofit2.Call
 import retrofit2.Response
+import java.util.*
+
+/**
+ * MapsPresenterImpl class
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListener {
 
@@ -50,8 +56,8 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
             }
 
             override fun onResponse(call: Call<POJO>?, response: Response<POJO>?) {
-                var open:String?=null
-                var photoreference: String?=null
+                var open: String? = null
+                var photoreference: String? = null
                 var photoitem: List<PhotosItem> = ArrayList()
                 pojo = response!!.body()!!
                 Log.i("ResponseNearbyMaps", response.body()!!.results.toString())
@@ -59,13 +65,34 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                 if (response!!.body()!! != null) {
                     for (i in 0 until response.body()!!.results!!.size) {
                         val markerOptions: MarkerOptions = MarkerOptions()
+                        var myMarker: Marker
                         val googlePlace = response.body()!!.results!![i]
                         val address = response.body()!!.results!![i].vicinity
                         val placename = googlePlace.name
                         val rating = googlePlace.rating
-                        val placeId:String=googlePlace.place_id
+                        val placeId: String = googlePlace.place_id
                         val lat = googlePlace.geometry.location.lat
                         val lon = googlePlace.geometry.location.lng
+
+                        if (googlePlace.opening_hours == null) {
+                            open = "NotAvailable"
+
+                        } else {
+                            open = googlePlace.opening_hours.open_now.toString()
+                        }
+
+
+
+
+
+                        Log.i("LatLng nearbyplaces", lat.toString() + "  " + lon)
+                        if (googlePlace.photos == null) {
+                            photoreference = "NotAvailable"
+                        } else {
+                            photoitem = googlePlace.photos.toList()
+                            photoreference = photoitem[0].photo_reference
+                        }
+                        var imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoreference&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
 //                        var restaurantData: RestaurantData = RestaurantData()
 //                        restaurantData.Name = placename
 //                        restaurantData.Address = address
@@ -94,16 +121,28 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
 //                            photoreference = photoitem[0].photo_reference
 //                        }
 
+                        var infoWindowPojo: InfoWindowPojo = InfoWindowPojo()
+                        infoWindowPojo.Name = placename
+                        infoWindowPojo.Address = address
+                        infoWindowPojo.openStatus = open
+                        infoWindowPojo.ratings = rating
+                        infoWindowPojo.image = imgUrl
+
+                        var customInfoWindow: CustomInfoWindow = CustomInfoWindow(context)
+                        mMap.setInfoWindowAdapter(customInfoWindow)
+                        // infoWindowPojo.timings=
 
                         markerOptions.position(latlng2)
                         markerOptions.title(placename)
                         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                        RestaurantMarker = mMap.addMarker(markerOptions)
+                        restaurantMarker = mMap.addMarker(markerOptions)
+                        restaurantMarker!!.tag = infoWindowPojo
+//                        restaurantMarker!!.showInfoWindow()
+
 
                     }
                     mMap.animateCamera(CameraUpdateFactory.zoomTo(11.0f))
                     Log.i("Total places", list.size.toString())
-
 
 
                 } else {
@@ -116,32 +155,49 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         })
     }
 
-     override fun favRestaurants(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap) {
-         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
-         var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
-         var Username = sharedpref.getString("username", null)
-         var uid = mydb.myDao().getUserId(Username!!)
-         var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+    override fun favRestaurants(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap) {
+        mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+        var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+        var Username = sharedpref.getString("username", null)
+        var uid = mydb.myDao().getUserId(Username!!)
+        var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
 
-         var favorite_list: ArrayList<RestaurantData> = ArrayList()
-         if(list.isNotEmpty()){
-             for(i in list.indices){
-                 val markerOptions: MarkerOptions = MarkerOptions()
-                 var latitude=list[i].lat
-                 var longitude=list[i].lng
-                 var name=list[i].restaurantName
+        var favorite_list: ArrayList<RestaurantData> = ArrayList()
+        if (list.isNotEmpty()) {
+            for (i in list.indices) {
+                val markerOptions: MarkerOptions = MarkerOptions()
+                var latitude = list[i].lat
+                var longitude = list[i].lng
+                var name = list[i].restaurantName
+                var address = list[i].restaurantAddress
+                var open = list[i].openStatus
+                var rating = list[i].ratings
 
-                 var latLng:LatLng= LatLng(latitude!!,longitude!!)
-                 markerOptions.position(latLng)
-                 markerOptions.title(name)
-                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                 RestaurantMarker = mMap.addMarker(markerOptions)
-             }
-             mMap.animateCamera(CameraUpdateFactory.zoomTo(11.0f))
-             Log.i("Total places", list.size.toString())
-         }else{
-             Log.i("List not found", "Trying again")
-         }
+
+                var photoreference = list[i].restaurantPhoto
+                var imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$photoreference&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
+                var latLng: LatLng = LatLng(latitude!!, longitude!!)
+                var infoWindowPojo: InfoWindowPojo = InfoWindowPojo()
+                infoWindowPojo.Name = name
+                infoWindowPojo.Address = address
+                infoWindowPojo.openStatus = open
+                infoWindowPojo.ratings = rating
+                infoWindowPojo.image = imgUrl
+
+                var customInfoWindow: CustomInfoWindow = CustomInfoWindow(context)
+                mMap.setInfoWindowAdapter(customInfoWindow)
+                markerOptions.position(latLng)
+                markerOptions.title(name)
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                restaurantMarker = mMap.addMarker(markerOptions)
+                restaurantMarker!!.tag = infoWindowPojo
+//                 restaurantMarker!!.showInfoWindow()
+            }
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(11.0f))
+            Log.i("Total places", list.size.toString())
+        } else {
+            Log.i("List not found", "Trying again")
+        }
 
     }
 
@@ -149,7 +205,6 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
     override fun onConnectionFailed(p0: ConnectionResult) {
         Log.i("OnConnectionFailed", "failed")
     }
-
 
 
     lateinit var iGoogleApiServices: IGoogleApiServices
@@ -171,8 +226,7 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         val AREA_LANDMARKS: HashMap<String, LatLng> = HashMap<String, LatLng>()
         var loc: Location? = null
         var myLocation: Marker? = null
-        var RestaurantMarker: Marker? = null
-
+        var restaurantMarker: Marker? = null
     }
 
     override fun BuildLocationreq(): LocationRequest {
@@ -192,8 +246,6 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
         return gClient
 
     }
-
-
 
 
     override fun checklocationpermission(context: Activity): Boolean {
@@ -234,13 +286,25 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                     myLocation!!.remove()
                 }
                 AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
+                val geocoder: Geocoder = Geocoder(activity, Locale.getDefault())
+                var address = geocoder.getFromLocation(latlng!!.latitude, latlng!!.longitude, 1)
+                val city = address[0].locality
+                val knownName = address[0].featureName
+                var infoWindowPojo: InfoWindowPojo = InfoWindowPojo()
+                infoWindowPojo.Name = "My Location"
+                infoWindowPojo.Address = "$city $knownName"
+                infoWindowPojo.openStatus = "NotAvailable"
+                infoWindowPojo.ratings = 14.0f.toDouble()
+                infoWindowPojo.image = " "
 
-
+                var customInfoWindow: CustomInfoWindow = CustomInfoWindow(activity)
+                mMap!!.setInfoWindowAdapter(customInfoWindow)
                 var markerOptions: MarkerOptions = MarkerOptions()
                 markerOptions.position(latlng!!)
                 markerOptions.title("My Location")
                 markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                 myLocation = mMap!!.addMarker(markerOptions)
+                myLocation!!.tag = infoWindowPojo
                 Log.i("Move with $count", "animated with location $loc")
                 if (mCount == 1) {
                     mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latlng))
@@ -253,12 +317,12 @@ class MapsPresenterImpl : MapsPresenter, GoogleApiClient.OnConnectionFailedListe
                     count++
                     if (count == 1) {
 
-                            var mySharedPreferences:SharedPreferences=activity.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
-                            var whatToShow=mySharedPreferences.getString("WhatToShow",null)
-                        if(whatToShow=="all"){
+                        var mySharedPreferences: SharedPreferences = activity.getSharedPreferences("RestaurantsOnMaps", android.content.Context.MODE_PRIVATE)
+                        var whatToShow = mySharedPreferences.getString("WhatToShow", null)
+                        if (whatToShow == "all") {
                             nearbyplaces2(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
                         }
-                        if(whatToShow=="fav"){
+                        if (whatToShow == "fav") {
                             favRestaurants(activity, "restaurant", loc!!, iGoogleApiServices, MapsFragment.mMap!!)
                         }
 

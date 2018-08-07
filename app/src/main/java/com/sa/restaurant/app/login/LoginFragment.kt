@@ -53,7 +53,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        MainActivity.isLoginVisible=true
+        MainActivity.isLoginVisible = true
         var layoutInflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
         val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
@@ -79,17 +79,40 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     }
 
 
-
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val accessToken = AccessToken.getCurrentAccessToken()
         val isLoggedIn = accessToken != null && !accessToken.isExpired
 
 
-//        btn_login.setOnEditorActionListener(object:TextView.OnEditorActionListener{
+        editText_Password.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                    var username: String = editText_Username.text.toString()
+                    var password: String = editText_Password.text.toString()
+
+                    if (!validatename(username)) run {
+                        if (!validateemail(username)) {
+                            method2(username)
+
+                            editText_Username.requestFocus()
+                        } else {
+                            check(username, password)
+                        }
+
+                    } else {
+                        check(username, password)
+                    }
+                }
+                return false
+            }
+
+        })
+
+
+//        editText_Password.setOnEditorActionListener(object:TextView.OnEditorActionListener{
 //            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-//                if(actionId==EditorInfo.IME_ACTION_DONE || actionId==EditorInfo.IME_ACTION_SEND) {
+//                if(event!=null && (event.keyCode== KeyEvent.KEYCODE_ENTER|| actionId == EditorInfo.IME_ACTION_DONE)) {
 //                    var username: String = editText_Username.text.toString()
 //                    var password: String = editText_Password.text.toString()
 //
@@ -116,7 +139,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         textview_Register.setOnClickListener(this)
         btn_login.setOnClickListener(this)
         callbackManager = CallbackManager.Factory.create()
-        login_button.loginBehavior = LoginBehavior.WEB_ONLY
+//        login_button.loginBehavior = LoginBehavior.WEB_ONLY
         login_button.setReadPermissions(Arrays.asList("public_profile", "email"))
 
         login_button.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
@@ -171,9 +194,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         })
 
 
-
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -228,9 +249,9 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
             if (issucess) {
 
                 var uid = mydb.myDao().getUserId(username)
-                Log.i("Username",username)
+                Log.i("Username", username)
                 var userData = mydb.myDao().getUserInfo(uid)
-                Log.i("UID",uid.toString())
+                Log.i("UID", uid.toString())
                 var table: Table = Table()
                 table.id = uid
                 table.name = userData[0].name
@@ -282,16 +303,16 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
     fun method4(id: String) {
         if (id == "") {
-            input_layout_login_Password.isErrorEnabled=true
+            input_layout_login_Password.isErrorEnabled = true
             input_layout_login_Password.error = "This is required field"
         } else {
-           input_layout_login_Password.error = "It should be minimum of 5 in length"
+            input_layout_login_Password.error = "It should be minimum of 5 in length"
         }
     }
 
     fun method2(id: String) {
         if (id == "") {
-            input_layout_login_Username.isErrorEnabled=true
+            input_layout_login_Username.isErrorEnabled = true
             input_layout_login_Username.error = "This is required field"
         } else {
             input_layout_login_Username.error = "Plzz enter Valid Username/Email"
@@ -313,8 +334,6 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         var editor2: SharedPreferences.Editor = sharedpref.edit()
         editor.putString("password", password)
         editor.apply()
-
-
 
 
     }

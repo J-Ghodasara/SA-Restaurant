@@ -28,15 +28,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.plus.PlusShare
-import com.sa.restaurant.Communicate
 import com.sa.restaurant.R
 import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
-import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
-import com.sa.restaurant.app.RestaurantsActivity.RestaurantInfoFragment
-import com.sa.restaurant.app.RestaurantsActivity.RetrofitnearbyClient
-import com.sa.restaurant.app.RestaurantsActivity.model.PlaceInfo.Response
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
@@ -44,11 +39,14 @@ import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
 import com.squareup.picasso.Picasso
-import retrofit2.Call
 
-import java.text.SimpleDateFormat
 import java.util.*
 
+/*
+* created by:- jay.ghodasara
+* created on:- 23 july 18
+* Adapter for the recyclerview Where restaurants are shown
+*/
 
 class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantData>, var myView: View, var flag: Int) : RecyclerView.Adapter<RestaurantAdapter.Vholder>() {
 
@@ -65,8 +63,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
     lateinit var imgUrl: String
     lateinit var referencePhoto: String
     lateinit var imgUrlForFb: String
-    var Name:String?=null
-    var Address:String?=null
+    var Name: String? = null
+    var Address: String? = null
 
     init {
         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -121,8 +119,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         holder.textView.setOnLongClickListener(View.OnLongClickListener {
             mBottomSheetDialog.show()
             var referenceImg = array[position].image
-            var Name=array[position].Name
-            var Address= array[position].Address
+            Name = array[position].Name
+            Address = array[position].Address
             if (array[position].image == "NotAvailable") {
                 imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
             } else {
@@ -132,30 +130,29 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         })
 
-     holder.card.setOnLongClickListener(View.OnLongClickListener {
-         mBottomSheetDialog.show()
-       Name =array[position].Name
-        Address= array[position].Address
-         var referenceImg = array[position].image
-         if (array[position].image == "NotAvailable") {
-             imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
-         } else {
-             imgUrlForFb = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
-         }
-         return@OnLongClickListener true
-     })
+        holder.card.setOnLongClickListener(View.OnLongClickListener {
+            mBottomSheetDialog.show()
+            Name = array[position].Name
+            Address = array[position].Address
+            var referenceImg = array[position].image
+            if (array[position].image == "NotAvailable") {
+                imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
+            } else {
+                imgUrlForFb = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
+            }
+            return@OnLongClickListener true
+        })
 
         holder.textView.setOnClickListener(View.OnClickListener {
 
             Log.i("placeId", array[position].placeId.toString())
 
 
-
             var bundle: Bundle = Bundle()
             var referenceImg = array[position].image
             bundle.putString("restroName", holder.textView.text.toString())
             bundle.putString("restroAddress", array[position].Address)
-            bundle.putString("Clicked_placeId", array[position].placeId.toString() )
+            bundle.putString("Clicked_placeId", array[position].placeId.toString())
             if (array[position].image == "NotAvailable") {
                 imgUrl = context.getString(R.string.no_Img_AvailableUrl)
             } else {
@@ -170,8 +167,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
                 bundle.putString("open", array[position].open.toString())
             }
             RestaurantActivity.restaurantInfoFragment.arguments = bundle
-            var communicateContext:Communicate=Communicate()
-            Log.i("Context",context.toString())
+
+            Log.i("Context", context.toString())
             Fragmentutils.replaceFragmentwithBackStack(context, RestaurantActivity.restaurantInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
 
         })
@@ -181,7 +178,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
 
             var shareLinkContent: ShareLinkContent = ShareLinkContent.Builder()
-                    .setQuote(Name+"\n"+Address)
+                    .setQuote(Name + "\n" + Address)
                     .setContentUrl(Uri.parse(imgUrlForFb))
                     .build()
             ShareDialog.show(context as Activity, shareLinkContent)
@@ -196,12 +193,12 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         })
 
         other_Share.setOnClickListener(View.OnClickListener {
-            Toastutils.showToast(context, "Other share")
+
             var sendIntent: Intent = Intent()
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.putExtra(Intent.EXTRA_TEXT, imgUrlForFb)
-            sendIntent.putExtra(Intent.EXTRA_TEXT,Name)
-            sendIntent.putExtra(Intent.EXTRA_TEXT,Address)
+            sendIntent.putExtra(Intent.EXTRA_TEXT, Name)
+            sendIntent.putExtra(Intent.EXTRA_TEXT, Address)
             sendIntent.type = "text/plain"
             startActivity(context, Intent.createChooser(sendIntent, "Select Where to Share"), null)
 
@@ -237,11 +234,11 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
                 favoritesTable.uid = uid
                 favoritesTable.restaurantAddress = array[position].Address
                 favoritesTable.restaurantPhoto = array[position].image
-                favoritesTable.ratings=array[position].rating
-                favoritesTable.PlaceId=array[position].placeId
-                favoritesTable.openStatus=array[position].open
-                favoritesTable.lat=array[position].lat
-                favoritesTable.lng=array[position].lng
+                favoritesTable.ratings = array[position].rating
+                favoritesTable.PlaceId = array[position].placeId
+                favoritesTable.openStatus = array[position].open
+                favoritesTable.lat = array[position].lat
+                favoritesTable.lng = array[position].lng
                 list.add(referencePhoto)
                 mydb.myDao().addfav(favoritesTable)
                 this.notifyDataSetChanged()
@@ -254,9 +251,9 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             } else {
 
                 var restrauntName = array[position].Name
-                var restaurantAddress=array[position].Address
+                var restaurantAddress = array[position].Address
                 var ID: Int = uid!!
-                mydb.myDao().deletefromfav(restrauntName!!, ID,restaurantAddress!!)
+                mydb.myDao().deletefromfav(restrauntName!!, ID, restaurantAddress!!)
                 this.notifyDataSetChanged()
                 var list: ArrayList<String> = ArrayList<String>()
                 list.add(holder.textView.text.toString())
@@ -274,11 +271,10 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
     }
 
 
-
     override fun getItemViewType(position: Int): Int {
-        if(position==0){
+        if (position == 0) {
             return 0
-        }else{
+        } else {
             return 1
         }
 
@@ -292,8 +288,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         //        var todays_timings:TextView=itemView.findViewById(R.id.timings_info)
         var img: ImageView = itemView.findViewById(R.id.imageView)
         var subtitle: TextView = itemView.findViewById(R.id.price)
-       var card:CardView=itemView.findViewById(R.id.card1)
-
+        var card: CardView = itemView.findViewById(R.id.card1)
 
 
     }

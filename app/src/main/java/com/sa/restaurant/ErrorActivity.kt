@@ -18,9 +18,16 @@ import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterIm
 import com.sa.restaurant.utils.Toastutils
 import kotlinx.android.synthetic.main.activity_error.*
 
+/**
+ * Error activity if location permission is not granted this activity will be presented
+ * Created On :- 4 aug 2018
+ * Created by :- jay.ghodasara
+ */
+
+
 class ErrorActivity : AppCompatActivity() {
 
-    var firstTime:Boolean?=null
+    var firstTime: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +44,7 @@ class ErrorActivity : AppCompatActivity() {
         permission.setOnClickListener(View.OnClickListener {
 
 
-                checklocationpermission(this)
+            checklocationpermission(this)
 
         })
     }
@@ -48,22 +55,22 @@ class ErrorActivity : AppCompatActivity() {
             99 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                    MainActivity.isPermissionGranted =true
+                    MainActivity.isPermissionGranted = true
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Toastutils.showToast(this, "Permission Granted")
-                        var sharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                        var editor:SharedPreferences.Editor=sharedPreferences.edit()
-                        editor.putBoolean("permission",true)
+                        var sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                        var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                        editor.putBoolean("permission", true)
                         editor.apply()
-                        var intent:Intent= Intent(this,RestaurantActivity::class.java)
+                        var intent: Intent = Intent(this, RestaurantActivity::class.java)
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         startActivity(intent)
 //                        mMap.isMyLocationEnabled = true
                     }
                 } else {
-                    var sharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var editor:SharedPreferences.Editor=sharedPreferences.edit()
-                    editor.putBoolean("permission",true)
+                    var sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                    editor.putBoolean("permission", true)
                     editor.apply()
                     Toast.makeText(applicationContext, " Permission Denied", Toast.LENGTH_LONG).show()
                 }
@@ -76,7 +83,7 @@ class ErrorActivity : AppCompatActivity() {
 //    }
 
 
-     fun checklocationpermission(context: Activity): Boolean {
+    fun checklocationpermission(context: Activity): Boolean {
         return if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(context, android.Manifest.permission.ACCESS_FINE_LOCATION)) {

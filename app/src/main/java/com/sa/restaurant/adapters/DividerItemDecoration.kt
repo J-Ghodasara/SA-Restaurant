@@ -8,6 +8,11 @@ import android.view.View
 import android.graphics.drawable.Drawable
 import com.sa.restaurant.R
 
+/*
+* created by:- jay.ghodasara
+* created on:- 23 july 18
+* This class is for the divider between the items of recyclerview
+*/
 
 class DividerItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
 

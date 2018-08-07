@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         var isVisible: Boolean = false
-        var permissionCount:Int = 0
-        var isLoginVisible=true
-        var isPermissionGranted:Boolean=false
+        var permissionCount: Int = 0
+        var isLoginVisible = true
+        var isPermissionGranted: Boolean = false
     }
 
 
@@ -47,11 +47,14 @@ class MainActivity : AppCompatActivity() {
         if (isVisible) {
 
         } else {
-            var loginFragment: LoginFragment = LoginFragment()
-            Fragmentutils.removeFragment(loginFragment, fragmentManager)
+            if (savedInstanceState == null) {
+                var loginFragment: LoginFragment = LoginFragment()
+                Fragmentutils.removeFragment(loginFragment, fragmentManager)
 
-            isVisible = true
-            Fragmentutils.addFragment(this, loginFragment, fragmentManager, R.id.container)
+                isVisible = true
+                Fragmentutils.addFragment(this, loginFragment, fragmentManager, R.id.container)
+            }
+
         }
 
         val geofencePendingIntent: PendingIntent by lazy {
@@ -66,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissionCount==0) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissionCount == 0) {
             permissionCount++
             var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
             restaurantPresenter.checklocationpermission(this)
@@ -75,11 +78,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(isVisible || isLoginVisible){
+        if (isVisible || isLoginVisible) {
             isVisible = false
-            isLoginVisible=false
+            isLoginVisible = false
             finishAffinity()
-        }else{
+        } else {
             super.onBackPressed()
         }
 
@@ -90,21 +93,21 @@ class MainActivity : AppCompatActivity() {
 
             99 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    var sharedPreferences:SharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var edit:SharedPreferences.Editor = sharedPreferences.edit()
-                    edit.putBoolean("permission",true)
+                    var sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    var edit: SharedPreferences.Editor = sharedPreferences.edit()
+                    edit.putBoolean("permission", true)
                     edit.apply()
-                    isPermissionGranted=true
+                    isPermissionGranted = true
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Toastutils.showToast(this, "Permission Granted")
 //                        mMap.isMyLocationEnabled = true
                     }
                 } else {
-                    var sharedPreferences:SharedPreferences=getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var edit:SharedPreferences.Editor = sharedPreferences.edit()
-                    edit.putBoolean("permission",false)
+                    var sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    var edit: SharedPreferences.Editor = sharedPreferences.edit()
+                    edit.putBoolean("permission", false)
                     edit.apply()
-                    isPermissionGranted=false
+                    isPermissionGranted = false
                     Toast.makeText(applicationContext, " Permission Denied", Toast.LENGTH_LONG).show()
                 }
             }

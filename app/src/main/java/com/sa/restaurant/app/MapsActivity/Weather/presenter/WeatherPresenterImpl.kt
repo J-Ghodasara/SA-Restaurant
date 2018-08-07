@@ -15,7 +15,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.sa.restaurant.app.MapsActivity.Weather.view.WeatherView
-import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
+import com.sa.restaurant.app.MapsActivity.Weather.WeatherFragment
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 import com.sa.restaurant.app.RestaurantsActivity.presenter.MapsPresenterImpl
 import com.sa.restaurant.utils.Toastutils
@@ -28,6 +28,11 @@ import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.app.roomDatabase.WeatherInfoTable
 import java.util.*
 
+/**
+ * WeatherPresenterImpl class
+ * Created On :- 27 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -58,14 +63,14 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
                 MapsPresenterImpl.AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
                 if (flag == 2) {
-                    var weatherView: WeatherView = weatherFragment()
+                    var weatherView: WeatherView = WeatherFragment()
                     weatherView.sendlocation(loc!!, activity, iGoogleApiServices, view!!)
 
                 }
                 if (flag == 1) {
                     getNameFromLatLng(loc!!, activity, iGoogleApiServices, view!!, 1)
                 }
-                if(flag ==3){
+                if (flag == 3) {
                     getNameFromLatLngForAlarm(loc!!, activity, iGoogleApiServices)
                 }
 
@@ -119,7 +124,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
                     Log.i("bundle", bundle.toString())
                     if (flag == 2) {
-                        var weatherView: WeatherView = weatherFragment()
+                        var weatherView: WeatherView = WeatherFragment()
                         weatherView.sendweatherInfo(bundle, context, view!!)
 
                     }
@@ -169,7 +174,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         if (flag == 1) {
             getWeatherInfo(context, bundle, iGoogleApiServices, view, 1)
         }
-        if(flag==3){
+        if (flag == 3) {
             getWeatherInfo(context, bundle, iGoogleApiServices, view, 3)
         }
 
@@ -209,7 +214,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         bundle.putString("place", knownName)
 
 
-            getWeatherInfoForAlarm(context, bundle, iGoogleApiServices)
+        getWeatherInfoForAlarm(context, bundle, iGoogleApiServices)
     }
 
     fun getWeatherInfoForAlarm(context: Context, typeplace: Bundle, iGoogleApiServices: IGoogleApiServices) {
@@ -235,37 +240,36 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
                     var text = result.query!!.results!!.channel!!.item!!.condition!!.text
 
 
-                        var mydb: Mydatabase = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
-                        var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
-                        var Username = sharedpref.getString("username", null)
+                    var mydb: Mydatabase = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+                    var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+                    var Username = sharedpref.getString("username", null)
 
-                        var uid = mydb.myDao().getUserId(Username!!)
-                        Log.i("username&uid Weather", Username + "  " + uid)
-                        var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
-                        Log.i("list weather", result.size.toString())
-                        if (result.isNotEmpty()) {
-                            var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
-                            weatherInfoTable.ID = result[0].ID
-                            weatherInfoTable.uid = uid
-                            weatherInfoTable.place = region.toString()
-                            weatherInfoTable.city = city.toString()
-                            weatherInfoTable.temperature = temperature.toString()
-                            weatherInfoTable.humidity = humidity.toString()
-                            weatherInfoTable.WeatherType = text.toString()
-                            weatherInfoTable.Code = code.toString()
-                            mydb.myDao().updateWeatherInfo(weatherInfoTable)
-                        } else {
-                            var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
-                            weatherInfoTable.uid = uid
-                            weatherInfoTable.place = region.toString()
-                            weatherInfoTable.city = city.toString()
-                            weatherInfoTable.temperature = temperature.toString()
-                            weatherInfoTable.humidity = humidity.toString()
-                            weatherInfoTable.WeatherType = text.toString()
-                            weatherInfoTable.Code = code.toString()
-                            mydb.myDao().addWeatherInfo(weatherInfoTable)
-                        }
-
+                    var uid = mydb.myDao().getUserId(Username!!)
+                    Log.i("username&uid Weather", Username + "  " + uid)
+                    var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+                    Log.i("list weather", result.size.toString())
+                    if (result.isNotEmpty()) {
+                        var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+                        weatherInfoTable.ID = result[0].ID
+                        weatherInfoTable.uid = uid
+                        weatherInfoTable.place = region.toString()
+                        weatherInfoTable.city = city.toString()
+                        weatherInfoTable.temperature = temperature.toString()
+                        weatherInfoTable.humidity = humidity.toString()
+                        weatherInfoTable.WeatherType = text.toString()
+                        weatherInfoTable.Code = code.toString()
+                        mydb.myDao().updateWeatherInfo(weatherInfoTable)
+                    } else {
+                        var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+                        weatherInfoTable.uid = uid
+                        weatherInfoTable.place = region.toString()
+                        weatherInfoTable.city = city.toString()
+                        weatherInfoTable.temperature = temperature.toString()
+                        weatherInfoTable.humidity = humidity.toString()
+                        weatherInfoTable.WeatherType = text.toString()
+                        weatherInfoTable.Code = code.toString()
+                        mydb.myDao().addWeatherInfo(weatherInfoTable)
+                    }
 
 
                 } else {
@@ -276,7 +280,6 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
         })
     }
-
 
 
 }

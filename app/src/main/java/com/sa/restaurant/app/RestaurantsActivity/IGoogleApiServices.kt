@@ -7,6 +7,12 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Url
 
+/**
+ * IGoogleApiServices interface
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
+
 interface IGoogleApiServices {
 
     @GET

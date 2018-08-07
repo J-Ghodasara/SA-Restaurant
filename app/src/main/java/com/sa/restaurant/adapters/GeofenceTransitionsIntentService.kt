@@ -13,6 +13,12 @@ import com.google.android.gms.location.GeofencingEvent
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 
+/*
+* created by:- jay.ghodasara
+* created on:- 23 july 18
+* This class is a service that is used to trigger notification on entering Geofence
+*/
+
 
 class GeofenceTransitionsIntentService : IntentService(null) {
 
@@ -36,11 +42,11 @@ class GeofenceTransitionsIntentService : IntentService(null) {
         // Get the transition type.
         val geofenceTransition = geofencingEvent.geofenceTransition
 
-        // Test that the reported transition was of interest.
-        if (geofenceTransition == GEOFENCE_TRANSITION_ENTER || geofenceTransition == GEOFENCE_TRANSITION_EXIT || geofenceTransition == GEOFENCE_TRANSITION_DWELL) {
+
+        if (geofenceTransition == GEOFENCE_TRANSITION_ENTER) {
 
             // Get the geofences that were triggered. A single event can trigger
-            // multiple geofences.
+
             val triggeringGeofences = geofencingEvent.triggeringGeofences
 
             // Get the transition details as a String.
@@ -53,7 +59,7 @@ class GeofenceTransitionsIntentService : IntentService(null) {
             sendNotification(geofenceTransitionDetails)
             Log.i("GeoIntentService", geofenceTransitionDetails.toString())
         } else {
-            // Log the error.
+
             Log.e("GeoIntentService", "Transition Invalid Type")
         }
     }
@@ -80,7 +86,6 @@ class GeofenceTransitionsIntentService : IntentService(null) {
 
 
         notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-
 
 
     }

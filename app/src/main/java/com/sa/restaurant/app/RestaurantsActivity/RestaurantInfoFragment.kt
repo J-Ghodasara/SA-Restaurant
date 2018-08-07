@@ -42,7 +42,7 @@ class RestaurantInfoFragment : Fragment() {
        isInfoVisible=true
         var view: View = inflater.inflate(R.layout.fragment_restaurant_info, container, false)
         RestaurantActivity.homeIsVisible = false
-        //RestaurantActivity.favIsVisibletouser=RestaurantActivity.favIsVisibletouser
+
 
         restroName = arguments.getString("restroName", null).toString()
         restroAddress = arguments.getString("restroAddress", null).toString()
@@ -136,7 +136,6 @@ class RestaurantInfoFragment : Fragment() {
         ratingbar.isClickable=false
         ratingbar.rating=ratings!!.toFloat()
 
-//        Log.i("timingsOnactivity",todays_timing)
         if(open=="NotAvailable"){
             open_status.visibility=View.GONE
         }else{

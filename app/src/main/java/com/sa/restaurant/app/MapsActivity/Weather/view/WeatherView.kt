@@ -6,6 +6,11 @@ import android.os.Bundle
 import android.view.View
 import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
 
+/**
+ * WeatherView class
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 interface WeatherView{
 

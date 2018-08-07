@@ -2,27 +2,35 @@ package com.sa.restaurant
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
+ * A simple splash screen that shows for 5 sec at first when activity starts
+ *
  */
 class SplashScreen : AppCompatActivity() {
-
+    var t: Handler = Handler()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_splash_screen)
 
-        var t: Thread = Thread(Runnable {
+        t.postDelayed(Runnable {
 
-            Thread.sleep(5000)
             var i: Intent = Intent(this, MainActivity::class.java)
             startActivity(i)
-        })
-        t.start()
+        }, 5000)
+
 
     }
+
+    override fun onPause() {
+        t.removeCallbacksAndMessages(null)
+        super.onPause()
+    }
+
+
 
 }

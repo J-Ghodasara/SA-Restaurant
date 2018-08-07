@@ -38,8 +38,7 @@ import com.sa.restaurant.app.roomDatabase.WeatherInfoTable
  * created by-> jay.ghodasara
  */
 
-class weatherFragment : Fragment(), WeatherView {
-
+class WeatherFragment : Fragment(), WeatherView {
 
 
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -72,7 +71,7 @@ class weatherFragment : Fragment(), WeatherView {
         iGoogleApiServices = RetrofitnearbyClient.getClient("https://query.yahooapis.com/").create(IGoogleApiServices::class.java)
 
         locationreq = weatherPresenter.BuildLocationreq()
-        locationcallback = weatherPresenter.Buildlocationcallback(iGoogleApiServices, activity, passed_view,2)
+        locationcallback = weatherPresenter.Buildlocationcallback(iGoogleApiServices, activity, passed_view, 2)
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
             fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
@@ -84,7 +83,7 @@ class weatherFragment : Fragment(), WeatherView {
 
     override fun sendlocation(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View) {
         var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
-        weatherPresenter.getNameFromLatLng(location, context, iGoogleApiServices, view,2)
+        weatherPresenter.getNameFromLatLng(location, context, iGoogleApiServices, view, 2)
 
 
     }

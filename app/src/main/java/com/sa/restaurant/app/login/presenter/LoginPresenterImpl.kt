@@ -8,7 +8,8 @@ import com.sa.restaurant.utils.Toastutils
 
 /**
  * Login presenterImpl that handles the data manipulation inside the database
- *
+ * created by:- jay.ghodasara
+ * created on:- 19 july 18
  */
 
 
@@ -21,18 +22,18 @@ class LoginPresenterImpl : LoginPresenter {
         if (result.isNotEmpty()) {
             var loginView: LoginFragment = LoginFragment()
             var email = result[0].email
-            var UserName = result[0].name
-            var Number = result[0].mobilenumber
+            var userName = result[0].name
+            var number = result[0].mobilenumber
 
             var table: Table = Table()
-            table.name = UserName
+            table.name = userName
             table.email = email
-            table.mobilenumber = Number
+            table.mobilenumber = number
             table.password = result[0].password
             table.loginStatus = "yes"
             mydatabase.myDao().update(table)
 
-            loginView.validuser(activity, UserName, email, Number, password)
+            loginView.validuser(activity, userName, email, number, password)
             return true
         } else {
             Toastutils.showsSnackBar(activity, "Invalid Username or Password")

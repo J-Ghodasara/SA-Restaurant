@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.annotation.RequiresApi
-import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
@@ -39,7 +38,6 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
-import com.sa.restaurant.Communicate
 import com.sa.restaurant.ErrorActivity
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
@@ -49,15 +47,13 @@ import com.sa.restaurant.app.Favorites.FavoriteRestaurants
 import com.sa.restaurant.app.MapsActivity.MapsFragment
 import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenter
 import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenterImpl
-import com.sa.restaurant.app.MapsActivity.Weather.weatherFragment
-import com.sa.restaurant.app.RestaurantsActivity.model.POJO
+import com.sa.restaurant.app.MapsActivity.Weather.WeatherFragment
 import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
 import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.RestaurantsActivity.view.RestaurantView
 import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.app.roomDatabase.Table
-import com.sa.restaurant.helpers.BottomNavigationViewHelper
 import com.sa.restaurant.services.MyBroadcastReceiverService
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
@@ -70,6 +66,11 @@ import kotlinx.coroutines.experimental.launch
 import ru.alexbykov.nopaginate.callback.OnLoadMoreListener
 import ru.alexbykov.nopaginate.paginate.NoPaginate
 
+/**
+ * RestaurantActivity class that shows all the restaurants fetched from the api
+ * Created On :- 23 july 2018
+ * Created by :- jay.ghodasara
+ */
 
 class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RestaurantView, SwipeRefreshLayout.OnRefreshListener {
 
@@ -77,8 +78,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     private var dotscount: Int = 0
     private var dots: Array<ImageView?>? = null
     lateinit var myMenu: Menu
-    lateinit var loc: Location
-    lateinit var pojo: POJO
+
     private lateinit var mMap: GoogleMap
     lateinit var url: String
     var list: ArrayList<RestaurantData> = ArrayList()
@@ -86,8 +86,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     lateinit var adapter: RestaurantAdapter
-    var RestaurantsList: ArrayList<String> = ArrayList()
-    var isfav: Boolean = false
+
     lateinit var mydb: Mydatabase
     var favRestros: FavoriteRestaurants = FavoriteRestaurants()
     var mapsFragment: MapsFragment = MapsFragment()
@@ -96,15 +95,15 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     var weatherIsVisibletouser: Boolean = false
 
     var GEOFENCE_RADIUS_IN_METERS: Int = 1000
-    var weatherfragment: weatherFragment = weatherFragment()
+    var weatherfragment: WeatherFragment = WeatherFragment()
     lateinit var geofencingClient: GeofencingClient
-    var PROX_ALERT_INTENT = "com.sa.restaurant.proximity"
+
     lateinit var locationManager: LocationManager
     lateinit var location: Location
     var mapsisVisibletouser: Boolean = false
     lateinit var navigationView: NavigationView
     lateinit var paginate: NoPaginate
-    var countdown: Int = 10
+
     var showMore: Boolean = true
     var noMoreItems: Boolean = false
 
@@ -130,117 +129,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
 
-    var mOnNavigationItemSelected: BottomNavigationView.OnNavigationItemSelectedListener = object : BottomNavigationView.OnNavigationItemSelectedListener {
-        override fun onNavigationItemSelected(item: MenuItem): Boolean {
-            when (item.itemId) {
-                R.id.home -> {
-                    supportActionBar!!.title = "Restaurants"
-                    favIsVisibletouser = false
-                    weatherIsVisibletouser = false
-                    mapsisVisibletouser = false
-                    if (RestaurantInfoFragment.isInfoVisible) {
-                        Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                        RestaurantInfoFragment.isInfoVisible = false
-                    }
-                    Fragmentutils.removeFragment(favRestros, fragmentManager)
-                    Fragmentutils.removeFragment(mapsFragment, fragmentManager)
-                    Fragmentutils.removeFragment(weatherfragment, fragmentManager)
-
-                    invalidateOptionsMenu()
-                    if (!homeIsVisible!!) {
-                        list.clear()
-                        if (ContextCompat.checkSelfPermission(applicationContext, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                            mcount = 1
-                            var restaurantPresenter: RestaurantPresenterImpl = RestaurantPresenterImpl()
-                            restaurantPresenter.nearbyplaces(applicationContext, "restaurant", RestaurantPresenterImpl.loc, iGoogleApiServices, adapter, recyclerview)
-                            homeIsVisible = true
-                            return true
-                        }
-                    }
-                }
-                R.id.favorite -> {
-                    list.clear()
-                    supportActionBar!!.title = "Favorites"
-                    weatherIsVisibletouser = false
-                    mapsisVisibletouser = false
-                    homeIsVisible = false
-                    RestaurantInfoFragment.isInfoVisible = false
-                    if (!favIsVisibletouser) {
-                        Fragmentutils.removeFragment(mapsFragment, fragmentManager)
-                        Fragmentutils.removeFragment(weatherfragment, fragmentManager)
-                        Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                        Fragmentutils.replaceFragment(applicationContext, favRestros, fragmentManager, R.id.content)
-
-                        favIsVisibletouser = true
-                        return true
-                    } else {
-                        return true
-                    }
-                }
-                R.id.weather_info -> {
-                    list.clear()
-                    supportActionBar!!.title = "Weather"
-                    favIsVisibletouser = false
-                    mapsisVisibletouser = false
-                    homeIsVisible = false
-                    RestaurantInfoFragment.isInfoVisible = false
-                    if (!weatherIsVisibletouser) {
-                        Fragmentutils.removeFragment(favRestros, fragmentManager)
-                        Fragmentutils.removeFragment(mapsFragment, fragmentManager)
-                        Fragmentutils.removeFragment(restaurantInfoFragment, fragmentManager)
-                        Fragmentutils.replaceFragment(applicationContext, weatherfragment, fragmentManager, R.id.content)
-                        myMenu.findItem(R.id.share).isVisible = false
-                        weatherIsVisibletouser = true
-                        return true
-                    } else {
-                        return true
-                    }
-                }
-                R.id.logout -> {
-
-                    var alertdialogbuilder: AlertDialog.Builder = AlertDialog.Builder(this@RestaurantActivity)
-
-                    alertdialogbuilder.setMessage("Are you sure you want to Logout?")
-                    alertdialogbuilder.setPositiveButton("Logout") { dialog, which ->
-                        favIsVisibletouser = false
-                        MainActivity.isVisible = false
-
-                        var sharedpref: SharedPreferences = this@RestaurantActivity.getSharedPreferences("UserInfo", 0)
-                        var username = sharedpref.getString("username", null)
-                        var email = sharedpref.getString("email", null)
-                        var password = sharedpref.getString("password", null)
-                        var number = sharedpref.getString("number", null)
-                        var uid = mydb.myDao().getUserId(username)
-                        var table: Table = Table()
-                        table.id = uid
-                        table.name = username
-                        table.email = email
-                        table.password = password
-                        table.mobilenumber = number
-                        table.loginStatus = "no"
-                        mydb.myDao().update(table)
-
-                        LoginManager.getInstance().logOut()
-                        var intent: Intent = Intent(this@RestaurantActivity, MainActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        Toastutils.showToast(this@RestaurantActivity, "Logged out")
-                        startActivity(intent)
-
-                    }
-                    alertdialogbuilder.setNegativeButton("Cancel") { dialog, which ->
-
-                    }
-                    val alertDialog = alertdialogbuilder.create()
-                    alertDialog.show()
-                    return true
-                }
-            }
-            return false
-        }
-
-    }
-
-
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("MissingPermission")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -253,8 +141,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         if (isPermissionAvailable == true) {
 
-            var communicateContext: Communicate = Communicate()
-            communicateContext.mycontext = this@RestaurantActivity
+
             homeIsVisible = true
             Log.i("Context", this.toString())
 
@@ -270,10 +157,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, 5000, 60000 * 60, pendingIntent)
 
 
-            var bottomNavigationViewHelper: BottomNavigationViewHelper = BottomNavigationViewHelper()
-            bottomNavigationViewHelper.disableShiftMode(bottom_navigation)
 
-            bottom_navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelected)
 
             MyfragmentManager = fragmentManager
             dialog = ProgressDialog(this)
@@ -281,7 +165,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             dialog.setCancelable(false)
             dialog.isIndeterminate = true
             dialog.show()
-//        progress.visibility=View.GONE
+
             MainActivity.isVisible = false
             locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             mydb = Room.databaseBuilder(this, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -308,9 +192,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             var view: View = nav_view.getHeaderView(0)
             var tv_headerUsername = view.findViewById<TextView>(R.id.tv_header_UserName)
             var tv_headeremail = view.findViewById<TextView>(R.id.tv_header_email)
-//        var tv_weatherType = view.findViewById<TextView>(R.id.tv_header_WeatherType)
-//        var tv_temperature = view.findViewById<TextView>(R.id.tv_header_temperature)
-//        var image_weather = view.findViewById<ImageView>(R.id.weather_image)
 
             //fetching weather info
             var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
@@ -409,13 +290,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             })
             // setting viewpager->> End
 
-
-//        //checking location permission --> Start
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
-//            restaurantPresenter.checklocationpermission(this)
-//        }
-//        //checking location permission-->End
 
             val viewGroup = (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
 
@@ -560,13 +434,6 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     }
 
 
-    override fun onDestroy() {
-//        paginate.unbind()
-        super.onDestroy()
-
-    }
-
-
     fun getGeofence(latLng: LatLng, placename: String): Geofence? {
         var latlon: LatLng = latLng
 
@@ -604,13 +471,9 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
     override fun onRefresh() {
         scrollCount = 0
         oneTime = 0
-        //  endHasBeenReached = false
         showMore = true
         noMoreItems = false
         isEnd = false
-//         isEnd = false
-//        paginate.showLoading(showMore)
-        // paginate.setNoMoreItems(noMoreItems)
         list.clear()
 
         var handler: Handler? = Handler()
@@ -637,38 +500,22 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
         if (requestCode == 1) {
 
-            Toastutils.showToast(this, "Shared")
         }
     }
 
 
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-//        when (requestCode) {
-//
-//            99 -> {
-//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//
-//
-//                    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//                        if (googleClient == null) {
-//                            var RestaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
-//                            googleClient = RestaurantPresenter.createClient(this)
-//                            googleClient!!.connect()
-//                        }
-//
-//                    }
-//                } else {
-//                    Toast.makeText(applicationContext, " Permission Denied", Toast.LENGTH_LONG).show()
-//                }
-//            }
-//        }
-//    }
-
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
             drawer_layout.closeDrawer(GravityCompat.START)
-        } else if (RestaurantInfoFragment.isInfoVisible) {
+        } else if (RestaurantInfoFragment.isInfoVisible && isFromRestaurant) {
             RestaurantInfoFragment.isInfoVisible = false
+            super.onBackPressed()
+        } else if (RestaurantInfoFragment.isInfoVisible && !isFromRestaurant) {
+            RestaurantInfoFragment.isInfoVisible = false
+            favIsVisibletouser = true
+            myMenu.findItem(R.id.share).isVisible = true
+            myMenu.findItem(R.id.showonmaps).isVisible = true
+            supportActionBar!!.title = "Favorites"
             super.onBackPressed()
         } else if (mapsisVisibletouser) {
             if (isFromRestaurant) {
@@ -676,14 +523,21 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
                 myMenu.findItem(R.id.share).isVisible = true
                 myMenu.findItem(R.id.showonmaps).isVisible = true
                 mapsisVisibletouser = false
+                homeIsVisible = true
             } else {
+                favIsVisibletouser = true
+                myMenu.findItem(R.id.share).isVisible = true
+                myMenu.findItem(R.id.showonmaps).isVisible = true
                 supportActionBar!!.title = "Favorites"
                 mapsisVisibletouser = false
+                favIsVisibletouser = true
+
             }
             super.onBackPressed()
         } else if (favIsVisibletouser || weatherIsVisibletouser) {
             supportActionBar!!.title = "Restaurants"
             isFromRestaurant = true
+            homeIsVisible = true
             if (favIsVisibletouser) {
                 list.clear()
                 if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -730,6 +584,12 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         return when (item.itemId) {
             R.id.showonmaps -> {
                 mapsisVisibletouser = true
+                if (homeIsVisible!!) {
+                    isFromRestaurant = true
+                }
+                if (favIsVisibletouser) {
+                    isFromRestaurant = false
+                }
                 supportActionBar!!.title = "Locations"
                 dialog = ProgressDialog(this)
                 dialog.setMessage("Please wait")
@@ -748,7 +608,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             R.id.share -> {
 
                 var alertdialogbuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-                alertdialogbuilder.setMessage("Long press on any restaurant name to share")
+                alertdialogbuilder.setMessage("To Share Just Long Press On Any Restaurant")
                 alertdialogbuilder.setPositiveButton("Ok") { dialog, which -> }
                 val alertDialog = alertdialogbuilder.create()
                 alertDialog.show()
@@ -763,7 +623,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.home -> {
-                isFromRestaurant=true
+                isFromRestaurant = true
                 Log.i("isHomeVisible", homeIsVisible.toString())
                 Log.i("isHomeVisible", "fav" + favIsVisibletouser.toString())
                 Log.i("isHomeVisible", "weather" + weatherIsVisibletouser.toString())
@@ -893,7 +753,7 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
 
             for (l in 0..list.size / 2) {
                 adapter.array.add(list[l])
-                // Log.i("list passed", "success $count")
+
             }
             adapter.notifyDataSetChanged()
 
@@ -912,10 +772,10 @@ class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemS
             adapter.array.clear()
             for (l in 0..list.size / 2) {
                 adapter.array.add(list[l])
-                //  Log.i("list passed", "success $count")
+
             }
             adapter.notifyDataSetChanged()
-            dialog.dismiss()
+              dialog.dismiss()
 
 
             var mapsFragment: MapsFragment = MapsFragment()

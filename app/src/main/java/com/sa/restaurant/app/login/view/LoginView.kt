@@ -4,7 +4,8 @@ import android.app.Activity
 
 /**
  * Login view
- *
+ * created by:- jay.ghodasara
+ * created on:- 19 july 18
  */
 
 interface LoginView {
