@@ -10,6 +10,8 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
 import com.sa.restaurant.app.login.LoginFragment
@@ -19,7 +21,6 @@ import com.sa.restaurant.app.signUp.presenter.RegisterPresenterImpl
 import com.sa.restaurant.app.signUp.view.RegisterView
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils
-import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.android.synthetic.main.fragment_register.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -53,46 +54,14 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
         super.onActivityCreated(savedInstanceState)
 
 
-        et_signup_CPassword.setOnKeyListener(object:View.OnKeyListener {
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    var name: String = et_signup_Name.text.toString()
-                    var email: String = et_signup_Email.text.toString()
-                    var password: String = et_signup_Password.text.toString()
-                    var confirmpassword: String = et_signup_CPassword.text.toString()
-                    var number: String = et_signup_mobileno.text.toString()
-
-
-                    if (!validateemail(email)) run {
-                        method1(email)
-
-                        et_signup_Email.requestFocus()
-                    } else if (!validatename(name)) run {
-                        method2(name)
-
-                        et_signup_Name.requestFocus()
-                    } else if (!validatemobileno(number)) run {
-                        method3(number)
-
-                        et_signup_mobileno.requestFocus()
-                    } else if (!validatepassword(password)) run {
-                        method4(password)
-
-                        et_signup_Password.requestFocus()
-                    } else if (!confirmpassword(confirmpassword)) run {
-                        method5(confirmpassword)
-
-                        et_signup_CPassword.requestFocus()
-                    } else {
-                        var registerPresenter: RegisterPresenter = RegisterPresenterImpl()
-
-                        registerPresenter.checkforuser(name, email, number, password, mydb, activity, fragmentManager)
-                    }
+        et_signup_CPassword.setOnEditorActionListener(object : TextView.OnEditorActionListener{
+            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btn_signup.performClick()
                 }
                 return false
             }
         })
-
 
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
         btn_signup.setOnClickListener(this)
@@ -152,13 +121,13 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
         }
     }
 
-    override fun showSnackBar(v: Activity, fragmentmanager: FragmentManager) {
+    override fun showSnackBar(activity: Activity, fragmentmanager: FragmentManager) {
 
         var loginFragment: LoginFragment = LoginFragment()
 
-        Toastutils.showsSnackBar(v, "Registered Successfully")
+        Toastutils.showsSnackBar(activity, "Registered Successfully")
 
-        Fragmentutils.replaceFragment(v, loginFragment, fragmentmanager, R.id.container)
+        Fragmentutils.replaceFragment(activity, loginFragment, fragmentmanager, R.id.container)
     }
 
     fun validateemail(email: String): Boolean {
@@ -206,7 +175,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
     fun validatename(name: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val namePATTERN = "^[a-zA-Z0-9._@-]+$"
+        val namePATTERN = "^[a-zA-Z0-9._@-]{5,}+$"
         pattern = Pattern.compile(namePATTERN)
         matcher = pattern.matcher(name)
 
@@ -220,7 +189,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
             input_layout_register_Password.isErrorEnabled=true
             input_layout_register_Password.error = "This is required field"
         } else {
-            input_layout_register_Password.error = "It should contain 1 special character,1 lowercase character and 1 uppercase character"
+            input_layout_register_Password.error = "Password should contain 1 special character,1 lowercase character, 1 uppercase character and of minimum 8 characters"
         }
     }
 
@@ -229,7 +198,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
             input_layout_Name.isErrorEnabled=true
             input_layout_Name.error = "This is required field"
         } else {
-            input_layout_Name.error = "It should contain only letters"
+            input_layout_Name.error = "UserName must be of minimum 5 characters"
         }
     }
 
@@ -239,7 +208,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
             input_layout_mobileno.isErrorEnabled=true
             input_layout_mobileno.error = "This is required field"
         } else {
-            input_layout_mobileno.error = "It should contain only 10 digits"
+            input_layout_mobileno.error = "Mobile Number must contain 10 digits"
         }
     }
 

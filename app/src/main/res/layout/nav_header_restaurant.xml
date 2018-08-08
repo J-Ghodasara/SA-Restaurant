@@ -15,11 +15,11 @@
 
     <ImageView
         android:id="@+id/weather_image"
-        android:layout_width="@dimen/_70sdp"
-        android:layout_height="@dimen/_70sdp"
-        android:layout_marginBottom="@dimen/_80sdp"
-        android:layout_marginLeft="@dimen/_16sdp"
-        android:layout_marginStart="@dimen/_16sdp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="76dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -30,12 +30,12 @@
         android:id="@+id/tv_header_UserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_7sdp"
-        android:layout_marginTop="@dimen/_72sdp"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="72dp"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
         android:text="@string/nav_header_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="@dimen/_20sdp"
+        android:textSize="20dp"
         app:layout_constraintBottom_toTopOf="@+id/tv_header_email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -80,10 +80,11 @@
         android:id="@+id/tv_header_email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_10sdp"
+        android:layout_marginBottom="4dp"
         android:text="@string/nav_header_subtitle"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="@+id/tv_header_UserName"
+        app:layout_constraintTop_toBottomOf="@+id/tv_header_UserName" />
 
 
 </android.support.constraint.ConstraintLayout>

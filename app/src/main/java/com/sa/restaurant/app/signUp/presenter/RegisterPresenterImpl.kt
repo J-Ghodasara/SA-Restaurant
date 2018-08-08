@@ -21,13 +21,12 @@ class RegisterPresenterImpl : RegisterPresenter {
     lateinit var registerView: RegisterView
 
 
-    override fun checkforuser(name: String, email: String, number: String, password: String, mydatabase: Mydatabase, v: Activity, fragmentmanager: FragmentManager) {
+    override fun checkforuser(name: String, email: String, number: String, password: String, mydatabase: Mydatabase, activity: Activity, fragmentmanager: FragmentManager) {
         var result: List<Table> = mydatabase.myDao().checkuser(name, email)
 
         if (result.isNotEmpty()) {
 
-            Toastutils.showsSnackBar(v, "User Already registered!! Username & Email must be Unique")
-
+            Toastutils.showsSnackBar(activity, "User Already registered!! Username & Email must be Unique")
 
         } else {
 
@@ -42,7 +41,7 @@ class RegisterPresenterImpl : RegisterPresenter {
 
             registerView = RegisterFragment()
 
-            registerView.showSnackBar(v, fragmentmanager)
+            registerView.showSnackBar(activity, fragmentmanager)
 
         }
 

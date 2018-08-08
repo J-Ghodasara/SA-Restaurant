@@ -74,7 +74,6 @@ import ru.alexbykov.nopaginate.paginate.NoPaginate
 
 class RestaurantActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, RestaurantView, SwipeRefreshLayout.OnRefreshListener {
 
-
     private var dotscount: Int = 0
     private var dots: Array<ImageView?>? = null
     lateinit var myMenu: Menu

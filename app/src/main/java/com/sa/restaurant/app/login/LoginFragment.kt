@@ -110,36 +110,12 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         })
 
 
-//        editText_Password.setOnEditorActionListener(object:TextView.OnEditorActionListener{
-//            override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
-//                if(event!=null && (event.keyCode== KeyEvent.KEYCODE_ENTER|| actionId == EditorInfo.IME_ACTION_DONE)) {
-//                    var username: String = editText_Username.text.toString()
-//                    var password: String = editText_Password.text.toString()
-//
-//                    if (!validatename(username)) run {
-//                        if (!validateemail(username)) {
-//                            method2(username)
-//
-//                            editText_Username.requestFocus()
-//                        } else {
-//                            check(username, password)
-//                        }
-//
-//                    } else {
-//                        check(username, password)
-//                    }
-//
-//                }
-//                return true
-//            }
-//
-//        })
+
 
 
         textview_Register.setOnClickListener(this)
         btn_login.setOnClickListener(this)
         callbackManager = CallbackManager.Factory.create()
-//        login_button.loginBehavior = LoginBehavior.WEB_ONLY
         login_button.setReadPermissions(Arrays.asList("public_profile", "email"))
 
         login_button.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
@@ -295,7 +271,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     fun validatename(name: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val namePATTERN = "^[a-zA-Z]+$"
+        val namePATTERN = "^[a-zA-Z]{5,}+$"
         pattern = Pattern.compile(namePATTERN)
         matcher = pattern.matcher(name)
         return matcher.matches()
@@ -306,7 +282,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
             input_layout_login_Password.isErrorEnabled = true
             input_layout_login_Password.error = "This is required field"
         } else {
-            input_layout_login_Password.error = "It should be minimum of 5 in length"
+            input_layout_login_Password.error = "Incorrect Password"
         }
     }
 
