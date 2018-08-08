@@ -142,7 +142,6 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         holder.textView.setOnClickListener(View.OnClickListener {
 
 
-
             val bundle: Bundle = Bundle()
             val referenceImg = array[position].image
             bundle.putString("restroName", holder.textView.text.toString())
@@ -164,8 +163,8 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             RestaurantActivity.restaurantInfoFragment.arguments = bundle
 
 
-            val restroInfoFragment:RestaurantInfoFragment=RestaurantInfoFragment()
-            restroInfoFragment.arguments=bundle
+            val restroInfoFragment: RestaurantInfoFragment = RestaurantInfoFragment()
+            restroInfoFragment.arguments = bundle
             Fragmentutils.replaceFragmentwithBackStack(context, restroInfoFragment, RestaurantActivity.myfragmentManager, R.id.content)
 
         })
@@ -267,7 +266,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
 
     override fun getItemViewType(position: Int): Int {
-       return position
+        return position
     }
 
 

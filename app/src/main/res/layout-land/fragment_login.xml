@@ -57,17 +57,7 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/textView_Forgot"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/_14sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:layout_marginRight="@dimen/_16sdp"
-        android:text="@string/forgot"
-        android:textColor="@color/colorComponents"
-        app:layout_constraintBottom_toBottomOf="@+id/input_layout_login_Password"
-        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <Button
         android:id="@+id/btn_login"

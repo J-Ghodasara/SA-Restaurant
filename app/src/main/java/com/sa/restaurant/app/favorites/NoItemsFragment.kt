@@ -10,6 +10,11 @@ import android.view.ViewGroup
 
 import com.sa.restaurant.R
 
+/**
+ * This fragment is shown when favorites list is empty
+ * created by:- jay.ghodasara
+ * created on:- 8 aug 18
+ */
 
 class NoItemsFragment : Fragment() {
 
