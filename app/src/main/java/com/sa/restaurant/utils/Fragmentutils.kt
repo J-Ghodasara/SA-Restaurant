@@ -11,33 +11,33 @@ object Fragmentutils {
 
     fun replaceFragment(context: Context, fragment: Fragment, fragmentManager: FragmentManager, id: Int) {
 
-        var fm: FragmentManager = fragmentManager
-        var fragmentTransaction: FragmentTransaction = fm.beginTransaction()
+        val fm: FragmentManager = fragmentManager
+        val fragmentTransaction: FragmentTransaction = fm.beginTransaction()
         fragmentTransaction.replace(id, fragment).commit()
 
     }
 
     fun addFragment(context: Context, fragment: Fragment, fragmentManager: FragmentManager, id: Int) {
-        var fm: FragmentManager = fragmentManager
-        var fragmentTransaction: FragmentTransaction = fm.beginTransaction()
+        val fm: FragmentManager = fragmentManager
+        val fragmentTransaction: FragmentTransaction = fm.beginTransaction()
         fragmentTransaction.add(id, fragment).commit()
     }
 
     fun removeFragment(fragment: Fragment, fragmentManager: FragmentManager) {
-        var fm: FragmentManager = fragmentManager
-        var fragmentTransaction: FragmentTransaction = fm.beginTransaction()
+        val fm: FragmentManager = fragmentManager
+        val fragmentTransaction: FragmentTransaction = fm.beginTransaction()
         fragmentTransaction.remove(fragment).commit()
     }
 
     fun addFragmentwithBackStack(context: Context, fragment: Fragment, fragmentManager: FragmentManager, id: Int) {
-        var fm: FragmentManager = fragmentManager
-        var fragmentTransaction: FragmentTransaction = fm.beginTransaction().addToBackStack(null)
+        val fm: FragmentManager = fragmentManager
+        val fragmentTransaction: FragmentTransaction = fm.beginTransaction().addToBackStack(null)
         fragmentTransaction.add(id, fragment).commit()
     }
 
     fun replaceFragmentwithBackStack(context: Context, fragment: Fragment, fragmentManager: FragmentManager, id: Int) {
-        var fm: FragmentManager = fragmentManager
-        var fragmentTransaction: FragmentTransaction = fm.beginTransaction().addToBackStack(null)
+        val fm: FragmentManager = fragmentManager
+        val fragmentTransaction: FragmentTransaction = fm.beginTransaction().addToBackStack(null)
         fragmentTransaction.replace(id, fragment).commit()
     }
 

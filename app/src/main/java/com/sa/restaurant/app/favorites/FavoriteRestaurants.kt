@@ -19,6 +19,7 @@ import com.sa.restaurant.app.restaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.restaurantsActivity.model.RestaurantData
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
+import com.sa.restaurant.utils.Fragmentutils
 import kotlinx.android.synthetic.main.fragment_favorite_restaurants.*
 
 
@@ -37,11 +38,11 @@ class FavoriteRestaurants : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        var mySharedPreferences:SharedPreferences=activity.getSharedPreferences("RestaurantsOnMaps",android.content.Context.MODE_PRIVATE)
-        var editor:SharedPreferences.Editor=mySharedPreferences.edit()
-        editor.putString("WhatToShow","fav")
+        val mySharedPreferences = activity.getSharedPreferences("RestaurantsOnMaps", android.content.Context.MODE_PRIVATE)
+        val editor: SharedPreferences.Editor = mySharedPreferences.edit()
+        editor.putString("WhatToShow", "fav")
         editor.apply()
-        var v: View = inflater.inflate(R.layout.fragment_favorite_restaurants, container, false)
+        val v: View = inflater.inflate(R.layout.fragment_favorite_restaurants, container, false)
         myView = v
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
 
@@ -51,54 +52,62 @@ class FavoriteRestaurants : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        var sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
-        var Username = sharedpref.getString("username", null)
-        var uid = mydb.myDao().getUserId(Username!!)
-        var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+        val sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
+        val username = sharedpref.getString("username", null)
+        val uid = mydb.myDao().getUserId(username!!)
+        val list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+        if (list.isEmpty()) {
+            val noItems: NoItemsFragment = NoItemsFragment()
+            RestaurantActivity.myMenu.findItem(R.id.share).isVisible = false
+            RestaurantActivity.myMenu.findItem(R.id.showonmaps).isVisible = false
+            Fragmentutils.addFragment(activity, noItems, fragmentManager, R.id.container)
+        } else {
 
-        var favorite_list: ArrayList<RestaurantData> = ArrayList()
-        for (l in list.indices) {
+            val favorite_list: ArrayList<RestaurantData> = ArrayList()
+            for (l in list.indices) {
 
-            var restaurantData: RestaurantData = RestaurantData()
-            restaurantData.Name = list[l].restaurantName
-            restaurantData.Address = list[l].restaurantAddress
-            restaurantData.image = list[l].restaurantPhoto
-            restaurantData.placeId=list[l].PlaceId
-            restaurantData.open=list[l].openStatus
-            restaurantData.rating=list[l].ratings
-            restaurantData.lat=list[l].lat
-            restaurantData.lng=list[l].lng
-            favorite_list.add(restaurantData)
+                val restaurantData: RestaurantData = RestaurantData()
+                restaurantData.name = list[l].restaurantName
+                restaurantData.address = list[l].restaurantAddress
+                restaurantData.image = list[l].restaurantPhoto
+                restaurantData.placeId = list[l].PlaceId
+                restaurantData.open = list[l].openStatus
+                restaurantData.rating = list[l].ratings
+                restaurantData.lat = list[l].lat
+                restaurantData.lng = list[l].lng
+                favorite_list.add(restaurantData)
+            }
+
+            adapter = RestaurantAdapter(activity, favorite_list, myView, 2)
+            val dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(activity)
+            fav_restaurants_recycler.addItemDecoration(dividerItemDecoration)
+
+            fav_restaurants_recycler.layoutManager = LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
+            fav_restaurants_recycler.adapter = adapter
+            RestaurantActivity.homeIsVisible = false
         }
 
-        adapter = RestaurantAdapter(activity, favorite_list, myView,2)
-        var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(activity)
-        fav_restaurants_recycler.addItemDecoration(dividerItemDecoration)
-
-        fav_restaurants_recycler.layoutManager = LinearLayoutManager(activity, LinearLayout.VERTICAL, false)
-        fav_restaurants_recycler.adapter = adapter
-        RestaurantActivity.homeIsVisible=false
 
     }
 
     fun reload(context: Context, myView: View) {
-        var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
-        var Username = sharedpref.getString("username", null)
+        val sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+        val username = sharedpref.getString("username", null)
         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
-        var uid = mydb.myDao().getUserId(Username!!)
-        var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
-        var favorite_list: ArrayList<RestaurantData> = ArrayList()
+        val uid = mydb.myDao().getUserId(username!!)
+        val list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+        val favorite_list: ArrayList<RestaurantData> = ArrayList()
         for (l in list.indices) {
 
-            var restaurantData: RestaurantData = RestaurantData()
-            restaurantData.Name = list[l].restaurantName
-            restaurantData.Address = list[l].restaurantAddress
+            val restaurantData: RestaurantData = RestaurantData()
+            restaurantData.name = list[l].restaurantName
+            restaurantData.address = list[l].restaurantAddress
             restaurantData.image = list[l].restaurantPhoto
             favorite_list.add(restaurantData)
         }
-        var fav_restaurants_recycler: RecyclerView = myView.findViewById(R.id.fav_restaurants_recycler)
-        adapter = RestaurantAdapter(context, favorite_list, myView,2)
-        var dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(context)
+        val fav_restaurants_recycler: RecyclerView = myView.findViewById(R.id.fav_restaurants_recycler)
+        adapter = RestaurantAdapter(context, favorite_list, myView, 2)
+        val dividerItemDecoration: com.sa.restaurant.adapters.DividerItemDecoration = com.sa.restaurant.adapters.DividerItemDecoration(context)
         fav_restaurants_recycler.addItemDecoration(dividerItemDecoration)
 
         fav_restaurants_recycler.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)

@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-
+    android:layout_margin="@dimen/_16sdp"
     android:layout_height="match_parent">
 
 <android.support.constraint.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".app.login.LoginFragment"
-    android:layout_margin="@dimen/_16sdp"
+
     tools:layout_editor_absoluteX="@dimen/_16sdp"
     tools:layout_editor_absoluteY="@dimen/_97sdp">
 
@@ -29,7 +29,7 @@
             android:singleLine="true"
             android:layout_height="wrap_content"
             android:maxLength="40"
-            android:hint="Email"
+            android:hint="@string/email"
             android:textColor="@color/colorBlack" />
 
 
@@ -54,7 +54,7 @@
             android:singleLine="true"
             android:maxLength="20"
             android:inputType="textPassword"
-            android:hint="Password"
+            android:hint="@string/password"
             android:textColor="@color/colorBlack" />
 
 
@@ -76,7 +76,7 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:maxLength="40"
-            android:hint="Username"
+            android:hint="@string/username"
             android:textColor="@color/colorBlack" />
 
 
@@ -100,7 +100,7 @@
             android:maxLength="20"
             android:singleLine="true"
             android:inputType="textPassword"
-            android:hint="Confirm Password"
+            android:hint="@string/confirm_password"
             android:textColor="@color/colorBlack" />
 
 
@@ -124,7 +124,7 @@
             android:inputType="number"
             android:singleLine="true"
             android:maxLength="10"
-            android:hint="Mobile Number"
+            android:hint="@string/mobile_number"
             android:textColor="@color/colorBlack" />
 
 
@@ -150,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_10sdp"
         android:layout_marginTop="42dp"
-        android:text="Already have an account ?"
+        android:text="@string/already_have_an_account"
         app:layout_constraintBottom_toTopOf="@+id/tv_signup_Login"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_CPassword"
@@ -161,7 +161,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/_25sdp"
-        android:text="Login Now"
+        android:text="@string/login_now"
         android:textAllCaps="true"
         android:textColor="@color/colorComponents"
         app:layout_constraintBottom_toBottomOf="parent"

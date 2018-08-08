@@ -55,18 +55,18 @@ class ErrorActivity : AppCompatActivity() {
                     MainActivity.isPermissionGranted = true
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Toastutils.showToast(this, "Permission Granted")
-                        var sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                        var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                        val sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                        val editor: SharedPreferences.Editor = sharedPreferences.edit()
                         editor.putBoolean("permission", true)
                         editor.apply()
-                        var intent: Intent = Intent(this, RestaurantActivity::class.java)
+                        val intent: Intent = Intent(this, RestaurantActivity::class.java)
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         startActivity(intent)
 //                        mMap.isMyLocationEnabled = true
                     }
                 } else {
-                    var sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var editor: SharedPreferences.Editor = sharedPreferences.edit()
+                    val sharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    val editor: SharedPreferences.Editor = sharedPreferences.edit()
                     editor.putBoolean("permission", true)
                     editor.apply()
                     Toast.makeText(applicationContext, " Permission Denied", Toast.LENGTH_LONG).show()

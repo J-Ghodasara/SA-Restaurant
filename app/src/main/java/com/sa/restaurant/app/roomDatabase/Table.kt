@@ -11,7 +11,7 @@ class Table {
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null
 
-    @ColumnInfo(name = "Name")
+    @ColumnInfo(name = "name")
     var name: String? = null
 
     @ColumnInfo(name = "Email")

@@ -20,4 +20,36 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="no_Img_AvailableUrl">https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325</string>
+    <string name="sa">SA</string>
+    <string name="restaurant">RESTAURANT</string>
+    <string name="hey">Hey</string>
+    <string name="jay">Jay,</string>
+    <string name="which_restaurant">Which Restaurant</string>
+    <string name="you_are_looking_for_today">you are looking for today ?</string>
+    <string name="alice_abcdjnsannksadna">Alice abcdjnsannksadna</string>
+    <string name="lorem_ipsum_colyjghjghjforfsasdasddfsgdsfsdfsdfsdf">Lorem ipsum colyjghjghjforfsasdasddfsgdsfsdfsdfsdf</string>
+    <string name="show_on_map">Show on Map</string>
+    <string name="temperature">Temperature :-</string>
+    <string name="city">City :-</string>
+    <string name="humidity">Humidity :-</string>
+    <string name="app_won_t_work_without_location_permission">App Won\'t work without location permission</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="already_have_an_account">Already have an account ?</string>
+    <string name="login_now">Login Now</string>
+    <string name="home">Home</string>
+    <string name="favorite">Favorite</string>
+    <string name="weather">Weather</string>
+    <string name="logout">Logout</string>
+    <string name="email_username">Email/Username</string>
+    <string name="forgot">Forgot</string>
+    <string name="don_t_have_an_account">Don\'t have an account</string>
+    <string name="register_now">Register Now</string>
+    <string name="textview">Textview</string>
+
+
 </resources>

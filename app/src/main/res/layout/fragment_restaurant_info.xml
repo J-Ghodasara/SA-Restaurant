@@ -85,7 +85,7 @@
         android:layout_marginRight="@dimen/_8sdp"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_16sdp"
-        android:text="TextView"
+        android:text="@string/textview"
         android:textColor="@color/colorComponents"
         android:textSize="@dimen/_17ssp"
         android:textStyle="bold|italic"

@@ -16,9 +16,9 @@ import com.sa.restaurant.app.restaurantsActivity.IGoogleApiServices
 
 interface WeatherPresenter {
 
-    fun BuildLocationreq(): LocationRequest
+    fun buildLocationreq(): LocationRequest
 
-    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View?, flag: Int): LocationCallback
+    fun buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View?, flag: Int): LocationCallback
 
 
     fun createClient(context: Context): GoogleApiClient

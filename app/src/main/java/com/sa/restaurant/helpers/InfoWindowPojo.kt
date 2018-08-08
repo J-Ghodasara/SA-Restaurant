@@ -8,8 +8,8 @@ package com.sa.restaurant.helpers
 
 
 class InfoWindowPojo{
-    var Name:String?=null
-    var Address:String?=null
+    var name:String?=null
+    var address:String?=null
     var openStatus:String?=null
     var timings:String?=null
     var ratings:Double?=null

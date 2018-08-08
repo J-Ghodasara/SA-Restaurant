@@ -22,7 +22,7 @@ class RegisterPresenterImpl : RegisterPresenter {
 
 
     override fun checkforuser(name: String, email: String, number: String, password: String, mydatabase: Mydatabase, activity: Activity, fragmentmanager: FragmentManager) {
-        var result: List<Table> = mydatabase.myDao().checkuser(name, email)
+        val result: List<Table> = mydatabase.myDao().checkuser(name, email)
 
         if (result.isNotEmpty()) {
 
@@ -30,7 +30,7 @@ class RegisterPresenterImpl : RegisterPresenter {
 
         } else {
 
-            var table: Table = Table()
+            val table: Table = Table()
             table.name = name
             table.email = email
             table.mobilenumber = number

@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
         } else {
             if (savedInstanceState == null) {
-                var loginFragment: LoginFragment = LoginFragment()
+                val loginFragment: LoginFragment = LoginFragment()
                 Fragmentutils.removeFragment(loginFragment, fragmentManager)
 
                 isVisible = true
@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissionCount == 0) {
             permissionCount++
-            var restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
+            val restaurantPresenter: RestaurantPresenter = RestaurantPresenterImpl()
             restaurantPresenter.checklocationpermission(this)
         }
 
@@ -93,18 +93,18 @@ class MainActivity : AppCompatActivity() {
 
             99 -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    var sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var edit: SharedPreferences.Editor = sharedPreferences.edit()
+                    val sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    val edit: SharedPreferences.Editor = sharedPreferences.edit()
                     edit.putBoolean("permission", true)
                     edit.apply()
                     isPermissionGranted = true
                     if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         Toastutils.showToast(this, "Permission Granted")
-//                        mMap.isMyLocationEnabled = true
+
                     }
                 } else {
-                    var sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
-                    var edit: SharedPreferences.Editor = sharedPreferences.edit()
+                    val sharedPreferences: SharedPreferences = getSharedPreferences("permissionGranted", Context.MODE_PRIVATE)
+                    val edit: SharedPreferences.Editor = sharedPreferences.edit()
                     edit.putBoolean("permission", false)
                     edit.apply()
                     isPermissionGranted = false

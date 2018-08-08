@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:hint="Email/Username"
+            android:hint="@string/email_username"
             android:maxLength="40"
             android:textColor="@color/colorBlack" />
 
@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:maxLength="20"
             android:textColor="@color/colorBlack" />
@@ -64,7 +64,7 @@
         android:layout_marginBottom="@dimen/_14sdp"
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginRight="@dimen/_16sdp"
-        android:text="FORGOT?"
+        android:text="@string/forgot"
         android:textColor="@color/colorComponents"
         app:layout_constraintBottom_toBottomOf="@+id/input_layout_login_Password"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -91,7 +91,7 @@
         android:layout_marginBottom="200dp"
         android:layout_marginLeft="@dimen/_16sdp"
         android:layout_marginStart="@dimen/_16sdp"
-        android:text="Don't have an account?"
+        android:text="@string/don_t_have_an_account"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btn_login" />
@@ -103,7 +103,7 @@
         android:layout_marginLeft="@dimen/_16sdp"
         android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_8sdp"
-        android:text="Register Now"
+        android:text="@string/register_now"
         android:textAllCaps="true"
         android:textColor="@color/colorComponents"
         app:layout_constraintStart_toStartOf="parent"

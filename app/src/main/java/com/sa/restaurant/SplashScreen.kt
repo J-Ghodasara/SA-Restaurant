@@ -19,7 +19,7 @@ class SplashScreen : AppCompatActivity() {
 
         t.postDelayed(Runnable {
 
-            var i: Intent = Intent(this, MainActivity::class.java)
+            val i: Intent = Intent(this, MainActivity::class.java)
             startActivity(i)
         }, 5000)
 

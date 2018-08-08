@@ -20,9 +20,9 @@ interface RestaurantPresenter{
 
 
 
-    fun BuildLocationreq(): LocationRequest
+    fun buildLocationreq(): LocationRequest
 
-   fun Buildlocationcallback(iGoogleApiServices:IGoogleApiServices,context: ViewGroup,activity: Context,adapter: RestaurantAdapter,recyclerView: RecyclerView): LocationCallback
+   fun buildlocationcallback(iGoogleApiServices:IGoogleApiServices, context: ViewGroup, activity: Context, adapter: RestaurantAdapter, recyclerView: RecyclerView): LocationCallback
 
     fun checklocationpermission(context: Activity): Boolean
 

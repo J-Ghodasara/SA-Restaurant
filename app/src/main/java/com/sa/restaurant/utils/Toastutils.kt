@@ -15,7 +15,7 @@ object Toastutils {
 
 
     fun showsSnackBar(v: Activity, message: String) {
-        var snackview: View = v.findViewById(android.R.id.content)
+        val snackview: View = v.findViewById(android.R.id.content)
         val snackbar = Snackbar
                 .make(snackview, message, Snackbar.LENGTH_LONG)
         snackbar.show()

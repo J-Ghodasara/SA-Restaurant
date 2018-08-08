@@ -33,10 +33,10 @@ class MyBroadcastReceiverService : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.i("Alarm", "Triggered")
         WeatherFragment.iGoogleApiServices = RetrofitnearbyClient.getClient("https://query.yahooapis.com/").create(IGoogleApiServices::class.java)
-        var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
+        val weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
         weatherPresenter.createClient(context!!)
-        locationreq = weatherPresenter.BuildLocationreq()
-        locationcallback = weatherPresenter.Buildlocationcallback(WeatherFragment.iGoogleApiServices, context, null, 3)
+        locationreq = weatherPresenter.buildLocationreq()
+        locationcallback = weatherPresenter.buildlocationcallback(WeatherFragment.iGoogleApiServices, context, null, 3)
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
             fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())

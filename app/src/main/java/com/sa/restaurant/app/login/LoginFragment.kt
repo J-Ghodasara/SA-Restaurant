@@ -56,22 +56,22 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
         var firstTime2 = mPreferences.getBoolean("firstTime", true)
         if (firstTime2) {
-            Log.i("User", "first login")
+
         } else {
-            Log.i("User", "already login")
-            var sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
-            var Username = sharedpref.getString("username", null)
-            var uid = mydb.myDao().getUserId(Username!!)
-            var list = mydb.myDao().getUserInfo(uid)
-            Log.i("Login Status", list[0].loginStatus.toString() + "  " + uid.toString() + "  " + list[0])
+
+            val sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
+            val username = sharedpref.getString("username", null)
+            val uid = mydb.myDao().getUserId(username!!)
+            val list = mydb.myDao().getUserInfo(uid)
+
             if (list[0].loginStatus == "yes") {
-                var intent: Intent = Intent(activity, RestaurantActivity::class.java)
+                val intent: Intent = Intent(activity, RestaurantActivity::class.java)
                 startActivity(intent)
             }
         }
 
 
-        var view: View = layoutInflater.inflate(R.layout.fragment_login, container, false)
+        val view: View = layoutInflater.inflate(R.layout.fragment_login, container, false)
         return view
     }
 
@@ -85,8 +85,8 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         editText_Password.setOnKeyListener(object : View.OnKeyListener {
             override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
                 if (keyCode == KeyEvent.KEYCODE_ENTER) {
-                    var username: String = editText_Username.text.toString()
-                    var password: String = editText_Password.text.toString()
+                    val username: String = editText_Username.text.toString()
+                    val password: String = editText_Password.text.toString()
 
                     if (!validatename(username)) run {
                         if (!validateemail(username)) {
@@ -117,21 +117,21 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
         login_button.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult?) {
-                Log.i("Login", "Success")
-
-                var request: GraphRequest = GraphRequest.newMeRequest(result!!.accessToken) { `object`, response ->
-                    var email = `object`.getString("email")
-                    var name = `object`.getString("name")
 
 
-                    var image: String = `object`.getString("id")
-                    Log.i("FB Image", image)
+                val request: GraphRequest = GraphRequest.newMeRequest(result!!.accessToken) { `object`, response ->
+                    val email = `object`.getString("email")
+                    val name = `object`.getString("name")
 
-                    var sp: SharedPreferences = activity.getSharedPreferences("UserInfoforfb", 0)
-                    var password = sp.getString("password", null)
 
-                    var sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
-                    var editor: SharedPreferences.Editor = sharedpref.edit()
+                    val image: String = `object`.getString("id")
+
+
+                    val sp: SharedPreferences = activity.getSharedPreferences("UserInfoforfb", 0)
+                    val password: String = sp.getString("password", null)
+
+                    val sharedpref: SharedPreferences = activity.getSharedPreferences("UserInfo", 0)
+                    val editor: SharedPreferences.Editor = sharedpref.edit()
                     editor.putString("username", name)
                     editor.putString("email", email)
                     editor.putString("number", "Permission required from facebook")
@@ -145,12 +145,12 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
                         editor.apply()
                     }
                     Toastutils.showToast(activity, "Login Successfull")
-                    var intent: Intent = Intent(activity, RestaurantActivity::class.java)
+                    val intent: Intent = Intent(activity, RestaurantActivity::class.java)
                     startActivity(intent)
 
                 }
 
-                var bundle: Bundle = Bundle()
+                val bundle: Bundle = Bundle()
                 bundle.putString("fields", "id,name,email,gender,birthday")
                 request.parameters = bundle
                 request.executeAsync()
@@ -171,7 +171,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        Log.i("Fragment", "OnActivity Result")
+
         callbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -181,15 +181,15 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
         when (v!!.id) {
 
             R.id.textview_Register -> {
-                var registerFragment: RegisterFragment = RegisterFragment()
+                val registerFragment: RegisterFragment = RegisterFragment()
                 Fragmentutils.replaceFragmentwithBackStack(activity, registerFragment, fragmentManager, R.id.container)
             }
 
             R.id.btn_login -> {
 
 
-                var username: String = editText_Username.text.toString()
-                var password: String = editText_Password.text.toString()
+                val username: String = editText_Username.text.toString()
+                val password: String = editText_Password.text.toString()
 
                 if (!validatename(username)) run {
                     if (!validateemail(username)) {
@@ -217,15 +217,15 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
         } else {
             loginpresenter = LoginPresenterImpl()
-            var issucess: Boolean = loginpresenter.validateUser(username, password, mydb, activity)
+            val issucess: Boolean = loginpresenter.validateUser(username, password, mydb, activity)
 
             if (issucess) {
 
-                var uid = mydb.myDao().getUserId(username)
-                Log.i("Username", username)
-                var userData = mydb.myDao().getUserInfo(uid)
-                Log.i("UID", uid.toString())
-                var table: Table = Table()
+                val uid = mydb.myDao().getUserId(username)
+
+                val userData = mydb.myDao().getUserInfo(uid)
+
+                val table: Table = Table()
                 table.id = uid
                 table.name = userData[0].name
                 table.email = userData[0].email
@@ -233,7 +233,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
                 table.mobilenumber = userData[0].mobilenumber
                 table.loginStatus = "yes"
                 mydb.myDao().update(table)
-                Log.i("User", "status Updated")
+
                 val mPreferences = activity.getSharedPreferences("first_time", Context.MODE_PRIVATE)
                 firstTime = mPreferences.getBoolean("firstTime", true)
                 if (firstTime as Boolean) {
@@ -242,7 +242,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
                     editor.apply()
                 }
 
-                var intent: Intent = Intent(activity, RestaurantActivity::class.java)
+                val intent: Intent = Intent(activity, RestaurantActivity::class.java)
                 startActivity(intent)
             }
 
@@ -257,7 +257,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     fun validateemail(email: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$"
+        val EMAIL_PATTERN = "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z_\\-\\.]+)\\.([a-zA-Z]{2,5})\$"
         pattern = Pattern.compile(EMAIL_PATTERN)
         matcher = pattern.matcher(email)
 
@@ -268,7 +268,7 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
     fun validatename(name: String): Boolean {
         val pattern: Pattern
         val matcher: Matcher
-        val namePATTERN = "^[a-zA-Z]{5,}+$"
+        val namePATTERN = "^[a-zA-Z0-9._@-]{5,}+\$"
         pattern = Pattern.compile(namePATTERN)
         matcher = pattern.matcher(name)
         return matcher.matches()
@@ -295,8 +295,8 @@ class LoginFragment : Fragment(), View.OnClickListener, LoginView {
 
     override fun validuser(v: Activity, username: String?, email: String?, Number: String?, password: String) {
         Toastutils.showsSnackBar(v, "Login Successfull")
-        var sharedpref: SharedPreferences = v.getSharedPreferences("UserInfo", 0)
-        var editor: SharedPreferences.Editor = sharedpref.edit()
+        val sharedpref: SharedPreferences = v.getSharedPreferences("UserInfo", 0)
+        val editor: SharedPreferences.Editor = sharedpref.edit()
         editor.putString("username", username)
         editor.putString("email", email)
         editor.putString("number", Number)

@@ -20,12 +20,12 @@ class LoginPresenterImpl : LoginPresenter {
         var result: List<Table> = mydatabase.myDao().userLogin(username, password)
 
         if (result.isNotEmpty()) {
-            var loginView: LoginFragment = LoginFragment()
-            var email = result[0].email
-            var userName = result[0].name
-            var number = result[0].mobilenumber
+            val loginView: LoginFragment = LoginFragment()
+            val email = result[0].email
+            val userName = result[0].name
+            val number = result[0].mobilenumber
 
-            var table: Table = Table()
+            val table: Table = Table()
             table.name = userName
             table.email = email
             table.mobilenumber = number

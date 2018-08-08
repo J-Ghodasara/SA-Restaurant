@@ -57,21 +57,21 @@ class WeatherFragment : Fragment(), WeatherView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        var view: View = inflater.inflate(R.layout.fragment_weather, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_weather, container, false)
         passed_view = view
         dialog = ProgressDialog(activity)
         dialog.setMessage("Please wait")
         dialog.setCancelable(false)
         dialog.isIndeterminate = true
         dialog.show()
-        var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
+        val weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
         weatherPresenter.createClient(activity)
 
 
         iGoogleApiServices = RetrofitnearbyClient.getClient("https://query.yahooapis.com/").create(IGoogleApiServices::class.java)
 
-        locationreq = weatherPresenter.BuildLocationreq()
-        locationcallback = weatherPresenter.Buildlocationcallback(iGoogleApiServices, activity, passed_view, 2)
+        locationreq = weatherPresenter.buildLocationreq()
+        locationcallback = weatherPresenter.buildlocationcallback(iGoogleApiServices, activity, passed_view, 2)
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
             fusedLocationProviderClient.requestLocationUpdates(locationreq, locationcallback, Looper.myLooper())
@@ -82,7 +82,7 @@ class WeatherFragment : Fragment(), WeatherView {
 
 
     override fun sendlocation(location: Location, context: Context, iGoogleApiServices: IGoogleApiServices, view: View) {
-        var weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
+        val weatherPresenter: WeatherPresenter = WeatherPresenterImpl()
         weatherPresenter.getNameFromLatLng(location, context, iGoogleApiServices, view, 2)
 
 
@@ -90,20 +90,20 @@ class WeatherFragment : Fragment(), WeatherView {
 
     override fun sendweatherInfo(bundle: Bundle, context: Context, view: View) {
 
-        var cityValue = bundle["city"]
-        var humidityValue = bundle["humidity"]
-        var unit = bundle["unit"]
-        var code = bundle["code"]
-        var temperatureValue = bundle["temperature"]
-        var text = bundle["text"]
-        var region = bundle["region"]
+        val cityValue = bundle["city"]
+        val humidityValue: Any = bundle["humidity"]
+        val unit = bundle["unit"]
+        val code = bundle["code"]
+        val temperatureValue = bundle["temperature"]
+        val text: Any = bundle["text"]
+        val region = bundle["region"]
 
-        var weather_type: TextView = view.findViewById(R.id.weather_type)
-        var humidity: TextView = view.findViewById(R.id.humidity)
-        var temperature_unit: TextView = view.findViewById(R.id.temperature_unit)
-        var temperature: TextView = view.findViewById(R.id.temperature)
-        var city: TextView = view.findViewById(R.id.city)
-        var weathericon: ImageView = view.findViewById(R.id.weathericon)
+        val weather_type: TextView = view.findViewById(R.id.weather_type)
+        val humidity: TextView = view.findViewById(R.id.humidity)
+        val temperature_unit: TextView = view.findViewById(R.id.temperature_unit)
+        val temperature: TextView = view.findViewById(R.id.temperature)
+        val city: TextView = view.findViewById(R.id.city)
+        val weathericon: ImageView = view.findViewById(R.id.weathericon)
 
         weather_type.text = text.toString()
         humidity.text = humidityValue.toString()
@@ -112,21 +112,21 @@ class WeatherFragment : Fragment(), WeatherView {
         city.text = cityValue.toString() + " " + region.toString()
 
         dialog.dismiss()
-        Log.i("image", "drawable/icon$code")
-        var resources: Int = context.resources.getIdentifier("drawable/icon$code", null, "com.sa.restaurant")
-        var icon: Drawable = context.resources.getDrawable(resources)
+
+        val resources: Int = context.resources.getIdentifier("drawable/icon$code", null, "com.sa.restaurant")
+        val icon: Drawable = context.resources.getDrawable(resources)
         weathericon.setImageDrawable(icon)
 
         mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
-        var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
-        var Username = sharedpref.getString("username", null)
+        val sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+        val username = sharedpref.getString("username", null)
 
-        var uid = mydb.myDao().getUserId(Username!!)
-        Log.i("username&uid Weather", Username + "  " + uid)
-        var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
-        Log.i("list weather", result.size.toString())
+        val uid = mydb.myDao().getUserId(username!!)
+
+        val result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+
         if (result.isNotEmpty()) {
-            var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+            val weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
             weatherInfoTable.ID = result[0].ID
             weatherInfoTable.uid = uid
             weatherInfoTable.place = region.toString()
@@ -137,7 +137,7 @@ class WeatherFragment : Fragment(), WeatherView {
             weatherInfoTable.Code = code.toString()
             mydb.myDao().updateWeatherInfo(weatherInfoTable)
         } else {
-            var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+            val weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
             weatherInfoTable.uid = uid
             weatherInfoTable.place = region.toString()
             weatherInfoTable.city = cityValue.toString()

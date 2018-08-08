@@ -40,7 +40,7 @@ class RestaurantInfoFragment : Fragment() {
         // Inflate the layout for this fragment
         RestaurantActivity.homeIsVisible=false
        isInfoVisible=true
-        var view: View = inflater.inflate(R.layout.fragment_restaurant_info, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_restaurant_info, container, false)
         RestaurantActivity.homeIsVisible = false
 
 
@@ -48,7 +48,7 @@ class RestaurantInfoFragment : Fragment() {
         restroAddress = arguments.getString("restroAddress", null).toString()
         restroImg = arguments.getString("restroImg", null).toString()
         ratings=arguments.getDouble("rating")
-        Log.i("InfoRating",ratings.toString())
+
         open=arguments.getString("open")
         placeId=arguments.getString("Clicked_placeId")
 
@@ -64,49 +64,49 @@ class RestaurantInfoFragment : Fragment() {
 
             override fun onResponse(call: Call<Response>?, response: retrofit2.Response<com.sa.restaurant.app.restaurantsActivity.model.PlaceInfo.Response>?) {
 
-                var result: com.sa.restaurant.app.restaurantsActivity.model.PlaceInfo.Response = response!!.body()!!
+                val result: com.sa.restaurant.app.restaurantsActivity.model.PlaceInfo.Response = response!!.body()!!
 
-                Log.i("result", result.toString())
-                var calendar: Calendar = Calendar.getInstance()
-                var date: Date = calendar.time
-                var day = SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.time)
-                Log.i("Day", day)
+
+                val calendar: Calendar = Calendar.getInstance()
+                val date: Date = calendar.time
+                val day = SimpleDateFormat("EEEE", Locale.ENGLISH).format(date.time)
+
                 if (result.result == null || result.result.opening_hours == null) {
                     todays_timings = "Timings Information Not Available"
-                    Log.i("Thursday", todays_timings)
+
                     timings_info.text = todays_timings
                     dialog.dismiss()
                 } else {
-                    var days = result.result.opening_hours.weekday_text
-                    Log.i("Days", days.toString())
+                    val days = result.result.opening_hours.weekday_text
+
                     when (day) {
                         "Monday" -> {
                             todays_timings = days[0].toString()
-                            Log.i("Monday", todays_timings)
+
                         }
                         "Tuesday" -> {
                             todays_timings = days[1].toString()
-                            Log.i("Tuesday", todays_timings)
+
                         }
                         "Wednesday" -> {
                             todays_timings = days[2].toString()
-                            Log.i("Wednesday", todays_timings)
+
                         }
                         "Thursday" -> {
                             todays_timings = days[3]
-                            Log.i("Thursday", todays_timings)
+
                         }
                         "Friday" -> {
                             todays_timings = days[4].toString()
-                            Log.i("Friday", todays_timings)
+
                         }
                         "Saturday" -> {
                             todays_timings = days[5].toString()
-                            Log.i("Saturday", todays_timings)
+
                         }
                         "Sunday" -> {
                             todays_timings = days[6].toString()
-                            Log.i("Sunday", todays_timings)
+
                         }
 
 
@@ -123,7 +123,7 @@ class RestaurantInfoFragment : Fragment() {
     }
 
     fun getrestaurantInfoUrl(placeId: String): String {
-        var googleplaceurl: StringBuilder = StringBuilder("https://maps.googleapis.com/maps/api/place/details/json?")
+        val googleplaceurl: StringBuilder = StringBuilder("https://maps.googleapis.com/maps/api/place/details/json?")
         googleplaceurl.append("placeid=" + placeId)
         googleplaceurl.append("&key=" + "AIzaSyB0_n9UBObCELuk4pLP8XL1kIKghrPNdks")
         return googleplaceurl.toString()
@@ -135,7 +135,7 @@ class RestaurantInfoFragment : Fragment() {
         address.text = restroAddress
         Picasso.get().load(restroImg).into(img)
         ratingbar.isClickable=false
-        Log.i("settingrating",ratings!!.toFloat().toString() )
+
        activity.runOnUiThread(Runnable {
            ratingbar.rating=ratings!!.toFloat()
        })

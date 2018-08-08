@@ -19,9 +19,9 @@ interface MapsPresenter {
 
     fun nearbyplaces2(context: Context, typeplace: String, location: Location, iGoogleApiServices: IGoogleApiServices, mMap: GoogleMap)
 
-    fun BuildLocationreq(): LocationRequest
+    fun buildLocationreq(): LocationRequest
 
-    fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context): LocationCallback
+    fun buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context): LocationCallback
 
     fun checklocationpermission(context: Activity): Boolean
 

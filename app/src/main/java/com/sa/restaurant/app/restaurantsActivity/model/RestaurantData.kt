@@ -1,8 +1,8 @@
 package com.sa.restaurant.app.restaurantsActivity.model
 
 class  RestaurantData{
-    var Name:String?=null
-    var Address:String?=null
+    var name:String?=null
+    var address:String?=null
     var image:String?=null
     var lat:Double?=null
     var lng:Double?=null

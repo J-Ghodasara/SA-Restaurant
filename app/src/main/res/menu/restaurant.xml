@@ -4,13 +4,13 @@
     <item
         android:id="@+id/share"
         android:orderInCategory="1"
-        android:title="Show on Map"
+        android:title="@string/show_on_map"
         android:icon="@drawable/ic_share_white_24dp"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/showonmaps"
         android:orderInCategory="2"
-        android:title="Show on Map"
+        android:title="@string/show_on_map"
         android:icon="@drawable/ic_place_white_24dp"
         app:showAsAction="always"></item>
 </menu>

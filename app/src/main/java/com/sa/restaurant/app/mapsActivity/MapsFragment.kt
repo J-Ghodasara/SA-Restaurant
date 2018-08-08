@@ -65,7 +65,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onMapReady(googleMap: GoogleMap?) {
         mMap = googleMap!!
         mMap!!.setOnMarkerClickListener(this)
-        Log.i("Map", "Ready")
+
         mydb = Room.databaseBuilder(activity, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -83,7 +83,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         contextt = context
         // RestaurantActivity.googleClient!!.reconnect()
         synchronized(this) {
-            Log.i("Client", "created")
+
             gclient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
             gclient.connect()
             mydb = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
@@ -102,7 +102,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     //Creating geofence via lat lng of favorite restaurants
     fun geoFencingReq(lat: Double, lng: Double, placename: String): GeofencingRequest {
-        var builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
+        val builder: GeofencingRequest.Builder = GeofencingRequest.Builder()
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
         builder.addGeofence(getGeofence(lat, lng, placename))
         return builder.build()
@@ -112,7 +112,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     fun getGeofence(latitude: Double, longitude: Double, placename: String): Geofence? {
 
 
-        var geofence: Geofence = Geofence.Builder()
+        val geofence: Geofence = Geofence.Builder()
                 .setRequestId(placename)
                 .setCircularRegion(latitude, longitude, GEOFENCE_RADIUS_IN_METERS.toFloat())
                 .setNotificationResponsiveness(1)
@@ -129,7 +129,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                               savedInstanceState: Bundle?): View? {
 
 
-        var view: View = inflater.inflate(R.layout.fragment_maps, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_maps, container, false)
 
         mMapView = view.findViewById(R.id.map)
 
@@ -145,9 +145,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         mMapView!!.getMapAsync(this)
 
         iGoogleApiServices = RetrofitnearbyClient.getClient("https://maps.google.com/").create(IGoogleApiServices::class.java)
-        var mapsPresenter: MapsPresenter = MapsPresenterImpl()
-        locationreq = mapsPresenter.BuildLocationreq()
-        locationcallback = mapsPresenter.Buildlocationcallback(iGoogleApiServices, activity)
+        val mapsPresenter: MapsPresenter = MapsPresenterImpl()
+        locationreq = mapsPresenter.buildLocationreq()
+        locationcallback = mapsPresenter.buildlocationcallback(iGoogleApiServices, activity)
 
         if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(activity)
@@ -167,7 +167,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         myLocationButton.setOnClickListener(View.OnClickListener {
             if (MapsPresenterImpl.loc != null) { // Check to ensure coordinates aren't null, probably a better way of doing this...
-                var latLng: LatLng = LatLng(MapsPresenterImpl.loc!!.latitude, MapsPresenterImpl.loc!!.longitude)
+                val latLng: LatLng = LatLng(MapsPresenterImpl.loc!!.latitude, MapsPresenterImpl.loc!!.longitude)
                 mMap!!.animateCamera(CameraUpdateFactory.newLatLng(latLng))
             }
         })
@@ -188,19 +188,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         Log.i("gClient", "connected")
 
 
-        var sharedpref: SharedPreferences = contextt.getSharedPreferences("UserInfo", 0)
-        var Username = sharedpref.getString("username", null)
-        var uid = mydb.myDao().getUserId(Username!!)
-        var list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
+        val sharedpref: SharedPreferences = contextt.getSharedPreferences("UserInfo", 0)
+        val username = sharedpref.getString("username", null)
+        val uid = mydb.myDao().getUserId(username!!)
+        val list: List<FavoritesTable> = mydb.myDao().getFavorites(uid)
 
 
 
         for (l in list.indices) {
-            var name: String = list[l].restaurantName.toString()
-            var location = RestaurantPresenterImpl.hashMap[name]
+            val name: String = list[l].restaurantName.toString()
+            val location = RestaurantPresenterImpl.hashMap[name]
 
             var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(contextt)
-            Log.i("Location", location.toString())
+
             if (location != null) {
                 LocationServices.GeofencingApi.addGeofences(gclient, geoFencingReq(location!!.latitude, location.longitude, name), geofencePendingIntent)
                         .setResultCallback(object : ResultCallback<Status> {
@@ -216,11 +216,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     override fun onConnectionSuspended(p0: Int) {
-        Log.i("Connection", "Suspended")
+
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        Log.i("OOps", "Connection Failed")
+
     }
 
 

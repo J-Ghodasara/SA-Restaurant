@@ -45,25 +45,25 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
     var result: com.sa.restaurant.app.mapsActivity.weather.model.Response = com.sa.restaurant.app.mapsActivity.weather.model.Response()
 
 
-    override fun BuildLocationreq(): LocationRequest {
+    override fun buildLocationreq(): LocationRequest {
         locationReq = LocationRequest()
         locationReq.interval = 60000 * 60
-        Log.i("Called", "in onconnected")
+
         locationReq.fastestInterval = 5000
         locationReq.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
         return locationReq
     }
 
-    override fun Buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View?, flag: Int): LocationCallback {
+    override fun buildlocationcallback(iGoogleApiServices: IGoogleApiServices, activity: Context, view: View?, flag: Int): LocationCallback {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(p0: LocationResult?) {
                 loc = p0!!.locations[p0.locations.size - 1]
-                Log.i("Location Weather", "${MapsPresenterImpl.loc}")
+
                 latlng = LatLng(loc!!.latitude, loc!!.longitude)
 
                 MapsPresenterImpl.AREA_LANDMARKS[GEOFENCE_ID_STAN_UNI] = latlng!!
                 if (flag == 2) {
-                    var weatherView: WeatherView = WeatherFragment()
+                    val weatherView: WeatherView = WeatherFragment()
                     weatherView.sendlocation(loc!!, activity, iGoogleApiServices, view!!)
 
                 }
@@ -84,7 +84,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
     override fun createClient(context: Context): GoogleApiClient {
         var gClient: GoogleApiClient
         synchronized(this) {
-            Log.i("Client", "created")
+
             gClient = GoogleApiClient.Builder(context).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(LocationServices.API).build()
             gClient.connect()
             return gClient
@@ -102,18 +102,18 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
 
                 result = response!!.body()!!
-                Log.i("Response", result.toString())
+
                 //  var latlng2: LatLng? = null
                 if (response!!.body()!! != null) {
-                    var city = result.query!!.results!!.channel!!.location!!.city
-                    var region = result.query!!.results!!.channel!!.location!!.region
-                    var humidity = result.query!!.results!!.channel!!.atmosphere!!.humidity
-                    var unit = result.query!!.results!!.channel!!.units!!.temperature
-                    var code = result.query!!.results!!.channel!!.item!!.condition!!.code
-                    var temperature = result.query!!.results!!.channel!!.item!!.condition!!.temp
-                    var text = result.query!!.results!!.channel!!.item!!.condition!!.text
+                    val city = result.query!!.results!!.channel!!.location!!.city
+                    val region = result.query!!.results!!.channel!!.location!!.region
+                    val humidity = result.query!!.results!!.channel!!.atmosphere!!.humidity
+                    val unit = result.query!!.results!!.channel!!.units!!.temperature
+                    val code = result.query!!.results!!.channel!!.item!!.condition!!.code
+                    val temperature = result.query!!.results!!.channel!!.item!!.condition!!.temp
+                    val text = result.query!!.results!!.channel!!.item!!.condition!!.text
 
-                    var bundle: Bundle = Bundle()
+                    val bundle: Bundle = Bundle()
                     bundle.putString("city", city)
                     bundle.putString("humidity", humidity)
                     bundle.putString("unit", unit)
@@ -122,18 +122,18 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
                     bundle.putString("text", text)
                     bundle.putString("region", region)
 
-                    Log.i("bundle", bundle.toString())
+
                     if (flag == 2) {
-                        var weatherView: WeatherView = WeatherFragment()
+                        val weatherView: WeatherView = WeatherFragment()
                         weatherView.sendweatherInfo(bundle, context, view!!)
 
                     }
                     if (flag == 1) {
-                        var restaurantActivity: RestaurantActivity = RestaurantActivity()
+                        val restaurantActivity: RestaurantActivity = RestaurantActivity()
                         restaurantActivity.setWeatherInfo(view!!, bundle, context)
                     }
                 } else {
-                    Log.i("List not found", "Trying again")
+
                 }
             }
 
@@ -183,16 +183,16 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        Log.i("OnConnectionFailed", "failed")
+
     }
 
     override fun onConnected(p0: Bundle?) {
 
-        Log.i("OnConnected", "success")
+
     }
 
     override fun onConnectionSuspended(p0: Int) {
-        Log.i("OnConnectionSuspended", "failed")
+
     }
 
 
@@ -209,7 +209,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
         val postalCode = addresses[0].postalCode
         val knownName = addresses[0].featureName
 
-        var bundle: Bundle = Bundle()
+        val bundle: Bundle = Bundle()
         bundle.putString("city", city)
         bundle.putString("place", knownName)
 
@@ -228,28 +228,28 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
 
                 result = response!!.body()!!
-                Log.i("Response", result.toString())
-                //  var latlng2: LatLng? = null
+
+
                 if (response!!.body()!! != null) {
-                    var city = result.query!!.results!!.channel!!.location!!.city
-                    var region = result.query!!.results!!.channel!!.location!!.region
-                    var humidity = result.query!!.results!!.channel!!.atmosphere!!.humidity
+                    val city = result.query!!.results!!.channel!!.location!!.city
+                    val region = result.query!!.results!!.channel!!.location!!.region
+                    val humidity = result.query!!.results!!.channel!!.atmosphere!!.humidity
                     var unit = result.query!!.results!!.channel!!.units!!.temperature
-                    var code = result.query!!.results!!.channel!!.item!!.condition!!.code
-                    var temperature = result.query!!.results!!.channel!!.item!!.condition!!.temp
-                    var text = result.query!!.results!!.channel!!.item!!.condition!!.text
+                    val code = result.query!!.results!!.channel!!.item!!.condition!!.code
+                    val temperature = result.query!!.results!!.channel!!.item!!.condition!!.temp
+                    val text = result.query!!.results!!.channel!!.item!!.condition!!.text
 
 
-                    var mydb: Mydatabase = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
-                    var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
-                    var Username = sharedpref.getString("username", null)
+                    val mydb: Mydatabase = Room.databaseBuilder(context, Mydatabase::class.java, "Database").allowMainThreadQueries().build()
+                    val sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+                    val username = sharedpref.getString("username", null)
 
-                    var uid = mydb.myDao().getUserId(Username!!)
-                    Log.i("username&uid Weather", Username + "  " + uid)
-                    var result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
-                    Log.i("list weather", result.size.toString())
+                    val uid = mydb.myDao().getUserId(username!!)
+
+                    val result: List<WeatherInfoTable> = mydb.myDao().checkUserId(uid)
+
                     if (result.isNotEmpty()) {
-                        var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+                        val weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
                         weatherInfoTable.ID = result[0].ID
                         weatherInfoTable.uid = uid
                         weatherInfoTable.place = region.toString()
@@ -260,7 +260,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
                         weatherInfoTable.Code = code.toString()
                         mydb.myDao().updateWeatherInfo(weatherInfoTable)
                     } else {
-                        var weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
+                        val weatherInfoTable: WeatherInfoTable = WeatherInfoTable()
                         weatherInfoTable.uid = uid
                         weatherInfoTable.place = region.toString()
                         weatherInfoTable.city = city.toString()
@@ -273,7 +273,7 @@ class WeatherPresenterImpl : WeatherPresenter, GoogleApiClient.ConnectionCallbac
 
 
                 } else {
-                    Log.i("List not found", "Trying again")
+
                 }
             }
 

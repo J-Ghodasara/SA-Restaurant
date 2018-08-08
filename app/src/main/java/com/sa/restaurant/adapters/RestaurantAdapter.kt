@@ -75,7 +75,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         geofencingClient = LocationServices.getGeofencingClient(context)
 
-        var layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         sheetView = layoutInflater.inflate(R.layout.custom_chooser, null)
         mBottomSheetDialog.setContentView(sheetView)
 
@@ -84,9 +84,9 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
                 .build()
         mGoogleSignInClient = GoogleSignIn.getClient(context, gso)
 
-        var v: View = LayoutInflater.from(parent.context).inflate(R.layout.restaurants_list, parent, false)
-        Log.i("oncreateviewholder", "in")
-        var sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
+        val v: View = LayoutInflater.from(parent.context).inflate(R.layout.restaurants_list, parent, false)
+
+        val sharedpref: SharedPreferences = context.getSharedPreferences("UserInfo", 0)
         Username = sharedpref.getString("username", null)
         uid = mydb.myDao().getUserId(Username!!)
 
@@ -101,15 +101,15 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
     override fun onBindViewHolder(holder: Vholder, position: Int) {
 
-        var fb_Share: LinearLayout = sheetView!!.findViewById(R.id.share_on_fb)
-        var google_Share: LinearLayout = sheetView!!.findViewById(R.id.share_on_google)
-        var other_Share: LinearLayout = sheetView!!.findViewById(R.id.share_to_other)
+        val fb_Share: LinearLayout = sheetView!!.findViewById(R.id.share_on_fb)
+        val google_Share: LinearLayout = sheetView!!.findViewById(R.id.share_on_google)
+        val other_Share: LinearLayout = sheetView!!.findViewById(R.id.share_to_other)
 
-        Log.i("onbindviewholder", "in")
 
-        holder.textView.text = array[position].Name
-        holder.subtitle.text = array[position].Address
-        Log.i("AdapterRating",array[position].Name+" "+array[position].rating.toString())
+
+        holder.textView.text = array[position].name
+        holder.subtitle.text = array[position].address
+
         if (array[position].image == "NotAvailable") {
             referencePhoto = "NotAvailable"
             imgUrl = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
@@ -125,9 +125,9 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         holder.card.setOnLongClickListener(View.OnLongClickListener {
             mBottomSheetDialog.show()
-            Name = array[position].Name
-            Address = array[position].Address
-            var referenceImg = array[position].image
+            Name = array[position].name
+            Address = array[position].address
+            val referenceImg = array[position].image
             if (array[position].image == "NotAvailable") {
                 imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
             } else {
@@ -141,13 +141,12 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         })
         holder.textView.setOnClickListener(View.OnClickListener {
 
-            Log.i("placeId", array[position].placeId.toString())
-              Log.i("ClickedRating",array[position].rating!!.toDouble().toString())
 
-            var bundle: Bundle = Bundle()
-            var referenceImg = array[position].image
+
+            val bundle: Bundle = Bundle()
+            val referenceImg = array[position].image
             bundle.putString("restroName", holder.textView.text.toString())
-            bundle.putString("restroAddress", array[position].Address)
+            bundle.putString("restroAddress", array[position].address)
             bundle.putString("Clicked_placeId", array[position].placeId.toString())
             if (array[position].image == "NotAvailable") {
                 imgUrl = context.getString(R.string.no_Img_AvailableUrl)
@@ -164,10 +163,10 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             }
             RestaurantActivity.restaurantInfoFragment.arguments = bundle
 
-            Log.i("Context", context.toString())
-            var restroInfoFragment:RestaurantInfoFragment=RestaurantInfoFragment()
+
+            val restroInfoFragment:RestaurantInfoFragment=RestaurantInfoFragment()
             restroInfoFragment.arguments=bundle
-            Fragmentutils.replaceFragmentwithBackStack(context, restroInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
+            Fragmentutils.replaceFragmentwithBackStack(context, restroInfoFragment, RestaurantActivity.myfragmentManager, R.id.content)
 
         })
 
@@ -175,7 +174,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         fb_Share.setOnClickListener(View.OnClickListener {
 
 
-            var shareLinkContent: ShareLinkContent = ShareLinkContent.Builder()
+            val shareLinkContent: ShareLinkContent = ShareLinkContent.Builder()
                     .setQuote(Name + "\n" + Address)
                     .setContentUrl(Uri.parse(imgUrlForFb))
                     .build()
@@ -183,7 +182,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         })
 
         google_Share.setOnClickListener(View.OnClickListener {
-            var shareIntent: Intent = PlusShare.Builder(context).setType("text/plain")
+            val shareIntent: Intent = PlusShare.Builder(context).setType("text/plain")
                     .setText(Name)
                     .setContentUrl(Uri.parse("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referencePhoto&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"))
                     .intent
@@ -192,7 +191,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         other_Share.setOnClickListener(View.OnClickListener {
 
-            var sendIntent: Intent = Intent()
+            val sendIntent: Intent = Intent()
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.putExtra(Intent.EXTRA_TEXT, imgUrlForFb)
             sendIntent.putExtra(Intent.EXTRA_TEXT, Name)
@@ -204,15 +203,15 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         //Start Dialog handling-->End
 
         //When the recyclerview loads data checks for the values that are favorite.
-        var result: List<FavoritesTable> = mydb.myDao().checkFavorites(array[position].Name!!, uid!!)
+        val result: List<FavoritesTable> = mydb.myDao().checkFavorites(array[position].name!!, uid!!)
         Picasso.get().load(imgUrl).into(holder.img)
-        Log.i("Result of db favs", result.toString())
+
         if (result.isNotEmpty()) {
 
             for (i in result.indices) {
-                var favRestaurant = result[i].restaurantName
-                var favRestaurantAddress = result[i].restaurantAddress
-                if (holder.textView.text == favRestaurant && array[position].Address == favRestaurantAddress) {
+                val favRestaurant = result[i].restaurantName
+                val favRestaurantAddress = result[i].restaurantAddress
+                if (holder.textView.text == favRestaurant && array[position].address == favRestaurantAddress) {
                     holder.add_to_fav.isChecked = true
                 }
             }
@@ -224,11 +223,11 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
         holder.add_to_fav.setOnClickListener(View.OnClickListener {
 
             if (holder.add_to_fav.isChecked) {
-                var restroName: String = holder.textView.text.toString()
-                var favoritesTable: FavoritesTable = FavoritesTable()
+                val restroName: String = holder.textView.text.toString()
+                val favoritesTable: FavoritesTable = FavoritesTable()
                 favoritesTable.restaurantName = restroName
                 favoritesTable.uid = uid
-                favoritesTable.restaurantAddress = array[position].Address
+                favoritesTable.restaurantAddress = array[position].address
                 favoritesTable.restaurantPhoto = array[position].image
                 favoritesTable.ratings = array[position].rating
                 favoritesTable.PlaceId = array[position].placeId
@@ -239,23 +238,23 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
                 mydb.myDao().addfav(favoritesTable)
                 this.notifyDataSetChanged()
 
-                var location = RestaurantPresenterImpl.hashMap[holder.textView.text.toString()]
-                Log.i("LatLng", location!!.latitude.toString() + "  " + location.longitude)
-                var mapsFragment: MapsFragment = MapsFragment()
+                val location = RestaurantPresenterImpl.hashMap[holder.textView.text.toString()]
+
+                val mapsFragment: MapsFragment = MapsFragment()
                 mapsFragment.callgeofence(context)
                 Toastutils.showsSnackBar(context as Activity, "Added to fav")
             } else {
 
-                var restrauntName = array[position].Name
-                var restaurantAddress = array[position].Address
-                var ID: Int = uid!!
-                mydb.myDao().deletefromfav(restrauntName!!, ID, restaurantAddress!!)
+                val restrauntName = array[position].name
+                val restaurantAddress = array[position].address
+                val id: Int = uid!!
+                mydb.myDao().deletefromfav(restrauntName!!, id, restaurantAddress!!)
                 this.notifyDataSetChanged()
-                var list: ArrayList<String> = ArrayList<String>()
+                val list: ArrayList<String> = ArrayList<String>()
                 list.add(holder.textView.text.toString())
                 LocationServices.GeofencingApi.removeGeofences(MapsFragment.gclient, list)
                 if (flag == 2) {
-                    var favoriteRestaurants: FavoriteRestaurants = FavoriteRestaurants()
+                    val favoriteRestaurants: FavoriteRestaurants = FavoriteRestaurants()
                     this.array.clear()
                     favoriteRestaurants.reload(context, myView)
                 }

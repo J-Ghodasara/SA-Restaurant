@@ -3,7 +3,6 @@ package com.sa.restaurant.helpers
 import android.view.View
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
-import android.app.Activity
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -24,16 +23,16 @@ class CustomInfoWindow(var context: Context) : GoogleMap.InfoWindowAdapter {
         var layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         var view: View = layoutInflater.inflate(R.layout.custom_window, null)
 
-        var Name = view.findViewById<TextView>(R.id.name_infowindow)
+        var name = view.findViewById<TextView>(R.id.name_infowindow)
         var address = view.findViewById<TextView>(R.id.address_infowindow)
         var ratings = view.findViewById<RatingBar>(R.id.ratingbar_infowindow)
         var open = view.findViewById<TextView>(R.id.open_status_infowindow)
         var imgUrl = view.findViewById<ImageView>(R.id.img_infowindow)
 
 
-        Name.text = marker!!.title
+        name.text = marker!!.title
         var infoWindowPojo: InfoWindowPojo = marker.tag as InfoWindowPojo
-        address.text = infoWindowPojo.Address
+        address.text = infoWindowPojo.address
         if (infoWindowPojo.ratings!!.toFloat() == 14.0f) {
             ratings.visibility = View.GONE
         } else {

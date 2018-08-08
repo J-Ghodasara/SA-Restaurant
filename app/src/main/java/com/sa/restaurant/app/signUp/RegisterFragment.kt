@@ -42,7 +42,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        var view: View = inflater.inflate(R.layout.fragment_register, container, false)
+        val view: View = inflater.inflate(R.layout.fragment_register, container, false)
         MainActivity.isVisible=false
         MainActivity.isLoginVisible=false
 
@@ -75,11 +75,11 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
         when (v!!.id) {
             R.id.btn_signup -> {
 
-                var name: String = et_signup_Name.text.toString()
-                var email: String = et_signup_Email.text.toString()
-                var password: String = et_signup_Password.text.toString()
-                var confirmpassword: String = et_signup_CPassword.text.toString()
-                var number: String = et_signup_mobileno.text.toString()
+                val name: String = et_signup_Name.text.toString()
+                val email: String = et_signup_Email.text.toString()
+                val password: String = et_signup_Password.text.toString()
+                val confirmpassword: String = et_signup_CPassword.text.toString()
+                val number: String = et_signup_mobileno.text.toString()
 
 
                 if (!validateemail(email)) run {
@@ -103,7 +103,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
 
                     et_signup_CPassword.requestFocus()
                 } else {
-                    var registerPresenter: RegisterPresenter = RegisterPresenterImpl()
+                    val registerPresenter: RegisterPresenter = RegisterPresenterImpl()
 
                     registerPresenter.checkforuser(name, email, number, password, mydb, activity, fragmentManager)
                 }
@@ -114,7 +114,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
 
             }
             R.id.tv_signup_Login -> {
-                var loginFragment: LoginFragment = LoginFragment()
+                val loginFragment: LoginFragment = LoginFragment()
                 Fragmentutils.replaceFragment(activity, loginFragment, fragmentManager, R.id.container)
             }
 
@@ -123,7 +123,7 @@ class RegisterFragment : Fragment(), View.OnClickListener, RegisterView {
 
     override fun showSnackBar(activity: Activity, fragmentmanager: FragmentManager) {
 
-        var loginFragment: LoginFragment = LoginFragment()
+        val loginFragment: LoginFragment = LoginFragment()
 
         Toastutils.showsSnackBar(activity, "Registered Successfully")
 

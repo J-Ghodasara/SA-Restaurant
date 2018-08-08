@@ -8,19 +8,19 @@
             android:id="@+id/home"
             android:checked="true"
             android:icon="@drawable/ic_home_red_700_24dp"
-            android:title="Home" />
+            android:title="@string/home" />
         <item
             android:id="@+id/fav"
             android:icon="@drawable/ic_favorite_red_a400_24dp"
-            android:title="Favorite" />
+            android:title="@string/favorite" />
         <item
             android:id="@+id/weather"
             android:icon="@drawable/ic_cloud_purple_a100_24dp"
-            android:title="Weather" />
+            android:title="@string/weather" />
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_phonelink_lock_green_800_24dp"
-            android:title="Logout" />
+            android:title="@string/logout" />
     </group>
 
 

@@ -31,11 +31,11 @@ class GeofenceTransitionsIntentService : IntentService(null) {
     lateinit var notification: Notification
     override fun onHandleIntent(intent: Intent?) {
 
-        Log.i("Geofence Service", "Triggered")
+
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (geofencingEvent.hasError()) {
 
-            Log.e("GeoIntentService", "Error")
+
             return
         }
 
@@ -50,22 +50,22 @@ class GeofenceTransitionsIntentService : IntentService(null) {
             val triggeringGeofences = geofencingEvent.triggeringGeofences
 
             // Get the transition details as a String.
-            val geofenceTransitionDetails = getGeofenceTransitionDetails()
+            val geofenceTransitionDetails = GetGeofenceTransitionDetails()
             geofenceTransitionDetails.context = this
             geofenceTransitionDetails.geofenceTransition = geofenceTransition
             geofenceTransitionDetails.list = triggeringGeofences
-            Log.i("trigger detected", "success")
+
             // Send notification and log the transition details.
             sendNotification(geofenceTransitionDetails)
-            Log.i("GeoIntentService", geofenceTransitionDetails.toString())
+
         } else {
 
-            Log.e("GeoIntentService", "Transition Invalid Type")
+
         }
     }
 
-    fun sendNotification(geofenceTransitionDetails: getGeofenceTransitionDetails) {
-        Log.i("Notification triggered", "success")
+    fun sendNotification(geofenceTransitionDetails: GetGeofenceTransitionDetails) {
+
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationIntent = Intent(this, MainActivity::class.java)
         var geofenceName = geofenceTransitionDetails.list!![0].requestId
@@ -90,7 +90,7 @@ class GeofenceTransitionsIntentService : IntentService(null) {
 
     }
 
-    class getGeofenceTransitionDetails() {
+    class GetGeofenceTransitionDetails() {
         var context: Context? = null
         var geofenceTransition: Int? = null
         var list: List<Geofence>? = null
