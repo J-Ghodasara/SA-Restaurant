@@ -11,7 +11,7 @@
         android:clickable="true"
         android:background="@color/colorwhite"
         android:padding="@dimen/_16sdp"
-        tools:context=".app.RestaurantsActivity.RestaurantInfoFragment"
+        tools:context=".app.restaurantsActivity.RestaurantInfoFragment"
         android:focusable="true">
 
         <ImageView
@@ -34,7 +34,7 @@
             android:layout_marginStart="@dimen/_32sdp"
             android:gravity="center_horizontal"
             android:textColor="@color/colorComponents"
-            android:textSize="20dp"
+            android:textSize="@dimen/_17ssp"
             android:textStyle="bold|italic"
             app:layout_constraintBottom_toTopOf="@+id/address_infowindow"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +84,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="TextView"
             android:textColor="@color/colorComponents"
-            android:textSize="20dp"
+            android:textSize="@dimen/_17ssp"
             android:textStyle="bold|italic"
             app:layout_constraintStart_toStartOf="@+id/name_infowindow"
             app:layout_constraintTop_toBottomOf="@+id/name_infowindow" />

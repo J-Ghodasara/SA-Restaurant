@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorwhite"
-    tools:context=".app.MapsActivity.Weather.WeatherFragment"
+    tools:context=".app.mapsActivity.weather.WeatherFragment"
     tools:layout_editor_absoluteY="81ssdp">
 
     <ImageView
@@ -46,12 +46,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_3sdp"
         android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_267sdp"
         android:textColor="@color/colorBlack"
         app:layout_constraintEnd_toStartOf="@+id/temperature_unit"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textView7"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView7"
         tools:text="60" />
 
     <TextView
@@ -60,12 +59,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_2sdp"
         android:layout_marginStart="@dimen/_2sdp"
-        android:layout_marginTop="@dimen/_267sdp"
         android:textColor="@color/colorBlack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/temperature"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/temperature"
         tools:text="F" />
 
     <TextView
@@ -105,12 +103,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_3sdp"
         android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_293sdp"
         android:textColor="@color/colorBlack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textView9"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView9"
         tools:text="Surat" />
 
     <TextView
@@ -132,12 +129,11 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/_3sdp"
         android:layout_marginStart="@dimen/_3sdp"
-        android:layout_marginTop="@dimen/_320sdp"
         android:textColor="@color/colorBlack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/textView8"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView8"
         tools:text="63" />
 
 </android.support.constraint.ConstraintLayout>

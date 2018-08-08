@@ -48,7 +48,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".app.RestaurantsActivity.RestaurantActivity"
+            android:name=".app.restaurantsActivity.RestaurantActivity"
             android:label="@string/title_activity_restaurant"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />

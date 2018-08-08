@@ -9,7 +9,7 @@
     android:id="@+id/maps"
     android:background="@color/colorwhite"
     android:name="com.google.android.gms.maps.SupportMapFragment"
-    tools:context=".app.MapsActivity.MapsFragment"
+    tools:context=".app.mapsActivity.MapsFragment"
     android:focusable="true">
 
     <com.google.android.gms.maps.MapView

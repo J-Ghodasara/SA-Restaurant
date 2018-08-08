@@ -75,7 +75,7 @@
         android:text="@string/button_login"
         android:textAllCaps="false"
         android:textColor="@color/colorwhite"
-        android:textSize="20sp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/input_layout_login_Password" />
 

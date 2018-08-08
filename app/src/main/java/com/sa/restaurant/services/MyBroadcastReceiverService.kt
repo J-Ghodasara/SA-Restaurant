@@ -11,11 +11,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenter
-import com.sa.restaurant.app.MapsActivity.Weather.presenter.WeatherPresenterImpl
-import com.sa.restaurant.app.MapsActivity.Weather.WeatherFragment
-import com.sa.restaurant.app.RestaurantsActivity.IGoogleApiServices
-import com.sa.restaurant.app.RestaurantsActivity.RetrofitnearbyClient
+import com.sa.restaurant.app.mapsActivity.weather.presenter.WeatherPresenter
+import com.sa.restaurant.app.mapsActivity.weather.presenter.WeatherPresenterImpl
+import com.sa.restaurant.app.mapsActivity.weather.WeatherFragment
+import com.sa.restaurant.app.restaurantsActivity.IGoogleApiServices
+import com.sa.restaurant.app.restaurantsActivity.RetrofitnearbyClient
 
 /**
  * MyBroadcastreceiver class for updating the weather info inside the Room database every 1 hour

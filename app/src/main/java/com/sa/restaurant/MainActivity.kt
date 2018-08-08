@@ -13,8 +13,8 @@ import android.widget.Toast
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.sa.restaurant.adapters.GeofenceTransitionsIntentService
-import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenter
-import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
+import com.sa.restaurant.app.restaurantsActivity.presenter.RestaurantPresenter
+import com.sa.restaurant.app.restaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.login.LoginFragment
 import com.sa.restaurant.utils.Fragmentutils
 import com.sa.restaurant.utils.Toastutils

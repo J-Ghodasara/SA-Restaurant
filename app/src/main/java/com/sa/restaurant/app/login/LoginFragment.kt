@@ -13,15 +13,12 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import android.widget.Toast
 import com.facebook.*
-import com.facebook.login.LoginBehavior
 import com.facebook.login.LoginResult
 import com.sa.restaurant.MainActivity
 import com.sa.restaurant.R
-import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
+import com.sa.restaurant.app.restaurantsActivity.RestaurantActivity
 import com.sa.restaurant.app.login.presenter.LoginPresenter
 import com.sa.restaurant.app.login.presenter.LoginPresenterImpl
 import com.sa.restaurant.app.login.view.LoginView

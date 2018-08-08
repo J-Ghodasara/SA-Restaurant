@@ -29,11 +29,12 @@ import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.plus.PlusShare
 import com.sa.restaurant.R
-import com.sa.restaurant.app.Favorites.FavoriteRestaurants
-import com.sa.restaurant.app.MapsActivity.MapsFragment
-import com.sa.restaurant.app.RestaurantsActivity.RestaurantActivity
-import com.sa.restaurant.app.RestaurantsActivity.model.RestaurantData
-import com.sa.restaurant.app.RestaurantsActivity.presenter.RestaurantPresenterImpl
+import com.sa.restaurant.app.favorites.FavoriteRestaurants
+import com.sa.restaurant.app.mapsActivity.MapsFragment
+import com.sa.restaurant.app.restaurantsActivity.RestaurantActivity
+import com.sa.restaurant.app.restaurantsActivity.RestaurantInfoFragment
+import com.sa.restaurant.app.restaurantsActivity.model.RestaurantData
+import com.sa.restaurant.app.restaurantsActivity.presenter.RestaurantPresenterImpl
 import com.sa.restaurant.app.roomDatabase.FavoritesTable
 import com.sa.restaurant.app.roomDatabase.Mydatabase
 import com.sa.restaurant.utils.Fragmentutils
@@ -108,6 +109,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         holder.textView.text = array[position].Name
         holder.subtitle.text = array[position].Address
+        Log.i("AdapterRating",array[position].Name+" "+array[position].rating.toString())
         if (array[position].image == "NotAvailable") {
             referencePhoto = "NotAvailable"
             imgUrl = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
@@ -117,16 +119,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
         }
         holder.textView.setOnLongClickListener(View.OnLongClickListener {
-            mBottomSheetDialog.show()
-            var referenceImg = array[position].image
-            Name = array[position].Name
-            Address = array[position].Address
-            if (array[position].image == "NotAvailable") {
-                imgUrlForFb = "https://vignette.wikia.nocookie.net/citrus/images/6/60/No_Image_Available.png/revision/latest?cb=20170129011325"
-            } else {
-                imgUrlForFb = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=$referenceImg&sensor=false&key=${context.resources.getString(R.string.google_maps_key)}"
-            }
-            return@OnLongClickListener true
+            holder.card.performLongClick()
 
         })
 
@@ -143,10 +136,13 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             return@OnLongClickListener true
         })
 
+        holder.card.setOnClickListener(View.OnClickListener {
+            holder.textView.performClick()
+        })
         holder.textView.setOnClickListener(View.OnClickListener {
 
             Log.i("placeId", array[position].placeId.toString())
-
+              Log.i("ClickedRating",array[position].rating!!.toDouble().toString())
 
             var bundle: Bundle = Bundle()
             var referenceImg = array[position].image
@@ -169,7 +165,9 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
             RestaurantActivity.restaurantInfoFragment.arguments = bundle
 
             Log.i("Context", context.toString())
-            Fragmentutils.replaceFragmentwithBackStack(context, RestaurantActivity.restaurantInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
+            var restroInfoFragment:RestaurantInfoFragment=RestaurantInfoFragment()
+            restroInfoFragment.arguments=bundle
+            Fragmentutils.replaceFragmentwithBackStack(context, restroInfoFragment, RestaurantActivity.MyfragmentManager, R.id.content)
 
         })
 
@@ -218,8 +216,6 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
                     holder.add_to_fav.isChecked = true
                 }
             }
-
-
         } else {
             holder.add_to_fav.isChecked = false
         }
@@ -272,12 +268,7 @@ class RestaurantAdapter(var context: Context, var array: ArrayList<RestaurantDat
 
 
     override fun getItemViewType(position: Int): Int {
-        if (position == 0) {
-            return 0
-        } else {
-            return 1
-        }
-
+       return position
     }
 
 
